@@ -87,6 +87,7 @@
       outline: 3px solid var(--accent-2);
       outline-offset: 2px;
     }
+    .storage-disabled .clip-actions { display: none; }
     .type-filter {
       display: flex;
       flex-wrap: wrap;
@@ -114,6 +115,30 @@
       color: var(--muted);
       font-size: 0.9rem;
     }
+    .hidden-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+      margin: 0.55rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .hidden-tools[hidden] { display: none; }
+    .restore-hidden {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      padding: 0.2rem 0;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .restore-hidden:focus-visible, .clip-action-btn:focus-visible, .undo-notice button:focus-visible {
+      outline: 3px solid var(--accent-2);
+      outline-offset: 2px;
+    }
     .month-section { margin: 0 0 2.2rem; }
     .month-section[hidden], .clip-card[hidden] { display: none; }
     .month-title {
@@ -123,12 +148,71 @@
       line-height: 1.35;
     }
     .clip-card {
+      position: relative;
       margin: 0 0 1rem;
-      padding: 1.25rem 1.3rem;
+      padding: 1.25rem 6.4rem 1.25rem 1.3rem;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: linear-gradient(180deg, rgba(22, 34, 49, 0.9), rgba(17, 24, 33, 0.9));
       box-shadow: 0 12px 30px var(--shadow);
+    }
+    .clip-card.is-hiding {
+      min-height: 5rem;
+      padding: 1rem 1.1rem;
+    }
+    .clip-card.is-hiding > :not(.undo-notice) { display: none; }
+    .clip-actions {
+      position: absolute;
+      top: 0.85rem;
+      right: 0.85rem;
+      display: flex;
+      gap: 0.35rem;
+    }
+    .clip-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.5rem;
+      min-height: 2.5rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17, 24, 33, 0.82);
+      color: var(--muted);
+      font: inherit;
+      font-size: 1.05rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .clip-action-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .fav-btn[aria-pressed="true"] {
+      border-color: rgba(242, 201, 76, 0.8);
+      color: var(--accent-2);
+      background: rgba(242, 201, 76, 0.13);
+    }
+    .hide-btn {
+      font-size: 0.95rem;
+    }
+    .undo-notice {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .undo-notice[hidden] { display: none; }
+    .undo-notice button {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      padding: 0.2rem 0;
+      cursor: pointer;
+      text-decoration: underline;
     }
     .clip-meta {
       display: flex;
@@ -170,6 +254,16 @@
       text-decoration: none;
     }
     .source-link:hover { text-decoration: underline; }
+    @media (max-width: 520px) {
+      .clip-card {
+        padding: 1.15rem 1.1rem;
+      }
+      .clip-actions {
+        position: static;
+        justify-content: flex-end;
+        margin: -0.1rem 0 0.45rem;
+      }
+    }
     .empty {
       padding: 2rem 1rem;
       text-align: center;
@@ -199,12 +293,21 @@
       <input id="search" class="search-box" type="search" placeholder="キーワードで検索" aria-label="クリップを検索" autocomplete="off">
       <div class="type-filter" id="type-filter" aria-label="種別で絞り込み"></div>
       <p class="count" id="count"></p>
+      <p class="hidden-tools" id="hidden-tools" hidden><span id="hidden-count"></span><button class="restore-hidden" type="button" id="restore-hidden">すべて戻す</button></p>
     </div>
 
     <div id="clip-list">
       <section class="month-section" data-month="2026年6月">
         <h2 class="month-title">2026年6月</h2>
-        <article class="clip-card" data-type="x" data-search="スマホ→codex経由で自宅pcを動かし、疑問を即html記事化→github pages公開 投稿者: koder (@koder_dev)。スマホのchatgptからcodex経由で自宅pcを動かし、疑問が浮かんだ瞬間にhtml記事化してgithub pagesに公開している人の紹介。「調べる」と「残す」がシームレスになり、スマホで分かった気で終わって忘れる問題に効く、という所感。">
+        <article class="clip-card" data-id="2026-06-12-slack-1781224161-447589" data-type="x" data-search="スマホ→codex経由で自宅pcを動かし、疑問を即html記事化→github pages公開 投稿者: koder (@koder_dev)。スマホのchatgptからcodex経由で自宅pcを動かし、疑問が浮かんだ瞬間にhtml記事化してgithub pagesに公開している人の紹介。「調べる」と「残す」がシームレスになり、スマホで分かった気で終わって忘れる問題に効く、という所感。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-12</time>
             <span class="clip-badge">X投稿</span>
@@ -215,7 +318,15 @@
           </div>
           <a class="source-link" href="https://x.com/koder_dev/status/2065010654185160937" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="x" data-search="obsidian×claude skillsで第二の脳を自動構築する方法 投稿者: obsidianotaku (@obsidianotaku)。記事「【保存版】obsidian×claude skillsで第二の脳を勝手に構築する方法」の紹介。llmを「賢い検索エンジン」ではなく「コンパイラ」と「図書館係」として動かすkarpathy方式。raw/wiki/reportsの3フォルダ構造で、素材を放り込むだけでllmが知識を自動構造化し、週次のhealth checkでvaultの整合性を保つ仕組み。セットアップからskill投入までの実装手順つき。">
+        <article class="clip-card" data-id="2026-06-12-618107483013251175" data-type="x" data-search="obsidian×claude skillsで第二の脳を自動構築する方法 投稿者: obsidianotaku (@obsidianotaku)。記事「【保存版】obsidian×claude skillsで第二の脳を勝手に構築する方法」の紹介。llmを「賢い検索エンジン」ではなく「コンパイラ」と「図書館係」として動かすkarpathy方式。raw/wiki/reportsの3フォルダ構造で、素材を放り込むだけでllmが知識を自動構造化し、週次のhealth checkでvaultの整合性を保つ仕組み。セットアップからskill投入までの実装手順つき。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-12</time>
             <span class="clip-badge">X投稿</span>
@@ -226,7 +337,15 @@
           </div>
           <a class="source-link" href="https://x.com/obsidianotaku/status/2056138801467232577" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="x" data-search="obsidian ceoがclaude code向け公式skillsを公開 投稿者: 東大claudecode研究所 (@claudecode_ut)。obsidianのceoがclaude code向け公式skillsを公開。(1) obsidian構文に沿ったmarkdownの正確な出力、(2) vault/kbのファイル管理・キャンバス編集、(3) webページのクリーンアップによるトークン消費削減、の3機能。ノート編集時に毎回必要だった指示が不要になるとのこと。">
+        <article class="clip-card" data-id="2026-06-11-slack-1781133723-908959" data-type="x" data-search="obsidian ceoがclaude code向け公式skillsを公開 投稿者: 東大claudecode研究所 (@claudecode_ut)。obsidianのceoがclaude code向け公式skillsを公開。(1) obsidian構文に沿ったmarkdownの正確な出力、(2) vault/kbのファイル管理・キャンバス編集、(3) webページのクリーンアップによるトークン消費削減、の3機能。ノート編集時に毎回必要だった指示が不要になるとのこと。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-11</time>
             <span class="clip-badge">X投稿</span>
@@ -237,7 +356,15 @@
           </div>
           <a class="source-link" href="https://x.com/claudecode_ut/status/2064622345009136127" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="x" data-search="fable 5を全力で活かすプロンプト（リファクタリング詳細プラン作成） 投稿者: kenn ejima (@kenn)。期間限定（6/22まで）のfable 5の活用法。「このコードベースには長年蓄積した大量の無駄がある。フェーズに分けて完全なリファクタリングを行うための詳細なプランを書いてほしい」と依頼し、深い調査能力というfableの強みで内部解析した出力を得る。実行はcodexやcursorに任せる、という役割分担。">
+        <article class="clip-card" data-id="2026-06-11-slack-1781129915-182929" data-type="x" data-search="fable 5を全力で活かすプロンプト（リファクタリング詳細プラン作成） 投稿者: kenn ejima (@kenn)。期間限定（6/22まで）のfable 5の活用法。「このコードベースには長年蓄積した大量の無駄がある。フェーズに分けて完全なリファクタリングを行うための詳細なプランを書いてほしい」と依頼し、深い調査能力というfableの強みで内部解析した出力を得る。実行はcodexやcursorに任せる、という役割分担。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-11</time>
             <span class="clip-badge">X投稿</span>
@@ -248,7 +375,15 @@
           </div>
           <a class="source-link" href="https://x.com/kenn/status/2064590494106317289" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="x" data-search="使われるプロダクトを作るための16のポイント（vibe coding批判） 投稿者: yusuke endo / en. (@ysk_en)。「aiでvibe codingするだけでプロダクトができるfという風潮」への反論として16のポイントを提示。達成目標の明確化、機能ではなく結果から考える、ユーザー体験の全フローをコントロール、期限を切って早く失敗する、最初から分業や自動化をしない、ユーザー行動を生で観察する、など。">
+        <article class="clip-card" data-id="2026-06-10-slack-1781095192-374929" data-type="x" data-search="使われるプロダクトを作るための16のポイント（vibe coding批判） 投稿者: yusuke endo / en. (@ysk_en)。「aiでvibe codingするだけでプロダクトができるfという風潮」への反論として16のポイントを提示。達成目標の明確化、機能ではなく結果から考える、ユーザー体験の全フローをコントロール、期限を切って早く失敗する、最初から分業や自動化をしない、ユーザー行動を生で観察する、など。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-10</time>
             <span class="clip-badge">X投稿</span>
@@ -259,7 +394,15 @@
           </div>
           <a class="source-link" href="https://x.com/ysk_en/status/2064309116462682607" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="x" data-search="aiリメイク: 箇条書きスライドをコンサル品質の資料に変換するプロンプト 投稿者: うちた (@uchita_success)。記事「aiリメイク。箇条書きスライドが、イケてる資料へ変貌。【手順付き保存版】」の共有。箇条書きをaiで構造化されたコンサル品質のスライドに変換するプロンプトと手順。">
+        <article class="clip-card" data-id="2026-06-06-slack-1780696647-101399" data-type="x" data-search="aiリメイク: 箇条書きスライドをコンサル品質の資料に変換するプロンプト 投稿者: うちた (@uchita_success)。記事「aiリメイク。箇条書きスライドが、イケてる資料へ変貌。【手順付き保存版】」の共有。箇条書きをaiで構造化されたコンサル品質のスライドに変換するプロンプトと手順。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-06</time>
             <span class="clip-badge">X投稿</span>
@@ -270,7 +413,15 @@
           </div>
           <a class="source-link" href="https://x.com/uchita_success/status/2062132545890951451" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="x" data-search="ai製スライド(画像/pdf)をズレなく編集可能なpptxに変換する手順 投稿者: うちた (@uchita_success)。aiで作ったスライドの「編集できない」「ppt変換時にレイアウトがズレる」という2課題を、プロンプト1つで解決する手順記事。画像/pdfをコード実行可能なai（chatgpt/claude）に渡し、専用プロンプトで編集可能な.pptxを生成する内容。">
+        <article class="clip-card" data-id="2026-06-06-slack-1780696566-748769" data-type="x" data-search="ai製スライド(画像/pdf)をズレなく編集可能なpptxに変換する手順 投稿者: うちた (@uchita_success)。aiで作ったスライドの「編集できない」「ppt変換時にレイアウトがズレる」という2課題を、プロンプト1つで解決する手順記事。画像/pdfをコード実行可能なai（chatgpt/claude）に渡し、専用プロンプトで編集可能な.pptxを生成する内容。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-06</time>
             <span class="clip-badge">X投稿</span>
@@ -281,7 +432,15 @@
           </div>
           <a class="source-link" href="https://x.com/uchita_success/status/2060657166714060970" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="x" data-search="getdesign.md の紹介ポスト 投稿者: mizuki | webエンジニア (@miz_apps_)。本文は https://getdesign.md/ のリンク共有のみ（「prとかではないです」）。デザイン系markdownツールと思われる。詳細はリンク先を要確認。">
+        <article class="clip-card" data-id="2026-06-05-slack-1780662089-945409" data-type="x" data-search="getdesign.md の紹介ポスト 投稿者: mizuki | webエンジニア (@miz_apps_)。本文は https://getdesign.md/ のリンク共有のみ（「prとかではないです」）。デザイン系markdownツールと思われる。詳細はリンク先を要確認。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2026-06-05</time>
             <span class="clip-badge">X投稿</span>
@@ -295,7 +454,15 @@
       </section>
       <section class="month-section" data-month="2025年8月">
         <h2 class="month-title">2025年8月</h2>
-        <article class="clip-card" data-type="article" data-search="obsidianとclaude codeを使ったドキュメント活用 obsidianをai-firstで運用し、claude codeとmcpで知識ベースとして活用する実践記事。">
+        <article class="clip-card" data-id="ObsidianとClaude Codeを使ったドキュメント活用" data-type="article" data-search="obsidianとclaude codeを使ったドキュメント活用 obsidianをai-firstで運用し、claude codeとmcpで知識ベースとして活用する実践記事。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2025-08-15</time>
             <span class="clip-badge">記事</span>
@@ -306,7 +473,15 @@
           </div>
           <a class="source-link" href="https://zenn.dev/oikon/articles/obsidian-claude-code" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="article" data-search="thread by @oikon48 しがないビジネスマン">
+        <article class="clip-card" data-id="Thread by @oikon48" data-type="article" data-search="thread by @oikon48 しがないビジネスマン">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2025-08-14</time>
             <span class="clip-badge">記事</span>
@@ -320,7 +495,15 @@
       </section>
       <section class="month-section" data-month="2025年6月">
         <h2 class="month-title">2025年6月</h2>
-        <article class="clip-card" data-type="article" data-search="thread by @masahirochaen ">
+        <article class="clip-card" data-id="Thread by @masahirochaen" data-type="article" data-search="thread by @masahirochaen ">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2025-06-29</time>
             <span class="clip-badge">記事</span>
@@ -331,7 +514,15 @@
           </div>
           <a class="source-link" href="https://x.com/masahirochaen/status/1939158933727518984" target="_blank" rel="noopener">元記事を開く →</a>
         </article>
-        <article class="clip-card" data-type="article" data-search="obsidian web clipperの使い方と設定方法 obsidianを使って情報を整理している方にとって、web上の気になる記事や資料をスムーズに取り込めるかどうかは大きな課題です。毎回コピペして整形するのは、地味に手間がかかる作業ですよね。そんなときに便利なのが「obsidian web clipper」。このツールを使えば、webページの内容を簡単にobsidianに保存でき、情報の整理が驚くほどスムーズになります。">
+        <article class="clip-card" data-id="Obsidian Web Clipperの使い方と設定方法" data-type="article" data-search="obsidian web clipperの使い方と設定方法 obsidianを使って情報を整理している方にとって、web上の気になる記事や資料をスムーズに取り込めるかどうかは大きな課題です。毎回コピペして整形するのは、地味に手間がかかる作業ですよね。そんなときに便利なのが「obsidian web clipper」。このツールを使えば、webページの内容を簡単にobsidianに保存でき、情報の整理が驚くほどスムーズになります。">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2025-06-29</time>
             <span class="clip-badge">記事</span>
@@ -345,7 +536,15 @@
       </section>
       <section class="month-section" data-month="2025年3月">
         <h2 class="month-title">2025年3月</h2>
-        <article class="clip-card" data-type="article" data-search="単なるメモから知的資産へ：obsidian in cursorで構築する知的生産システム｜松濤vimmer はじめに  こんにちは松濤vimmerです。以前書いた「メモ管理はobsidian in cursor が最強」を多くの方に読んでいただき沢山の感想をいただきました！  前回の記事からおよそ3ヶ月が経過し自分のobsidian事情もアップデートされたので今回はアップデート版を書かせていただきました。前回よりもボリュームが多くなっています！！  obsidian in cursorとは  最近、obsidianやcursorを使ったメモ管理への関心が高まっています。obsidian in cursorとは、markdownベースのナレッジ管理ツール「obsidian」とai搭載コードエ">
+        <article class="clip-card" data-id="単なるメモから知的資産へ：Obsidian in Cursorで構築する知的生産システム｜松濤Vimmer" data-type="article" data-search="単なるメモから知的資産へ：obsidian in cursorで構築する知的生産システム｜松濤vimmer はじめに  こんにちは松濤vimmerです。以前書いた「メモ管理はobsidian in cursor が最強」を多くの方に読んでいただき沢山の感想をいただきました！  前回の記事からおよそ3ヶ月が経過し自分のobsidian事情もアップデートされたので今回はアップデート版を書かせていただきました。前回よりもボリュームが多くなっています！！  obsidian in cursorとは  最近、obsidianやcursorを使ったメモ管理への関心が高まっています。obsidian in cursorとは、markdownベースのナレッジ管理ツール「obsidian」とai搭載コードエ">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2025-03-10</time>
             <span class="clip-badge">記事</span>
@@ -359,7 +558,15 @@
       </section>
       <section class="month-section" data-month="2021年12月">
         <h2 class="month-title">2021年12月</h2>
-        <article class="clip-card" data-type="article" data-search="githubで人生を管理する ">
+        <article class="clip-card" data-id="githubで人生を管理する" data-type="article" data-search="githubで人生を管理する ">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>2021-12-17</time>
             <span class="clip-badge">記事</span>
@@ -382,14 +589,25 @@
     var TYPE_LABELS = {
       all: "すべて",
       x: "X投稿",
-      article: "記事"
+      article: "記事",
+      fav: "⭐ お気に入り"
     };
+    var TYPE_ORDER = ["all", "x", "article", "fav"];
     var activeType = "all";
     var searchEl = document.getElementById("search");
     var typeFilterEl = document.getElementById("type-filter");
     var countEl = document.getElementById("count");
+    var hiddenToolsEl = document.getElementById("hidden-tools");
+    var hiddenCountEl = document.getElementById("hidden-count");
+    var restoreHiddenEl = document.getElementById("restore-hidden");
     var cards = Array.prototype.slice.call(document.querySelectorAll(".clip-card"));
     var sections = Array.prototype.slice.call(document.querySelectorAll(".month-section"));
+    var storageEnabled = storageWorks();
+    var favs = storageEnabled ? new Set(readIds("clips:favs")) : new Set();
+    var hiddenIds = storageEnabled ? new Set(readIds("clips:hidden")) : new Set();
+    var pendingUndoIds = new Set();
+    var undoTimers = {};
+    if (!storageEnabled) document.body.classList.add("storage-disabled");
 
     function escapeHtml(s) {
       return s.replace(/[&<>"']/g, function (c) {
@@ -398,13 +616,68 @@
     }
 
     function renderTypeChips() {
-      typeFilterEl.innerHTML = ["all", "x", "article"].map(function (type) {
+      var types = storageEnabled ? TYPE_ORDER : TYPE_ORDER.filter(function (type) { return type !== "fav"; });
+      typeFilterEl.innerHTML = types.map(function (type) {
         return '<button class="type-chip" type="button" data-type="' + type + '" aria-pressed="' + (activeType === type ? "true" : "false") + '">' + escapeHtml(TYPE_LABELS[type]) + '</button>';
       }).join("");
     }
 
+    function storageWorks() {
+      try {
+        var key = "clips:storage-test";
+        localStorage.setItem(key, "1");
+        localStorage.removeItem(key);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function readIds(key) {
+      try {
+        var value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value.filter(function (id) { return typeof id === "string"; }) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeIds(key, ids) {
+      if (!storageEnabled) return;
+      try {
+        localStorage.setItem(key, JSON.stringify(Array.from(ids).sort()));
+      } catch (error) {
+      }
+    }
+
+    function cardId(card) {
+      return card.getAttribute("data-id") || "";
+    }
+
+    function updateCardControls(card) {
+      var id = cardId(card);
+      var favButton = card.querySelector("[data-action='fav']");
+      var notice = card.querySelector(".undo-notice");
+      if (favButton) {
+        var isFav = favs.has(id);
+        favButton.textContent = isFav ? "⭐" : "☆";
+        favButton.setAttribute("aria-pressed", isFav ? "true" : "false");
+        favButton.setAttribute("aria-label", isFav ? "お気に入りを解除" : "お気に入りに追加");
+      }
+      if (notice) notice.hidden = !pendingUndoIds.has(id);
+      card.classList.toggle("is-hiding", pendingUndoIds.has(id));
+    }
+
     function cardMatches(card, terms) {
-      if (activeType !== "all" && card.getAttribute("data-type") !== activeType) return false;
+      var id = cardId(card);
+      var isFav = favs.has(id);
+      var isHidden = hiddenIds.has(id);
+      if (activeType === "fav") {
+        if (!isFav) return false;
+      } else {
+        if (isHidden) return false;
+        if (activeType !== "all" && card.getAttribute("data-type") !== activeType) return false;
+      }
       if (!terms.length) return true;
       var hay = card.getAttribute("data-search") || "";
       return terms.every(function (term) { return hay.indexOf(term) !== -1; });
@@ -417,7 +690,9 @@
 
       cards.forEach(function (card) {
         var visible = cardMatches(card, terms);
-        card.hidden = !visible;
+        var id = cardId(card);
+        updateCardControls(card);
+        card.hidden = !visible && !pendingUndoIds.has(id);
         if (visible) matched += 1;
       });
 
@@ -426,9 +701,9 @@
         section.hidden = visibleCards.length === 0;
       });
 
-      countEl.textContent = query || activeType !== "all"
-        ? matched + " 件ヒット（全 " + cards.length + " 件）"
-        : matched + " 件表示（全 " + cards.length + " 件）";
+      countEl.textContent = "表示中" + matched + " / 全" + cards.length + "件";
+      hiddenToolsEl.hidden = !storageEnabled || hiddenIds.size === 0;
+      hiddenCountEl.textContent = "非表示: " + hiddenIds.size + "件";
     }
 
     typeFilterEl.addEventListener("click", function (event) {
@@ -436,6 +711,47 @@
       if (!button) return;
       activeType = button.getAttribute("data-type");
       renderTypeChips();
+      render();
+    });
+    document.getElementById("clip-list").addEventListener("click", function (event) {
+      var button = event.target.closest("[data-action]");
+      if (!button || !storageEnabled) return;
+      var card = event.target.closest(".clip-card");
+      if (!card) return;
+      var id = cardId(card);
+      var action = button.getAttribute("data-action");
+      if (action === "fav") {
+        if (favs.has(id)) favs.delete(id); else favs.add(id);
+        writeIds("clips:favs", favs);
+        render();
+      }
+      if (action === "hide") {
+        hiddenIds.add(id);
+        pendingUndoIds.add(id);
+        writeIds("clips:hidden", hiddenIds);
+        if (undoTimers[id]) clearTimeout(undoTimers[id]);
+        undoTimers[id] = setTimeout(function () {
+          pendingUndoIds.delete(id);
+          delete undoTimers[id];
+          render();
+        }, 3000);
+        render();
+      }
+      if (action === "undo") {
+        hiddenIds.delete(id);
+        pendingUndoIds.delete(id);
+        if (undoTimers[id]) clearTimeout(undoTimers[id]);
+        delete undoTimers[id];
+        writeIds("clips:hidden", hiddenIds);
+        render();
+      }
+    });
+    restoreHiddenEl.addEventListener("click", function () {
+      if (!storageEnabled) return;
+      hiddenIds.clear();
+      pendingUndoIds.clear();
+      Object.keys(undoTimers).forEach(function (id) { clearTimeout(undoTimers[id]); delete undoTimers[id]; });
+      writeIds("clips:hidden", hiddenIds);
       render();
     });
     searchEl.addEventListener("input", render);

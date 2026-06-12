@@ -197,7 +197,16 @@ def render_paragraphs(paragraphs):
 def render_clip(clip):
     type_label = "X投稿" if clip["type"] == "x" else "記事"
     search_text = " ".join([clip["title"], " ".join(clip["paragraphs"])])
-    return f"""        <article class="clip-card" data-type="{esc(clip['type'])}" data-search="{esc(search_text.lower())}">
+    clip_id = Path(clip["filename"]).stem
+    return f"""        <article class="clip-card" data-id="{esc(clip_id)}" data-type="{esc(clip['type'])}" data-search="{esc(search_text.lower())}">
+          <div class="clip-actions" aria-label="クリップ操作">
+            <button class="clip-action-btn fav-btn" type="button" data-action="fav" aria-label="お気に入りに追加" aria-pressed="false">☆</button>
+            <button class="clip-action-btn hide-btn" type="button" data-action="hide" aria-label="非表示にする">✕</button>
+          </div>
+          <div class="undo-notice" hidden>
+            <span>非表示にしました</span>
+            <button type="button" data-action="undo">元に戻す</button>
+          </div>
           <div class="clip-meta">
             <time>{esc(clip['date'] or '日付未設定')}</time>
             <span class="clip-badge">{esc(type_label)}</span>
@@ -315,6 +324,7 @@ def render_html(clips):
       outline: 3px solid var(--accent-2);
       outline-offset: 2px;
     }}
+    .storage-disabled .clip-actions {{ display: none; }}
     .type-filter {{
       display: flex;
       flex-wrap: wrap;
@@ -342,6 +352,30 @@ def render_html(clips):
       color: var(--muted);
       font-size: 0.9rem;
     }}
+    .hidden-tools {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+      margin: 0.55rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }}
+    .hidden-tools[hidden] {{ display: none; }}
+    .restore-hidden {{
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      padding: 0.2rem 0;
+      cursor: pointer;
+      text-decoration: underline;
+    }}
+    .restore-hidden:focus-visible, .clip-action-btn:focus-visible, .undo-notice button:focus-visible {{
+      outline: 3px solid var(--accent-2);
+      outline-offset: 2px;
+    }}
     .month-section {{ margin: 0 0 2.2rem; }}
     .month-section[hidden], .clip-card[hidden] {{ display: none; }}
     .month-title {{
@@ -351,12 +385,71 @@ def render_html(clips):
       line-height: 1.35;
     }}
     .clip-card {{
+      position: relative;
       margin: 0 0 1rem;
-      padding: 1.25rem 1.3rem;
+      padding: 1.25rem 6.4rem 1.25rem 1.3rem;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: linear-gradient(180deg, rgba(22, 34, 49, 0.9), rgba(17, 24, 33, 0.9));
       box-shadow: 0 12px 30px var(--shadow);
+    }}
+    .clip-card.is-hiding {{
+      min-height: 5rem;
+      padding: 1rem 1.1rem;
+    }}
+    .clip-card.is-hiding > :not(.undo-notice) {{ display: none; }}
+    .clip-actions {{
+      position: absolute;
+      top: 0.85rem;
+      right: 0.85rem;
+      display: flex;
+      gap: 0.35rem;
+    }}
+    .clip-action-btn {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.5rem;
+      min-height: 2.5rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17, 24, 33, 0.82);
+      color: var(--muted);
+      font: inherit;
+      font-size: 1.05rem;
+      line-height: 1;
+      cursor: pointer;
+    }}
+    .clip-action-btn:hover {{
+      border-color: var(--accent);
+      color: var(--text);
+    }}
+    .fav-btn[aria-pressed="true"] {{
+      border-color: rgba(242, 201, 76, 0.8);
+      color: var(--accent-2);
+      background: rgba(242, 201, 76, 0.13);
+    }}
+    .hide-btn {{
+      font-size: 0.95rem;
+    }}
+    .undo-notice {{
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }}
+    .undo-notice[hidden] {{ display: none; }}
+    .undo-notice button {{
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      padding: 0.2rem 0;
+      cursor: pointer;
+      text-decoration: underline;
     }}
     .clip-meta {{
       display: flex;
@@ -398,6 +491,16 @@ def render_html(clips):
       text-decoration: none;
     }}
     .source-link:hover {{ text-decoration: underline; }}
+    @media (max-width: 520px) {{
+      .clip-card {{
+        padding: 1.15rem 1.1rem;
+      }}
+      .clip-actions {{
+        position: static;
+        justify-content: flex-end;
+        margin: -0.1rem 0 0.45rem;
+      }}
+    }}
     .empty {{
       padding: 2rem 1rem;
       text-align: center;
@@ -427,6 +530,7 @@ def render_html(clips):
       <input id="search" class="search-box" type="search" placeholder="キーワードで検索" aria-label="クリップを検索" autocomplete="off">
       <div class="type-filter" id="type-filter" aria-label="種別で絞り込み"></div>
       <p class="count" id="count"></p>
+      <p class="hidden-tools" id="hidden-tools" hidden><span id="hidden-count"></span><button class="restore-hidden" type="button" id="restore-hidden">すべて戻す</button></p>
     </div>
 
     <div id="clip-list">
@@ -442,14 +546,25 @@ def render_html(clips):
     var TYPE_LABELS = {{
       all: "すべて",
       x: "X投稿",
-      article: "記事"
+      article: "記事",
+      fav: "⭐ お気に入り"
     }};
+    var TYPE_ORDER = ["all", "x", "article", "fav"];
     var activeType = "all";
     var searchEl = document.getElementById("search");
     var typeFilterEl = document.getElementById("type-filter");
     var countEl = document.getElementById("count");
+    var hiddenToolsEl = document.getElementById("hidden-tools");
+    var hiddenCountEl = document.getElementById("hidden-count");
+    var restoreHiddenEl = document.getElementById("restore-hidden");
     var cards = Array.prototype.slice.call(document.querySelectorAll(".clip-card"));
     var sections = Array.prototype.slice.call(document.querySelectorAll(".month-section"));
+    var storageEnabled = storageWorks();
+    var favs = storageEnabled ? new Set(readIds("clips:favs")) : new Set();
+    var hiddenIds = storageEnabled ? new Set(readIds("clips:hidden")) : new Set();
+    var pendingUndoIds = new Set();
+    var undoTimers = {{}};
+    if (!storageEnabled) document.body.classList.add("storage-disabled");
 
     function escapeHtml(s) {{
       return s.replace(/[&<>"']/g, function (c) {{
@@ -458,13 +573,68 @@ def render_html(clips):
     }}
 
     function renderTypeChips() {{
-      typeFilterEl.innerHTML = ["all", "x", "article"].map(function (type) {{
+      var types = storageEnabled ? TYPE_ORDER : TYPE_ORDER.filter(function (type) {{ return type !== "fav"; }});
+      typeFilterEl.innerHTML = types.map(function (type) {{
         return '<button class="type-chip" type="button" data-type="' + type + '" aria-pressed="' + (activeType === type ? "true" : "false") + '">' + escapeHtml(TYPE_LABELS[type]) + '</button>';
       }}).join("");
     }}
 
+    function storageWorks() {{
+      try {{
+        var key = "clips:storage-test";
+        localStorage.setItem(key, "1");
+        localStorage.removeItem(key);
+        return true;
+      }} catch (error) {{
+        return false;
+      }}
+    }}
+
+    function readIds(key) {{
+      try {{
+        var value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value.filter(function (id) {{ return typeof id === "string"; }}) : [];
+      }} catch (error) {{
+        return [];
+      }}
+    }}
+
+    function writeIds(key, ids) {{
+      if (!storageEnabled) return;
+      try {{
+        localStorage.setItem(key, JSON.stringify(Array.from(ids).sort()));
+      }} catch (error) {{
+      }}
+    }}
+
+    function cardId(card) {{
+      return card.getAttribute("data-id") || "";
+    }}
+
+    function updateCardControls(card) {{
+      var id = cardId(card);
+      var favButton = card.querySelector("[data-action='fav']");
+      var notice = card.querySelector(".undo-notice");
+      if (favButton) {{
+        var isFav = favs.has(id);
+        favButton.textContent = isFav ? "⭐" : "☆";
+        favButton.setAttribute("aria-pressed", isFav ? "true" : "false");
+        favButton.setAttribute("aria-label", isFav ? "お気に入りを解除" : "お気に入りに追加");
+      }}
+      if (notice) notice.hidden = !pendingUndoIds.has(id);
+      card.classList.toggle("is-hiding", pendingUndoIds.has(id));
+    }}
+
     function cardMatches(card, terms) {{
-      if (activeType !== "all" && card.getAttribute("data-type") !== activeType) return false;
+      var id = cardId(card);
+      var isFav = favs.has(id);
+      var isHidden = hiddenIds.has(id);
+      if (activeType === "fav") {{
+        if (!isFav) return false;
+      }} else {{
+        if (isHidden) return false;
+        if (activeType !== "all" && card.getAttribute("data-type") !== activeType) return false;
+      }}
       if (!terms.length) return true;
       var hay = card.getAttribute("data-search") || "";
       return terms.every(function (term) {{ return hay.indexOf(term) !== -1; }});
@@ -477,7 +647,9 @@ def render_html(clips):
 
       cards.forEach(function (card) {{
         var visible = cardMatches(card, terms);
-        card.hidden = !visible;
+        var id = cardId(card);
+        updateCardControls(card);
+        card.hidden = !visible && !pendingUndoIds.has(id);
         if (visible) matched += 1;
       }});
 
@@ -486,9 +658,9 @@ def render_html(clips):
         section.hidden = visibleCards.length === 0;
       }});
 
-      countEl.textContent = query || activeType !== "all"
-        ? matched + " 件ヒット（全 " + cards.length + " 件）"
-        : matched + " 件表示（全 " + cards.length + " 件）";
+      countEl.textContent = "表示中" + matched + " / 全" + cards.length + "件";
+      hiddenToolsEl.hidden = !storageEnabled || hiddenIds.size === 0;
+      hiddenCountEl.textContent = "非表示: " + hiddenIds.size + "件";
     }}
 
     typeFilterEl.addEventListener("click", function (event) {{
@@ -496,6 +668,47 @@ def render_html(clips):
       if (!button) return;
       activeType = button.getAttribute("data-type");
       renderTypeChips();
+      render();
+    }});
+    document.getElementById("clip-list").addEventListener("click", function (event) {{
+      var button = event.target.closest("[data-action]");
+      if (!button || !storageEnabled) return;
+      var card = event.target.closest(".clip-card");
+      if (!card) return;
+      var id = cardId(card);
+      var action = button.getAttribute("data-action");
+      if (action === "fav") {{
+        if (favs.has(id)) favs.delete(id); else favs.add(id);
+        writeIds("clips:favs", favs);
+        render();
+      }}
+      if (action === "hide") {{
+        hiddenIds.add(id);
+        pendingUndoIds.add(id);
+        writeIds("clips:hidden", hiddenIds);
+        if (undoTimers[id]) clearTimeout(undoTimers[id]);
+        undoTimers[id] = setTimeout(function () {{
+          pendingUndoIds.delete(id);
+          delete undoTimers[id];
+          render();
+        }}, 3000);
+        render();
+      }}
+      if (action === "undo") {{
+        hiddenIds.delete(id);
+        pendingUndoIds.delete(id);
+        if (undoTimers[id]) clearTimeout(undoTimers[id]);
+        delete undoTimers[id];
+        writeIds("clips:hidden", hiddenIds);
+        render();
+      }}
+    }});
+    restoreHiddenEl.addEventListener("click", function () {{
+      if (!storageEnabled) return;
+      hiddenIds.clear();
+      pendingUndoIds.clear();
+      Object.keys(undoTimers).forEach(function (id) {{ clearTimeout(undoTimers[id]); delete undoTimers[id]; }});
+      writeIds("clips:hidden", hiddenIds);
       render();
     }});
     searchEl.addEventListener("input", render);

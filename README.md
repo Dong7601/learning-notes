@@ -40,6 +40,7 @@ Obsidian の外部記事/X投稿クリップを `clips/index.html` に静的HTML
 ビルド: `python tools/build_clips.py --src <Obsidianのクリップフォルダ>`。
 生成HTMLの `noindex, nofollow` は維持する。
 公開対象は外部記事/X投稿の要約と公開URLのみ。備考段落は非公開、`memo` / `prompt` タイプは除外する。
+お気に入り・非表示はブラウザ単位の `localStorage` に保存され、端末間では同期されない。
 
 ## コンテンツ作成ルール
 
