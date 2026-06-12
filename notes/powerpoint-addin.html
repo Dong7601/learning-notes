@@ -1,0 +1,1089 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>PowerPointアドイン開発記 — 保存失敗の真因を切り分ける</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0f14;
+      --panel: #111821;
+      --panel-2: #162231;
+      --text: #eef4fb;
+      --muted: #a8b6c8;
+      --line: #2b3a4b;
+      --accent: #58d6c2;
+      --accent-2: #f2c94c;
+      --danger: #ff6b7a;
+      --ok: #8be28b;
+      --info: #77aaff;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --max: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(88, 214, 194, 0.12), transparent 34rem),
+        linear-gradient(180deg, #0b0f14 0%, #101721 46%, #0b0f14 100%);
+      color: var(--text);
+      font-family: "Yu Gothic UI", "Meiryo", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    button,
+    a,
+    summary {
+      outline-offset: 4px;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid var(--accent-2);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      transform: translateY(-150%);
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      background: var(--accent-2);
+      color: #111;
+      font-weight: 700;
+      z-index: 10;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    header,
+    main,
+    footer {
+      width: min(100% - 2rem, var(--max));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      align-content: center;
+      padding: 6rem 0 4rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--accent);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(2.25rem, 6vw, 5.2rem);
+    }
+
+    .hero-summary {
+      max-width: 780px;
+      margin: 1.4rem 0 2rem;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+    }
+
+    .hero-meta,
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tag {
+      min-height: 2.25rem;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    section {
+      padding: 4.5rem 0;
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(18rem, 1fr);
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 1.6rem;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(22, 34, 49, 0.92), rgba(17, 24, 33, 0.92));
+      box-shadow: 0 18px 45px var(--shadow);
+    }
+
+    .tldr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.36fr);
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+
+    .tldr-list {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .tldr-list li + li {
+      margin-top: 0.6rem;
+    }
+
+    .verdict-box {
+      display: grid;
+      place-content: center;
+      min-height: 100%;
+      border-radius: 6px;
+      background: #0b121a;
+      border: 1px solid rgba(88, 214, 194, 0.35);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .verdict-box strong {
+      display: block;
+      color: var(--accent-2);
+      font-size: 1.5rem;
+      line-height: 1.25;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 1.1rem;
+      top: 0.5rem;
+      bottom: 0.5rem;
+      width: 2px;
+      background: var(--line);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-left: 0;
+      padding-left: 3rem;
+    }
+
+    .timeline-item::before {
+      content: attr(data-step);
+      position: absolute;
+      left: 0;
+      top: 0.65rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #0f1721;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .step-button,
+    .suspect-button {
+      width: 100%;
+      min-height: 3.25rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease;
+    }
+
+    .step-button {
+      padding: 0.9rem 3rem 0.9rem 1rem;
+    }
+
+    .suspect-button {
+      padding: 1rem;
+    }
+
+    .step-button:hover,
+    .suspect-button:hover,
+    .step-button[aria-expanded="true"],
+    .suspect-button[aria-expanded="true"] {
+      border-color: rgba(88, 214, 194, 0.75);
+      background: var(--panel-2);
+    }
+
+    .step-button::after {
+      content: "+";
+      float: right;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .step-button[aria-expanded="true"]::after {
+      content: "−";
+    }
+
+    .step-title,
+    .suspect-title {
+      display: block;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .step-note,
+    .suspect-note {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .step-panel,
+    .suspect-panel {
+      display: none;
+      border: 1px solid var(--line);
+      border-top: 0;
+      border-radius: 0 0 8px 8px;
+      background: rgba(11, 18, 26, 0.75);
+      padding: 1rem;
+    }
+
+    .step-panel.is-open,
+    .suspect-panel.is-open {
+      display: block;
+    }
+
+    .triad {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin: 0;
+    }
+
+    .triad div {
+      border: 1px solid rgba(168, 182, 200, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.8rem;
+    }
+
+    .triad dt {
+      margin: 0 0 0.35rem;
+      color: var(--accent-2);
+      font-weight: 800;
+    }
+
+    .triad dd {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .suspect-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.8rem;
+      margin-top: 0.65rem;
+      border-radius: 999px;
+      padding: 0.15rem 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .innocent {
+      background: rgba(139, 226, 139, 0.14);
+      color: var(--ok);
+    }
+
+    .culprit {
+      background: rgba(255, 107, 122, 0.16);
+      color: var(--danger);
+    }
+
+    .environment {
+      background: rgba(119, 170, 255, 0.15);
+      color: var(--info);
+    }
+
+    .code-lab {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #071019;
+      padding: 1rem;
+      color: #e9f2ff;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .code-title {
+      margin: 0 0 0.5rem;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    mark {
+      border-radius: 4px;
+      padding: 0.05rem 0.18rem;
+      background: rgba(255, 107, 122, 0.25);
+      color: #fff;
+    }
+
+    .after mark {
+      background: rgba(139, 226, 139, 0.22);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 8.5rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      padding: 1rem;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--accent-2);
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .concept-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(17, 24, 33, 0.9);
+      padding: 1rem;
+    }
+
+    .concept-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--accent-2);
+      font-size: 1.1rem;
+    }
+
+    .concept-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .concept-card p + p {
+      margin-top: 0.65rem;
+    }
+
+    .layer-map {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .layer-row {
+      display: grid;
+      grid-template-columns: minmax(8rem, 0.26fr) minmax(0, 1fr);
+      gap: 1rem;
+      border: 1px solid rgba(168, 182, 200, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.9rem;
+    }
+
+    .layer-row strong {
+      color: var(--accent);
+    }
+
+    .layer-row span {
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-card,
+    .term-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(17, 24, 33, 0.9);
+      padding: 1rem;
+    }
+
+    .lesson-card h3,
+    .term-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .lesson-card p,
+    .term-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    footer {
+      padding: 3rem 0;
+      color: var(--muted);
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    @media (max-width: 860px) {
+      .section-head,
+      .tldr,
+      .code-lab,
+      .flow,
+      .concept-grid,
+      .cards,
+      .glossary-grid,
+      .suspect-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .layer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .triad {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step {
+        min-height: auto;
+      }
+
+      .flow-step:not(:last-child)::after {
+        content: "↓";
+        right: 1rem;
+        top: auto;
+        bottom: -1rem;
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <p style="width: min(100% - 2rem, var(--max)); margin: 1.5rem auto 0;">
+    <a href="../index.html" style="color: var(--accent); text-decoration: none; font-weight: 700;">← 学習ノート一覧へ戻る</a>
+  </p>
+
+  <header id="hero" class="hero">
+    <p class="eyebrow">Technical case study</p>
+    <h1>PowerPointアドイン開発記 — 保存失敗の真因を切り分ける</h1>
+    <p class="hero-summary">既存業務アドイン風PowerPointアドインの開発で、保存失敗、信頼設定、セキュリティ製品隔離が連鎖した。結論は「OOXML保存の破損」ではなく、1箇所の型宣言と環境ポリシーの分離だった。</p>
+    <ul class="hero-meta" aria-label="主要トピック">
+      <li class="tag">VBA + RibbonX</li>
+      <li class="tag">PowerPoint .ppam</li>
+      <li class="tag">E_FAIL</li>
+      <li class="tag">遅延コンパイル</li>
+      <li class="tag">セキュリティ製品</li>
+    </ul>
+  </header>
+
+  <main id="main">
+    <section id="tldr" aria-labelledby="tldr-title">
+      <div class="section-head">
+        <h2 id="tldr-title">TL;DR</h2>
+        <p class="lead">まず結論。長いデバッグ叙事詩の中心は、壊れた保存経路ではなく、壊れた前提だった。</p>
+      </div>
+      <div class="panel tldr">
+        <ol class="tldr-list">
+          <li>目標は、リボン「PowerPoint部品アドイン」からテンプレスライドと図形グループ要素をサムネイルギャラリーで挿入する既存業務アドイン風PowerPointアドインだった。</li>
+          <li>保存が延々とE_FAILで失敗し、VBOM設定、StrPtr、サイズ、モジュール数、危険構文、保存経路を切り分けた。</li>
+          <li>真犯人は <code>Dim w As Window</code>。PowerPointに存在しないExcel由来の型を1箇所だけ使っていた。</li>
+          <li><code>As DocumentWindow</code> に修正後、COMでフル実VBAの <code>.ppam</code> は生成できた。</li>
+          <li>最後はセキュリティ製品が実コードの <code>.ppam</code> を隔離し、管理PCでは動かせなかった。</li>
+        </ol>
+        <div class="verdict-box" aria-label="結論">
+          <span>保存失敗の真犯人</span>
+          <strong>1単語の型宣言</strong>
+          <span><code>Window</code> → <code>DocumentWindow</code></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="basics" aria-labelledby="basics-title">
+      <div class="section-head">
+        <h2 id="basics-title">そもそも何を作っていたのか</h2>
+        <p class="lead">VBAやマクロを知らない前提で、PowerPoint部品アドインの正体を先に整理する。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>PowerPointアドイン</h3>
+          <p>PowerPointに追加機能を差し込む小さな拡張パッケージ。今回のPowerPoint部品アドインは、PowerPointのリボンに「PowerPoint部品アドイン」タブを出し、用意済みのスライド部品をワンクリックで挿入する道具だった。</p>
+          <p>配布形式は <code>.ppam</code>。PowerPointに読み込ませると、通常のプレゼンとは別に裏側で常駐し、ボタンやギャラリーを提供する。</p>
+        </article>
+        <article class="concept-card">
+          <h3>マクロ</h3>
+          <p>Office上の操作を自動化する命令のまとまり。人間が手で行う「スライドを開く」「図形をコピーする」「現在のページへ貼る」といった手順を、ボタン一発で実行させる。</p>
+          <p>セキュリティ上は強い権限を持つため、管理PCでは信頼場所、署名、セキュリティ製品、マクロポリシーの影響を受ける。</p>
+        </article>
+        <article class="concept-card">
+          <h3>VBA</h3>
+          <p>Visual Basic for Applicationsの略。Excel、PowerPoint、Wordなどに組み込まれているマクロ用のプログラミング言語。</p>
+          <p>注意点は、Officeアプリごとに使える型やオブジェクト名が違うこと。今回の <code>Window</code> はExcelでは自然でも、PowerPoint VBAでは正しい型名ではなかった。</p>
+        </article>
+        <article class="concept-card">
+          <h3>RibbonX</h3>
+          <p>OfficeのリボンUIを定義するXML。どのタブに、どのボタンやギャラリーを置き、クリック時にどのVBA関数を呼ぶかをつなぐ。</p>
+          <p>見た目の入口がRibbonX、実際に動く処理がVBA、配布の箱が <code>.ppam</code> という分担だった。</p>
+        </article>
+      </div>
+
+      <div class="panel layer-map" aria-label="PowerPoint部品アドインの構成">
+        <div class="layer-row">
+          <strong>利用者の操作</strong>
+          <span>PowerPointのリボンでPowerPoint部品アドインタブを開き、ギャラリーから部品を選ぶ。</span>
+        </div>
+        <div class="layer-row">
+          <strong>RibbonX</strong>
+          <span>リボン上のボタンやギャラリーを定義し、クリック時に呼ぶVBA関数名を指定する。</span>
+        </div>
+        <div class="layer-row">
+          <strong>VBAマクロ</strong>
+          <span>ライブラリ用PPTXからスライドや図形を取り出し、現在のプレゼンへ挿入する。</span>
+        </div>
+        <div class="layer-row">
+          <strong>.ppam</strong>
+          <span>RibbonXとVBAをPowerPointアドインとしてまとめ、PowerPointに読み込ませる配布ファイル。</span>
+        </div>
+        <div class="layer-row">
+          <strong>COM/VBOM</strong>
+          <span>外部スクリプトからPowerPointやVBAプロジェクトを操作して、ビルドや検証を自動化する経路。</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="deployed-addin-example" aria-labelledby="deployed-addin-title">
+      <div class="section-head">
+        <h2 id="deployed-addin-title">社内配布アドインはどう入っているのか</h2>
+        <p class="lead">手元のPowerPointに表示されている社内配布アドインのタブを、ファイル構造から逆算する。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>実体は .ppam ファイル</h3>
+          <p>調査した管理PCでは、社内配布アドインの本体がユーザー別Officeアドインフォルダ内の <code>.ppam</code> として配置されていた。標準のOfficeアドイン置き場にあるため、PowerPointが読み込める。</p>
+          <p>同じ周辺フォルダにReadMeやテンプレートらしきPPTXもあり、ヘルプやテンプレートをアドインから参照する構成に見える。</p>
+        </article>
+        <article class="concept-card">
+          <h3>社内配布アドインのタブはRibbonXで出ている</h3>
+          <p><code>.ppam</code> の中には <code>customUI/customUI14.xml</code> があり、そこで独自タブ、各グループ、ボタン、メニューが定義されていた。</p>
+          <p>PowerPoint上に見える独自タブのグループ構成は、このXML側のグループ定義と対応する。</p>
+        </article>
+        <article class="concept-card">
+          <h3>処理本体はVBA</h3>
+          <p>同じ <code>.ppam</code> 内に <code>ppt/vbaProject.bin</code> が入っていた。これはVBAプロジェクト本体で、RibbonXの <code>onAction</code> から呼ばれるマクロ群が入る場所。</p>
+          <p>たとえばRibbonX上のボタンは <code>onAction="Save_SelectedSlides"</code> のように、クリック時に呼ぶVBA側の関数名を持つ。</p>
+        </article>
+        <article class="concept-card">
+          <h3>PowerPoint部品アドインとの違い</h3>
+          <p>仕組み自体はPowerPoint部品アドインと近い。違いは、社内配布アドインは管理されたPC環境で許可済みまたは既に配布済みの <code>.ppam</code> として置かれている点。</p>
+          <p>PowerPoint部品アドインは自作の新しい <code>.ppam</code> なので、同じ技術構造でもセキュリティ製品やマクロポリシーから見ると別物として扱われ得る。</p>
+        </article>
+      </div>
+
+      <div class="panel layer-map" aria-label="社内配布アドインの読み込み構造">
+        <div class="layer-row">
+          <strong>配置</strong>
+          <span>ユーザー別Officeアドインフォルダに <code>.ppam</code> 形式のアドイン本体が置かれる。</span>
+        </div>
+        <div class="layer-row">
+          <strong>読み込み</strong>
+          <span>PowerPointがアドインとして <code>.ppam</code> を読み込む。読み込まれると、通常のタブとは別に社内配布アドインのタブが増える。</span>
+        </div>
+        <div class="layer-row">
+          <strong>表示</strong>
+          <span><code>customUI/customUI14.xml</code> がリボンのタブ、グループ、ボタン、アイコンを定義する。</span>
+        </div>
+        <div class="layer-row">
+          <strong>実行</strong>
+          <span>ボタンの <code>onAction</code> が <code>vbaProject.bin</code> 内のVBAマクロを呼ぶ。</span>
+        </div>
+        <div class="layer-row">
+          <strong>補助ファイル</strong>
+          <span>隣接フォルダのReadMeやテンプレートPPTXを、ヘルプやテンプレート機能として参照している可能性が高い。</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="timeline" aria-labelledby="timeline-title">
+      <div class="section-head">
+        <h2 id="timeline-title">インタラクティブ・タイムライン</h2>
+        <p class="lead">各ステップを開くと、症状、調べたこと、分かったことを確認できる。</p>
+      </div>
+      <div class="timeline">
+        <article class="timeline-item" data-step="1">
+          <button class="step-button" type="button" aria-expanded="true" aria-controls="step-1">
+            <span class="step-title">目標設定: 既存業務アドイン風PowerPointアドイン</span>
+            <span class="step-note">VBA + RibbonXで .ppam として実装する方針。</span>
+          </button>
+          <div id="step-1" class="step-panel is-open">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>リボン「PowerPoint部品アドイン」からテンプレスライドと図形グループ要素を挿入したい。</dd></div>
+              <div><dt>調べたこと</dt><dd>Office.jsとVBA+RibbonXの実装条件を比較した。</dd></div>
+              <div><dt>分かったこと</dt><dd>Office.jsは常駐サーバーが必要で、図形グループ挿入も不可だったため、VBA+RibbonXを採用した。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="2">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-2">
+            <span class="step-title">罠①: Officeのの信頼設定</span>
+            <span class="step-note">AccessVBOMレジストリ値だけでは通らなかった。</span>
+          </button>
+          <div id="step-2" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>レジストリの <code>AccessVBOM=1</code> でもVBAプロジェクト オブジェクト モデルへのアクセスが拒否された。</dd></div>
+              <div><dt>調べたこと</dt><dd>PowerPointとExcelで同じ信頼設定を比較した。</dd></div>
+              <div><dt>分かったこと</dt><dd>Trust CenterのUIチェックだけが有効で、設定はクラウド同期ストアに保存され、レジストリには現れなかった。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="3">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-3">
+            <span class="step-title">罠②: StrPtrでppam保存がE_FAIL</span>
+            <span class="step-note">Win32 INI APIを全廃して回避。</span>
+          </button>
+          <div id="step-3" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd><code>StrPtr</code> を含むVBAモジュールがあると <code>.ppam</code> 保存がE_FAILになった。</dd></div>
+              <div><dt>調べたこと</dt><dd><code>GetPrivateProfileStringW</code> と <code>StrPtr</code> を使うINI読み取りを切り分けた。</dd></div>
+              <div><dt>分かったこと</dt><dd>Win32 INI APIを廃止し、FileSystemObject製の純VBA INIパーサに置換して回避した。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="4">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-4">
+            <span class="step-title">大苦戦: フル結合だけがE_FAIL</span>
+            <span class="step-note">単体は通る。結合すると保存できない。</span>
+          </button>
+          <div id="step-4" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>フル6モジュールで <code>.pptm</code> / <code>.ppam</code> 保存がE_FAILになった。</dd></div>
+              <div><dt>調べたこと</dt><dd>単体モジュール、同程度の大きさのダミー、各種型を使う単体、1モジュール統合、COM SaveAs、SaveCopyAs、VBA内部SaveAs、可視/不可視ウィンドウを試した。</dd></div>
+              <div><dt>分かったこと</dt><dd>サイズでもモジュール数でも保存経路でもなかった。バイナリ <code>.ppt</code> だけは保存できたが、VBA抽出不能だった。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="5">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-5">
+            <span class="step-title">重大な交絡: PowerPointインスタンスの汚染</span>
+            <span class="step-note">複数テストを1プロセスで回すと観測を誤る。</span>
+          </button>
+          <div id="step-5" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>一度保存に失敗すると、そのPowerPointインスタンスでは以後の保存も全部失敗した。</dd></div>
+              <div><dt>調べたこと</dt><dd>同じプロセス内で複数ケースを回した結果と、プロセスを分けた結果を比較した。</dd></div>
+              <div><dt>分かったこと</dt><dd>正しい観測単位は「1プロセス1テスト」だった。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="6">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-6">
+            <span class="step-title">真犯人: <code>Dim w As Window</code></span>
+            <span class="step-note">PowerPointには存在しない型だった。</span>
+          </button>
+          <div id="step-6" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>保存はE_FAILだが、VBA自体の一部実行は成功していた。バージョン確認用の小さな関数は正しい値を返した。</dd></div>
+              <div><dt>調べたこと</dt><dd>壊れた関数まで含めたプロジェクト全体のコンパイル状態を見直した。</dd></div>
+              <div><dt>分かったこと</dt><dd><code>Window</code> はExcelの型で、PowerPointの正しい型は <code>DocumentWindow</code>。OOXML保存はコンパイル状態をシリアライズするため、コンパイル不能だと保存がE_FAILになった。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="7">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-7">
+            <span class="step-title">修正後: フル実VBAの .ppam 生成成功</span>
+            <span class="step-note"><code>As Window</code> を <code>As DocumentWindow</code> に変更。</span>
+          </button>
+          <div id="step-7" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>修正前は30回以上の保存失敗テストが全て同じバグ入りコードで行われていた。</dd></div>
+              <div><dt>調べたこと</dt><dd>型宣言を修正した状態でCOMからフル実VBAの <code>.ppam</code> 生成を確認した。</dd></div>
+              <div><dt>分かったこと</dt><dd>当初の「OOXML保存が壊れている」という結論は誤り。正しくは「コンパイル不能なプロジェクトは保存できない」。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="8">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-8">
+            <span class="step-title">罠③: 自動ロードの同意</span>
+            <span class="step-note">AddInsキーだけでは新規アドインを自動ロードできない。</span>
+          </button>
+          <div id="step-8" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>レジストリの AddIns キーに <code>Path</code> と <code>AutoLoad=1</code> を設定しても、新規アドインの起動時自動ロードが有効にならなかった。</dd></div>
+              <div><dt>調べたこと</dt><dd>既存の業務アドインを別名登録して、同じ仕組みでも読み込み条件が変わるかを試した。</dd></div>
+              <div><dt>分かったこと</dt><dd>PowerPointのアドインUIダイアログから追加したときに記録される「同意」がゲートで、これもレジストリ外ストアに保存された。</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <article class="timeline-item" data-step="9">
+          <button class="step-button" type="button" aria-expanded="false" aria-controls="step-9">
+            <span class="step-title">最後の壁: セキュリティ製品</span>
+            <span class="step-note">実コードの .ppam が中身を根拠に隔離された。</span>
+          </button>
+          <div id="step-9" class="step-panel">
+            <dl class="triad">
+              <div><dt>症状</dt><dd>管理PCのセキュリティ製品が実コードの <code>.ppam</code> を永続隔離し、ファイルがアクセス拒否でロックされ、PowerPointも読み込めなかった。</dd></div>
+              <div><dt>調べたこと</dt><dd>サイズ、危険構文、コメント削減、自己署名コード署名、信頼場所でないマクロ実行ポリシーを検証した。</dd></div>
+              <div><dt>分かったこと</dt><dd>これはコードの問題ではなく管理PCのセキュリティポリシーの壁。現実解はIT部門への許可申請、または制約を承知したOffice.js版への作り直しだった。</dd></div>
+            </dl>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="suspects" aria-labelledby="suspects-title">
+      <div class="section-head">
+        <h2 id="suspects-title">犯人はどれだ?</h2>
+        <p class="lead">容疑者ボードは、疑い、検証、評決を分けて読むためのもの。カードを開くと詳細が出る。</p>
+      </div>
+      <div class="suspect-grid">
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="false" aria-controls="suspect-vbom">
+            <span class="suspect-title">AccessVBOMレジストリ</span>
+            <span class="suspect-note">信頼設定の罠ではあったが、保存失敗の真犯人ではない。</span>
+            <span class="badge environment">環境要因</span>
+          </button>
+          <div id="suspect-vbom" class="suspect-panel">
+            <p><strong>疑い:</strong> <code>AccessVBOM=1</code> が効かず、VBA操作が拒否される。</p>
+            <p><strong>検証:</strong> Trust Center UIチェックとレジストリ値を比較し、Excelでも確認。</p>
+            <p><strong>評決:</strong> この環境ではレジストリ外ストアが効く環境要因。</p>
+          </div>
+        </article>
+
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="false" aria-controls="suspect-strptr">
+            <span class="suspect-title">StrPtr</span>
+            <span class="suspect-note">ppam保存E_FAILを起こしたため、INI実装を置換。</span>
+            <span class="badge environment">環境要因</span>
+          </button>
+          <div id="suspect-strptr" class="suspect-panel">
+            <p><strong>疑い:</strong> <code>StrPtr</code> を含むVBAモジュールが保存を壊す。</p>
+            <p><strong>検証:</strong> Win32 INI APIを廃止し、FileSystemObject製の純VBA INIパーサへ置換。</p>
+            <p><strong>評決:</strong> 回避対象ではあったが、後続のフル結合保存失敗の真犯人ではない。</p>
+          </div>
+        </article>
+
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="false" aria-controls="suspect-size">
+            <span class="suspect-title">ファイルサイズ</span>
+            <span class="suspect-note">同程度の大きさのダミーやセキュリティ製品検証で否定。</span>
+            <span class="badge innocent">無罪</span>
+          </button>
+          <div id="suspect-size" class="suspect-panel">
+            <p><strong>疑い:</strong> コード量やファイルサイズが保存失敗や隔離の原因ではないか。</p>
+            <p><strong>検証:</strong> 同程度の大きさのダミーコードは保存も通過もできた一方、実コードは隔離された。</p>
+            <p><strong>評決:</strong> サイズではなかった。</p>
+          </div>
+        </article>
+
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="false" aria-controls="suspect-modules">
+            <span class="suspect-title">モジュール数</span>
+            <span class="suspect-note">1モジュール統合でもNG。</span>
+            <span class="badge innocent">無罪</span>
+          </button>
+          <div id="suspect-modules" class="suspect-panel">
+            <p><strong>疑い:</strong> フル6モジュール構成そのものが保存を壊す。</p>
+            <p><strong>検証:</strong> 各モジュール単体はOK、フル結合は1モジュールに統合してもNG。</p>
+            <p><strong>評決:</strong> モジュール数ではなかった。</p>
+          </div>
+        </article>
+
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="false" aria-controls="suspect-danger">
+            <span class="suspect-title">危険構文</span>
+            <span class="suspect-note">API宣言、FSO、Dictionary、ネイティブI/Oを個別検証。</span>
+            <span class="badge innocent">無罪</span>
+          </button>
+          <div id="suspect-danger" class="suspect-panel">
+            <p><strong>疑い:</strong> Win32 API宣言、FileSystemObject、Dictionary、ネイティブファイルI/Oが隔離の原因ではないか。</p>
+            <p><strong>検証:</strong> これら全部入りでも小さければ素通りした。</p>
+            <p><strong>評決:</strong> 個別の危険構文は無罪。</p>
+          </div>
+        </article>
+
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="false" aria-controls="suspect-signature">
+            <span class="suspect-title">デジタル署名の欠如</span>
+            <span class="suspect-note">自己署名しても隔離。既存の業務アドインは未署名でも通過。</span>
+            <span class="badge innocent">無罪</span>
+          </button>
+          <div id="suspect-signature" class="suspect-panel">
+            <p><strong>疑い:</strong> 署名がないからセキュリティ製品が隔離している。</p>
+            <p><strong>検証:</strong> 自己署名コード署名証明書を作り、ローカル環境で信頼済みとして扱われるようにして署名した。</p>
+            <p><strong>評決:</strong> それでも隔離。セキュリティ製品は署名ベースではなかった。</p>
+          </div>
+        </article>
+
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="true" aria-controls="suspect-window">
+            <span class="suspect-title">型宣言 <code>As Window</code></span>
+            <span class="suspect-note">PowerPointに存在しない型。保存失敗の核心。</span>
+            <span class="badge culprit">真犯人</span>
+          </button>
+          <div id="suspect-window" class="suspect-panel is-open">
+            <p><strong>疑い:</strong> どこかの関数だけがプロジェクト全体のコンパイルを壊している。</p>
+            <p><strong>検証:</strong> <code>Dim w As Window</code> を <code>Dim w As DocumentWindow</code> に修正。</p>
+            <p><strong>評決:</strong> 修正後、COMでフル実VBAの <code>.ppam</code> が問題なく生成できた。</p>
+          </div>
+        </article>
+
+        <article>
+          <button class="suspect-button" type="button" aria-expanded="false" aria-controls="suspect-edr">
+            <span class="suspect-title">セキュリティ製品</span>
+            <span class="suspect-note">ビルド成功後に立ちはだかった最終的な環境の壁。</span>
+            <span class="badge environment">環境要因</span>
+          </button>
+          <div id="suspect-edr" class="suspect-panel">
+            <p><strong>疑い:</strong> 実コードの <code>.ppam</code> が管理PCのセキュリティポリシーに止められている。</p>
+            <p><strong>検証:</strong> サイズ、危険構文、コメント削減、デジタル署名を検証したが、隔離は変わらなかった。</p>
+            <p><strong>評決:</strong> コードでは超えられない環境の壁。IT部門への許可申請、またはOffice.js版への作り直しが現実解。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="code" aria-labelledby="code-title">
+      <div class="section-head">
+        <h2 id="code-title">コード before / after</h2>
+        <p class="lead">保存失敗の中心は、Excelの型名をPowerPoint VBAで使っていた1行だった。</p>
+      </div>
+      <div class="code-lab" aria-label="コード差分">
+        <div>
+          <p class="code-title">Before</p>
+          <pre><code>Dim w As <mark>Window</mark></code></pre>
+        </div>
+        <div>
+          <p class="code-title">After</p>
+          <pre class="after"><code>Dim w As <mark>DocumentWindow</mark></code></pre>
+        </div>
+      </div>
+      <div class="flow" aria-label="OOXML保存失敗の流れ">
+        <div class="flow-step">
+          <strong>1. 存在しない型</strong>
+          <span><code>Window</code> はExcelの型で、PowerPointには存在しない。</span>
+        </div>
+        <div class="flow-step">
+          <strong>2. プロジェクト不全</strong>
+          <span>その宣言を含むVBAプロジェクトはコンパイル不能になる。</span>
+        </div>
+        <div class="flow-step">
+          <strong>3. 部分的成功の罠</strong>
+          <span>遅延コンパイルにより、呼んだ小さな関数だけは個別にコンパイルされ動いた。</span>
+        </div>
+        <div class="flow-step">
+          <strong>4. 保存E_FAIL</strong>
+          <span>OOXML保存はVBAのコンパイル状態をシリアライズするため、保存ごと一般エラーになった。</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="lessons" aria-labelledby="lessons-title">
+      <div class="section-head">
+        <h2 id="lessons-title">教訓カード</h2>
+        <p class="lead">このケースから取り出せるメタ学習。コードより先に、観測の前提を疑う。</p>
+      </div>
+      <div class="cards">
+        <article class="lesson-card">
+          <h3>交絡変数を疑え</h3>
+          <p>同じ前提、つまりWindowバグ入りコードで30回テストして得た結論は丸ごと誤りだった。「結論」より「前提」を疑う。</p>
+        </article>
+        <article class="lesson-card">
+          <h3>遅延コンパイルの罠</h3>
+          <p>1つの関数が動くことは、プロジェクト全体が健全であることを意味しない。部分的成功を全体の健全性と取り違えない。</p>
+        </article>
+        <article class="lesson-card">
+          <h3>1プロセス1テスト</h3>
+          <p>状態が汚染されるシステムでは、毎回まっさらな環境で1要因ずつ変える。</p>
+        </article>
+        <article class="lesson-card">
+          <h3>探索法は観測次第</h3>
+          <p>二分探索やleave-one-outは強力だが、汚染下では無効化される。観測装置、つまりテスト環境自体の健全性をまず疑う。</p>
+        </article>
+        <article class="lesson-card">
+          <h3>環境の壁を分ける</h3>
+          <p>最後のセキュリティ製品はコードでは超えられない種類の障害だった。コードの壁と環境の壁を分けて考える。</p>
+        </article>
+        <article class="lesson-card">
+          <h3>最小再現を作れ</h3>
+          <p>「Aを足すと壊れる」を1要因まで削る。原因が1単語なら、そこまで小さくできる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="glossary" aria-labelledby="glossary-title">
+      <div class="section-head">
+        <h2 id="glossary-title">用語集</h2>
+        <p class="lead">このケースで出てきた言葉を、文脈に必要な最小限で整理する。</p>
+      </div>
+      <div class="glossary-grid">
+        <article class="term-card"><h3>ppam</h3><p>PowerPointアドインとして配布・読み込みするためのファイル形式。</p></article>
+        <article class="term-card"><h3>マクロ</h3><p>Office上の操作を自動化する命令のまとまり。ボタン操作の裏で実行される処理。</p></article>
+        <article class="term-card"><h3>VBA</h3><p>Officeに組み込まれたマクロ用言語。ExcelとPowerPointでは使える型名が一部異なる。</p></article>
+        <article class="term-card"><h3>RibbonX</h3><p>OfficeのリボンUIをカスタマイズするために使った仕組み。</p></article>
+        <article class="term-card"><h3>customUI</h3><p><code>.ppam</code> 内でリボンのタブ、グループ、ボタン、画像を定義するXML領域。</p></article>
+        <article class="term-card"><h3>onAction</h3><p>RibbonXのボタンがクリックされた時に、どのVBAマクロを呼ぶかを指定する属性。</p></article>
+        <article class="term-card"><h3>VBOM</h3><p>VBAプロジェクト オブジェクト モデル。アクセスには信頼設定が関係した。</p></article>
+        <article class="term-card"><h3>OOXML</h3><p><code>.pptm</code> や <code>.ppam</code> 保存で関係したOffice文書形式。</p></article>
+        <article class="term-card"><h3>COM自動化</h3><p>PowerPointを外部から操作し、SaveAsなどを実行するために使った自動化経路。</p></article>
+        <article class="term-card"><h3>セキュリティ製品</h3><p>管理PC上で実コードの <code>.ppam</code> を隔離した管理PCのセキュリティ製品。</p></article>
+        <article class="term-card"><h3>遅延コンパイル</h3><p>呼ばれた関数だけが個別にコンパイルされるため、別の壊れた関数を見逃し得る挙動。</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer">
+    <p>2026-06-12 / 公開用に匿名化済み</p>
+  </footer>
+
+  <script>
+    (function () {
+      function toggle(button) {
+        var targetId = button.getAttribute("aria-controls");
+        var panel = document.getElementById(targetId);
+        var expanded = button.getAttribute("aria-expanded") === "true";
+        button.setAttribute("aria-expanded", String(!expanded));
+        if (panel) {
+          panel.classList.toggle("is-open", !expanded);
+        }
+      }
+
+      var buttons = document.querySelectorAll(".step-button, .suspect-button");
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          toggle(button);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
+
