@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>非エンジニアのためのGitHub入門 — 公開・実行の仕組みを理解する</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0f14;
+      --panel: #111821;
+      --panel-2: #162231;
+      --text: #eef4fb;
+      --muted: #a8b6c8;
+      --line: #2b3a4b;
+      --accent: #58d6c2;
+      --accent-2: #f2c94c;
+      --danger: #ff6b7a;
+      --ok: #8be28b;
+      --info: #77aaff;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --max: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(88, 214, 194, 0.12), transparent 34rem),
+        linear-gradient(180deg, #0b0f14 0%, #101721 46%, #0b0f14 100%);
+      color: var(--text);
+      font-family: "Yu Gothic UI", "Meiryo", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    button,
+    a,
+    summary {
+      outline-offset: 4px;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid var(--accent-2);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      transform: translateY(-150%);
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      background: var(--accent-2);
+      color: #111;
+      font-weight: 700;
+      z-index: 10;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    header,
+    main,
+    footer {
+      width: min(100% - 2rem, var(--max));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      align-content: center;
+      padding: 6rem 0 4rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--accent);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(2.25rem, 6vw, 5.2rem);
+    }
+
+    .hero-summary {
+      max-width: 780px;
+      margin: 1.4rem 0 2rem;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+    }
+
+    .hero-meta,
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tag {
+      min-height: 2.25rem;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    section {
+      padding: 4.5rem 0;
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(18rem, 1fr);
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 1.6rem;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(22, 34, 49, 0.92), rgba(17, 24, 33, 0.92));
+      box-shadow: 0 18px 45px var(--shadow);
+    }
+
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #071019;
+      padding: 1rem;
+      color: #e9f2ff;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 8.5rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      padding: 1rem;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--accent-2);
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .flow-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .concept-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(17, 24, 33, 0.9);
+      padding: 1rem;
+    }
+
+    .concept-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--accent-2);
+      font-size: 1.1rem;
+    }
+
+    .concept-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .concept-card p + p {
+      margin-top: 0.65rem;
+    }
+
+    .layer-map {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .layer-row {
+      display: grid;
+      grid-template-columns: minmax(8rem, 0.26fr) minmax(0, 1fr);
+      gap: 1rem;
+      border: 1px solid rgba(168, 182, 200, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.9rem;
+    }
+
+    .layer-row strong {
+      color: var(--accent);
+    }
+
+    .layer-row span {
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-card,
+    .term-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(17, 24, 33, 0.9);
+      padding: 1rem;
+    }
+
+    .lesson-card h3,
+    .term-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .lesson-card p,
+    .term-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .term-card h3 {
+      color: var(--accent-2);
+    }
+
+    .warning-box {
+      border: 2px solid rgba(255, 107, 122, 0.6);
+      border-radius: 8px;
+      background: rgba(255, 107, 122, 0.07);
+      padding: 1.2rem 1.4rem;
+      margin-top: 1.6rem;
+    }
+
+    .warning-box .warning-title {
+      display: block;
+      color: var(--danger);
+      font-weight: 800;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .warning-box p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .warning-box ul {
+      margin: 0.6rem 0 0;
+      padding-left: 1.4rem;
+      color: var(--muted);
+    }
+
+    .warning-box ul li + li {
+      margin-top: 0.4rem;
+    }
+
+    .note-list {
+      margin: 1rem 0 0;
+      padding-left: 1.4rem;
+      color: var(--muted);
+    }
+
+    .note-list li + li {
+      margin-top: 0.5rem;
+    }
+
+    footer {
+      padding: 3rem 0;
+      color: var(--muted);
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    @media (max-width: 860px) {
+      .section-head,
+      .flow,
+      .concept-grid,
+      .cards,
+      .glossary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .layer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step {
+        min-height: auto;
+      }
+
+      .flow-step:not(:last-child)::after {
+        content: "↓";
+        right: 1rem;
+        top: auto;
+        bottom: -1rem;
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <p style="width: min(100% - 2rem, var(--max)); margin: 1.5rem auto 0;">
+    <a href="../index.html" style="color: var(--accent); text-decoration: none; font-weight: 700;">← 学習ノート一覧へ戻る</a>
+  </p>
+
+  <header id="hero" class="hero">
+    <p class="eyebrow">Non-engineer guide</p>
+    <h1>非エンジニアのためのGitHub入門 — 公開・実行の仕組みを理解する</h1>
+    <p class="hero-summary">GitHubは難しそうに見えるが、非エンジニアが触る範囲は意外と少ない。「ファイルを保管・公開する場所」という核を押さえれば、サイト公開もコード実行も同じ仕組みの上で理解できる。</p>
+    <ul class="hero-meta" aria-label="主要トピック">
+      <li class="tag">GitHub</li>
+      <li class="tag">GitHub Pages</li>
+      <li class="tag">リポジトリ</li>
+      <li class="tag">git clone</li>
+      <li class="tag">静的サイト</li>
+      <li class="tag">Claude Code</li>
+      <li class="tag">Codex</li>
+    </ul>
+  </header>
+
+  <main id="main">
+
+    <!-- セクション1: GitHubとは何か -->
+    <section id="what-is-github" aria-labelledby="what-is-github-title">
+      <div class="section-head">
+        <h2 id="what-is-github-title">GitHubとは何か</h2>
+        <p class="lead">まずメンタルモデルを整える。4つの概念を押さえるだけで、ほとんどの説明が通じるようになる。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>GitHub</h3>
+          <p>ファイル一式（プロジェクト）を、変更履歴つきでインターネット上に保管・共有できるサービス。中心にあるのは「リポジトリ」という単位。</p>
+          <p>Microsoft が運営しており、世界中の開発者が使っている最大級のコード共有サービスでもある。</p>
+        </article>
+        <article class="concept-card">
+          <h3>リポジトリ（repo）</h3>
+          <p>1つのプロジェクト用のフォルダ。中身のファイルに加えて「いつ・誰が・何を変えたか」の履歴を丸ごと持つ。</p>
+          <p>ローカル（自分のPC）とGitHub上（クラウド）の両方に存在し、同期する仕組みになっている。</p>
+        </article>
+        <article class="concept-card">
+          <h3>コミット（commit）</h3>
+          <p>「ここまでの状態を1つのセーブポイントとして記録する」操作。短い説明文（コミットメッセージ）が付き、後から履歴をたどれる。</p>
+          <p>ゲームのセーブデータに近いイメージ。いつでも過去の状態に戻れる。</p>
+        </article>
+        <article class="concept-card">
+          <h3>Git と GitHub の違い</h3>
+          <p>Git はPC上で履歴を管理する仕組み（道具）。GitHub はそのGitリポジトリをネット上に置いて共有・公開できるようにするサービス（場所）。</p>
+          <p>混同しやすいが「道具」と「置き場所」の関係。Git なしでは GitHub は成り立たないが、Git 自体は GitHub がなくても使える。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- セクション2: public / private / ブランチ -->
+    <section id="public-private-branch" aria-labelledby="public-private-branch-title">
+      <div class="section-head">
+        <h2 id="public-private-branch-title">public / private とブランチ</h2>
+        <p class="lead">リポジトリの公開設定と、「ブランチ」という用語を最低限だけ整理する。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>public リポジトリ</h3>
+          <p>誰でも中身を見られる（コピーもできる）。GitHub Pages でサイト公開する場合は基本 public にする必要がある。</p>
+          <p>「公開」とはサイトだけでなく、元のファイル（コード・HTML）もネットから見える状態になることを意味する。機密情報を載せないことが鉄則。</p>
+        </article>
+        <article class="concept-card">
+          <h3>private リポジトリ</h3>
+          <p>自分（と招待した人）だけが見られる。公開したくないものはこちら。</p>
+          <p>ただし private リポジトリでは GitHub Pages の無料公開機能が使えない制約がある（有料プランなら可能）。</p>
+        </article>
+        <article class="concept-card">
+          <h3>ブランチ（branch）</h3>
+          <p>本線（main）を壊さずに作業するための「並行コピー」。変更を試してから本線に取り込む、という流れで使う。</p>
+          <p>非エンジニアは普段 <code>main</code> 1本だけで十分。「ブランチ」という言葉が出てきたとき用語として知っておく程度でよい。</p>
+        </article>
+        <article class="concept-card">
+          <h3>main ブランチ</h3>
+          <p>リポジトリの「本線」にあたる標準のブランチ名。以前は <code>master</code> と呼ばれていたが、現在は <code>main</code> が標準。</p>
+          <p>GitHub Pages の公開設定では「どのブランチを公開するか」を指定する。多くの場合 <code>main</code> を指定する。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- セクション3: GitHub Pages -->
+    <section id="github-pages" aria-labelledby="github-pages-title">
+      <div class="section-head">
+        <h2 id="github-pages-title">ナレッジをWebサイトとして公開する仕組み（GitHub Pages）</h2>
+        <p class="lead">リポジトリに置いたHTMLファイルがそのままWebサイトになる仕組みを、構造から理解する。</p>
+      </div>
+
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>GitHub Pages とは</h3>
+          <p>リポジトリに置いたHTML/CSS/JavaScriptのファイルを、GitHubが無料でWebサイトとしてインターネットにそのままホスティングしてくれる機能。</p>
+          <p>サーバーを自分で借りたり、契約したりする必要がない。リポジトリに push するだけで自動で公開される。</p>
+        </article>
+        <article class="concept-card">
+          <h3>「静的サイト」とは</h3>
+          <p>置いたファイルを「そのまま」配信する方式。アクセスのたびにサーバー側で計算したり、データベースを引いたりしない。</p>
+          <p>ナレッジ閲覧サイトのように「決まった内容を見せるだけ」の用途には十分で、無料・高速・壊れにくいという特長がある。</p>
+        </article>
+        <article class="concept-card">
+          <h3>URLの構造と index.html</h3>
+          <p>公開されたサイトのURLは <code>https://&lt;ユーザー名&gt;.github.io/&lt;リポジトリ名&gt;/</code> という形になる。</p>
+          <p>URLにファイル名を付けずにフォルダを開くと、自動的に <code>index.html</code> が表示される。だから一覧ページは <code>index.html</code> という名前にする。</p>
+        </article>
+        <article class="concept-card">
+          <h3>GitHub Pages の制約</h3>
+          <p>静的ファイルのみ（サーバー側プログラムやデータベースは動かせない）。public リポジトリだと元のファイル自体もネットから見える。</p>
+          <p>大規模サイトや常時更新アプリには不向き。ナレッジ・ポートフォリオ・資料公開に最適な用途。</p>
+        </article>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">公開までのフロー</h3>
+      <div class="flow" aria-label="GitHub Pages 公開フロー">
+        <div class="flow-step">
+          <strong>1. push する</strong>
+          <span>HTMLファイルをリポジトリに置く。ローカルの変更をGitHub上へ送る操作が「push」。</span>
+        </div>
+        <div class="flow-step">
+          <strong>2. Pages を有効化</strong>
+          <span>どのブランチ・どのフォルダを公開するか、リポジトリ設定で指定する。</span>
+        </div>
+        <div class="flow-step">
+          <strong>3. 自動ビルド</strong>
+          <span>GitHubが公開用に自動で配置する。数十秒〜数分で反映される。</span>
+        </div>
+        <div class="flow-step">
+          <strong>4. URL で公開</strong>
+          <span><code>https://&lt;ユーザー名&gt;.github.io/&lt;リポジトリ名&gt;/</code> で世界中からアクセス可能になる。</span>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">このサイトで使っている設定</h3>
+      <div class="panel layer-map" aria-label="このサイトの公開設定">
+        <div class="layer-row">
+          <strong>.nojekyll</strong>
+          <span>GitHub Pages の標準変換処理（Jekyll）をオフにして、置いたHTMLをそのまま配信させるための空ファイル。Jekyll を無効化しないと、アンダースコアで始まるフォルダが非表示になるなどの副作用がある。</span>
+        </div>
+        <div class="layer-row">
+          <strong>robots.txt</strong>
+          <span><code>Disallow: /</code> を書くことで、検索エンジンのロボットに「このサイトは巡回しないで」と伝えるファイル。URLを直接知っている人だけが見られる状態にするための設定。</span>
+        </div>
+        <div class="layer-row">
+          <strong>noindex メタタグ</strong>
+          <span>各HTMLの <code>&lt;head&gt;</code> に入れて「検索結果に載せないで」と指示するタグ。robots.txt と合わせることで、URLを知っている人だけが見られる"半非公開"状態にする。</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション4: Claude Code / Codex で動かす -->
+    <section id="run-with-ai" aria-labelledby="run-with-ai-title">
+      <div class="section-head">
+        <h2 id="run-with-ai-title">公開コードを Claude Code / Codex で読み込み「動かす」原理</h2>
+        <p class="lead">「やり方は知っているが原理は分かっていない」という部分を、3つの登場人物から整理する。</p>
+      </div>
+
+      <h3 style="margin: 0 0 0.8rem; color: var(--accent-2);">3つの登場人物</h3>
+      <div class="panel layer-map" aria-label="GitHub・PC・AI の関係">
+        <div class="layer-row">
+          <strong>GitHub</strong>
+          <span>コードの「保管庫」。コードはここに置いてあるだけで、ここでは動かない。public リポジトリなら誰でもURLさえ分かればアクセスできる。</span>
+        </div>
+        <div class="layer-row">
+          <strong>自分のPC（またはサンドボックス環境）</strong>
+          <span>コードが実際に「動く場所」。プログラムを実行するのはあくまで手元の環境。GitHub からファイルを持ってきて、ここで動かす。</span>
+        </div>
+        <div class="layer-row">
+          <strong>Claude Code / Codex</strong>
+          <span>その2つを橋渡しして操作する「作業者」。人間の代わりにコマンドを打ち、ファイルを読み、実行する。魔法でネットのコードを覗くのではなく、一度手元に落としてからローカルのファイルとして読んでいる。</span>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">git clone の原理</h3>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>clone とは</h3>
+          <p><code>git clone &lt;リポジトリのURL&gt;</code> は、「GitHub上のリポジトリを、ファイルも履歴も丸ごと自分のPCにコピーする」操作。</p>
+          <p>public リポジトリなら URL さえ分かれば誰でも clone できる。これが「ネット上のコードを手元に持ってくる」の正体。</p>
+        </article>
+        <article class="concept-card">
+          <h3>ダウンロードとの違い</h3>
+          <p>単純なファイルダウンロードに近いが、履歴も含めて完全な複製が手に入る点が特徴。</p>
+          <p>clone 後は GitHub との接続が残るため、後で <code>git pull</code> を実行すれば最新の変更を取り込むことができる。</p>
+        </article>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">「読み込ませる」とは — クローンからファイル読み取りまで</h3>
+      <div class="flow flow-3" aria-label="コードを読ませるフロー">
+        <div class="flow-step">
+          <strong>1. git clone</strong>
+          <span>手元に GitHub のリポジトリをコピーする。ファイルも履歴も全部落ちてくる。</span>
+        </div>
+        <div class="flow-step">
+          <strong>2. ローカルのファイルを開く</strong>
+          <span>Claude Code / Codex がローカルに落ちたファイルを開いて読む。ネット越しに読んでいるのではない。</span>
+        </div>
+        <div class="flow-step">
+          <strong>3. 構造・処理を把握</strong>
+          <span>コードの構造、関数の役割、依存関係などを解析して理解する。</span>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">「動作させる」とは — 実行環境の準備から起動まで</h3>
+      <div class="flow flow-3" aria-label="コードを動かすフロー">
+        <div class="flow-step">
+          <strong>1. 言語と環境の確認</strong>
+          <span>そのコードが何の言語か（Node.js / Python など）を確認し、対応する実行環境（ランタイム）が手元に入っているか確認する。</span>
+        </div>
+        <div class="flow-step">
+          <strong>2. 依存ライブラリのインストール</strong>
+          <span>他人が作った部品（ライブラリ）をインストールする。例: <code>npm install</code>、<code>pip install</code>。コードは単体では動かず、材料が揃って初めて動く。</span>
+        </div>
+        <div class="flow-step">
+          <strong>3. 起動コマンドを実行</strong>
+          <span>README 等の手順に従って起動コマンドを実行する。ここで初めてコードが「動く」状態になる。</span>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">なぜ「動くとき」と「動かないとき」があるのか</h3>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>環境の違いが原因の大半</h3>
+          <p>コード本体は同じでも、動かす側の環境（OS、言語のバージョン、入っているライブラリ）が違うと結果が変わる。</p>
+          <p>「自分のPCでは動かない」の多くは、コードの間違いではなく環境・依存のズレ。</p>
+        </article>
+        <article class="concept-card">
+          <h3>Claude Code / Codex はズレを解消できる</h3>
+          <p>このズレを読み取って、足りない物を入れたり、手順を調整したりしてくれるのが Claude Code / Codex の役割。</p>
+          <p>エラーメッセージを貼り付けると、何が足りないかを診断して対処方法を提案してくれる。</p>
+        </article>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">README / package.json / requirements.txt の役割</h3>
+      <div class="cards">
+        <article class="lesson-card">
+          <h3>README</h3>
+          <p>そのリポジトリの「取扱説明書」。何のコードで、どう動かすかが書いてある。Claude Code / Codex もまずここを読んで全体像を把握する。</p>
+        </article>
+        <article class="lesson-card">
+          <h3>package.json（Node.js）</h3>
+          <p>「材料リスト」。このコードが必要とする外部部品（パッケージ）の一覧。<code>npm install</code> 時にこれを見て部品をそろえる。</p>
+        </article>
+        <article class="lesson-card">
+          <h3>requirements.txt（Python）</h3>
+          <p>Python版の「材料リスト」。<code>pip install -r requirements.txt</code> で一括インストールできる。</p>
+        </article>
+      </div>
+
+      <div class="warning-box" role="note" aria-label="セキュリティの注意">
+        <span class="warning-title">セキュリティの注意 — 公開コードを動かすリスク</span>
+        <p>公開コードを動かす＝知らない人が書いたプログラムを自分の環境で実行すること。悪意あるコードのリスクがある。</p>
+        <ul>
+          <li>信頼できる出所かどうか確認してから動かす</li>
+          <li>中身を Claude Code / Codex に確認させてから動かす</li>
+          <li>できれば隔離された環境（サンドボックス）で動かす</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 用語集 -->
+    <section id="glossary" aria-labelledby="glossary-title">
+      <div class="section-head">
+        <h2 id="glossary-title">用語集</h2>
+        <p class="lead">このノートで出てきた言葉を、最小限の文脈で整理する。</p>
+      </div>
+      <div class="glossary-grid">
+        <article class="term-card">
+          <h3>GitHub</h3>
+          <p>Gitリポジトリをネット上に置いて共有・公開できるサービス。世界最大のコード共有プラットフォーム。</p>
+        </article>
+        <article class="term-card">
+          <h3>リポジトリ</h3>
+          <p>1つのプロジェクト用のフォルダ単位。ファイルと変更履歴を丸ごと管理する入れ物。</p>
+        </article>
+        <article class="term-card">
+          <h3>コミット</h3>
+          <p>変更内容をセーブポイントとして記録する操作。コミットメッセージ（説明）が付き、後から履歴をたどれる。</p>
+        </article>
+        <article class="term-card">
+          <h3>push</h3>
+          <p>ローカル（自分のPC）でのコミットをGitHub上に送って反映させる操作。GitHub Pages の更新もこれで行う。</p>
+        </article>
+        <article class="term-card">
+          <h3>clone</h3>
+          <p>GitHub上のリポジトリをファイルも履歴も丸ごと自分のPCにコピーする操作。<code>git clone &lt;URL&gt;</code> で実行。</p>
+        </article>
+        <article class="term-card">
+          <h3>branch（ブランチ）</h3>
+          <p>本線（main）を壊さずに作業するための並行コピー。非エンジニアは main 1本だけで通常は十分。</p>
+        </article>
+        <article class="term-card">
+          <h3>main</h3>
+          <p>リポジトリの本線にあたる標準ブランチ名。GitHub Pages の公開設定で指定することが多い。</p>
+        </article>
+        <article class="term-card">
+          <h3>GitHub Pages</h3>
+          <p>リポジトリに置いたHTMLファイルを無料でWebサイトとして公開できる GitHub の機能。サーバー契約不要。</p>
+        </article>
+        <article class="term-card">
+          <h3>静的サイト</h3>
+          <p>置いたファイルをそのまま配信する方式のWebサイト。サーバー側での計算やDB参照がない。高速・安定・無料向き。</p>
+        </article>
+        <article class="term-card">
+          <h3>ランタイム</h3>
+          <p>プログラムを実際に動かすために必要な実行環境。Node.js や Python がこれにあたる。ランタイムがないとコードは動かない。</p>
+        </article>
+        <article class="term-card">
+          <h3>依存ライブラリ</h3>
+          <p>コードが動くために必要な外部部品のこと。package.json や requirements.txt に一覧が書かれており、インストールして揃える。</p>
+        </article>
+        <article class="term-card">
+          <h3>README</h3>
+          <p>リポジトリの取扱説明書。何のコードで、どう動かすかが書かれている。Claude Code / Codex も最初にここを読む。</p>
+        </article>
+        <article class="term-card">
+          <h3>public / private</h3>
+          <p>リポジトリの公開設定。public は誰でも見られる（元のファイルも含む）、private は招待した人だけが見られる。</p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer">
+    <p>2026-06-12 / 公開用に匿名化済み</p>
+  </footer>
+</body>
+</html>
