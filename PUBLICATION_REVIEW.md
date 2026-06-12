@@ -19,6 +19,9 @@
 ### index.html / README.md / robots.txt
 - 検閲結果: 機密情報なし。GitHubアカウント名（公開情報）のみ記載。**問題なし。**
 
+### notes/ai-api-vs-subscription.html
+- ai-api-vs-subscription：機密情報なし（一般教育内容。会社名・取引先・個人情報・秘密値を含まない）
+
 ### 検索除外
 - robots.txt に `Disallow: /` を設置。
 - 全HTMLの `<head>` に `noindex, nofollow` メタを設置。

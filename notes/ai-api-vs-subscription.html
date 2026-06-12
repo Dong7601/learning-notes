@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>企業のAI導入：API従量課金 と サブスクの違い — なぜ「全員サブスク」で済まないのか</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0f14;
+      --panel: #111821;
+      --panel-2: #162231;
+      --text: #eef4fb;
+      --muted: #a8b6c8;
+      --line: #2b3a4b;
+      --accent: #58d6c2;
+      --accent-2: #f2c94c;
+      --danger: #ff6b7a;
+      --ok: #8be28b;
+      --info: #77aaff;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --max: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(88, 214, 194, 0.12), transparent 34rem),
+        linear-gradient(180deg, #0b0f14 0%, #101721 46%, #0b0f14 100%);
+      color: var(--text);
+      font-family: "Yu Gothic UI", "Meiryo", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    button,
+    a,
+    summary {
+      outline-offset: 4px;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid var(--accent-2);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      transform: translateY(-150%);
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      background: var(--accent-2);
+      color: #111;
+      font-weight: 700;
+      z-index: 10;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    header,
+    main,
+    footer {
+      width: min(100% - 2rem, var(--max));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      align-content: center;
+      padding: 6rem 0 4rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--accent);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(2.25rem, 6vw, 5.2rem);
+    }
+
+    .hero-summary {
+      max-width: 780px;
+      margin: 1.4rem 0 2rem;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+    }
+
+    .hero-meta,
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tag {
+      min-height: 2.25rem;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    section {
+      padding: 4.5rem 0;
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(18rem, 1fr);
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 1.6rem;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(22, 34, 49, 0.92), rgba(17, 24, 33, 0.92));
+      box-shadow: 0 18px 45px var(--shadow);
+      padding: 1rem;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 8.5rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      padding: 1rem;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--accent-2);
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .flow-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .concept-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(17, 24, 33, 0.9);
+      padding: 1rem;
+    }
+
+    .concept-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--accent-2);
+      font-size: 1.1rem;
+    }
+
+    .concept-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .concept-card p + p {
+      margin-top: 0.65rem;
+    }
+
+    .layer-map {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .layer-row {
+      display: grid;
+      grid-template-columns: minmax(8rem, 0.26fr) minmax(0, 1fr);
+      gap: 1rem;
+      border: 1px solid rgba(168, 182, 200, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.9rem;
+    }
+
+    .layer-row strong {
+      color: var(--accent);
+    }
+
+    .layer-row span {
+      color: var(--muted);
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .term-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(17, 24, 33, 0.9);
+      padding: 1rem;
+    }
+
+    .term-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--accent-2);
+      font-size: 1.1rem;
+    }
+
+    .term-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .warning-box {
+      border: 2px solid rgba(255, 107, 122, 0.6);
+      border-radius: 8px;
+      background: rgba(255, 107, 122, 0.07);
+      padding: 1.2rem 1.4rem;
+      margin-top: 1.6rem;
+    }
+
+    .warning-box .warning-title {
+      display: block;
+      color: var(--danger);
+      font-weight: 800;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .warning-box p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .warning-box p + p {
+      margin-top: 0.65rem;
+    }
+
+    .warning-box ul {
+      margin: 0.6rem 0 0;
+      padding-left: 1.4rem;
+      color: var(--muted);
+    }
+
+    .warning-box ul li + li {
+      margin-top: 0.4rem;
+    }
+
+    .note-list {
+      margin: 1rem 0 0;
+      padding-left: 1.4rem;
+      color: var(--muted);
+    }
+
+    .note-list li + li {
+      margin-top: 0.5rem;
+    }
+
+    .visual-figure {
+      margin: 1.25rem 0 1.5rem;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(22, 34, 49, .72), rgba(17, 24, 33, .88));
+    }
+
+    .visual-figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 920px;
+      margin: 0 auto;
+      overflow: visible;
+    }
+
+    .visual-figure figcaption {
+      margin-top: .75rem;
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .viz-node {
+      fill: var(--panel-2);
+      stroke: var(--line);
+      stroke-width: 2;
+    }
+
+    .viz-node-strong {
+      stroke: var(--accent);
+    }
+
+    .viz-line,
+    .viz-arrow {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .viz-text {
+      fill: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .viz-small {
+      fill: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .viz-label {
+      fill: var(--accent-2);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .viz-boundary {
+      fill: rgba(119, 170, 255, 0.08);
+      stroke: var(--info);
+      stroke-width: 3;
+      stroke-dasharray: 10 8;
+    }
+
+    footer {
+      padding: 3rem 0;
+      color: var(--muted);
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    @media (max-width: 860px) {
+      .section-head,
+      .flow,
+      .concept-grid,
+      .glossary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .layer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step {
+        min-height: auto;
+      }
+
+      .flow-step:not(:last-child)::after {
+        content: "↓";
+        right: 1rem;
+        top: auto;
+        bottom: -1rem;
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <p style="width: min(100% - 2rem, var(--max)); margin: 1.5rem auto 0;">
+    <a href="../index.html" style="color: var(--accent); text-decoration: none; font-weight: 700;">← 学習ノート一覧へ戻る</a>
+  </p>
+
+  <header id="hero" class="hero">
+    <p class="eyebrow">Enterprise AI guide</p>
+    <h1>企業のAI導入：API従量課金 と サブスクの違い — なぜ「全員サブスク」で済まないのか</h1>
+    <p class="hero-summary">「全社員にサブスクを配ればいい」という感覚は、<strong>人が画面に向かって使う用途</strong>では正しい。だが企業がAPIで1日数十万〜数百万円を使うのは、APIが<strong>人手を介さず自動でシステムに組み込む</strong>ためのもので、用途も課金の仕組みも別物だから。さらに「データを海外AI企業に直接渡したくない」という別の理由から、AWSやAzure経由（Amazon Bedrock / Azure OpenAI）で使う構成が選ばれる。この2つの論点を分けて理解する。</p>
+    <ul class="hero-meta" aria-label="主要トピック">
+      <li class="tag">AI導入</li>
+      <li class="tag">API</li>
+      <li class="tag">従量課金</li>
+      <li class="tag">サブスクリプション</li>
+      <li class="tag">Amazon Bedrock</li>
+      <li class="tag">Azure OpenAI</li>
+      <li class="tag">セキュリティ</li>
+      <li class="tag">データレジデンシー</li>
+      <li class="tag">エンタープライズ</li>
+      <li class="tag">コスト</li>
+    </ul>
+  </header>
+
+  <main id="main">
+
+    <section id="two-axes" aria-labelledby="two-axes-title">
+      <div class="section-head">
+        <h2 id="two-axes-title">まず「2つの軸」を分ける</h2>
+        <p class="lead">ユーザーの疑問は、実は独立した2つの軸が混ざっている。ここを分けると一気に整理できる。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>軸A：課金モデル</h3>
+          <p>「サブスク定額」か「API従量課金」か。これはコストの話。</p>
+        </article>
+        <article class="concept-card">
+          <h3>軸B：データ経路／インフラ</h3>
+          <p>「AI企業に直接」か「AWS/Azure経由」か。これはセキュリティの話。</p>
+        </article>
+        <article class="concept-card">
+          <h3>両者は独立</h3>
+          <p>この2軸は独立している。巨額コストは軸Aの問題、個人情報の懸念は軸Bの問題で、原因も対策も別。</p>
+        </article>
+        <article class="concept-card">
+          <h3>企業の典型構成</h3>
+          <p>企業の典型構成は「<strong>API従量課金（軸A）× AWS/Azure経由（軸B）</strong>」。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="subscription-vs-api" aria-labelledby="subscription-vs-api-title">
+      <div class="section-head">
+        <h2 id="subscription-vs-api-title">サブスク と API従量課金 は用途が違う</h2>
+        <p class="lead">定額で人が使うものと、プログラムから自動で呼び出すものは、同じAIでも用途が違う。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>サブスク</h3>
+          <p>ChatGPT Plus/Team/Enterprise、Claude Pro/Team など。1人あたり定額で、<strong>人がチャット画面に向かって対話する</strong>ことが前提。</p>
+          <p>レート制限（一定時間あたりの回数上限）があり、使いすぎても定額の範囲で頭打ち。</p>
+        </article>
+        <article class="concept-card">
+          <h3>サブスクでは組み込めない</h3>
+          <p>社内システムやアプリには<strong>組み込めない</strong>。プログラムから叩く用途は規約上APIの領域。</p>
+        </article>
+        <article class="concept-card">
+          <h3>API（従量課金）</h3>
+          <p>処理した<strong>トークン量（おおまかには文字量）に応じて課金</strong>。上限が無く青天井になりうる。</p>
+          <p><strong>人手を介さず</strong>プログラムから大量に呼べる。アプリ・自動化・社内システムへの組み込み用。</p>
+        </article>
+        <article class="concept-card">
+          <h3>人数と無関係に増える</h3>
+          <p>1人が使うのではなく「1つの仕組み」が動き続ける。人数と無関係にコストが増える。</p>
+        </article>
+      </div>
+      <div class="warning-box" role="note" aria-label="なぜ巨額になるか">
+        <span class="warning-title">なぜ1日数十万〜数百万になるのか</span>
+        <ul>
+          <li>RAG（社内文書を毎回大量に読み込ませる）で1回のリクエストが巨大化。</li>
+          <li>AIエージェントの自動ループが想定以上に回る／暴走する。</li>
+          <li>バッチ処理・全データ一括処理を人手を介さず実行。</li>
+          <li>リトライや多段推論で見えないところでトークンが積み上がる。</li>
+        </ul>
+        <p>「人が使いすぎた」のではなく「自動化が裏で大量に消費」しているのが典型。設計・監視ミスでも起きる。</p>
+      </div>
+    </section>
+
+    <section id="why-not-all-subscriptions" aria-labelledby="why-not-all-subscriptions-title">
+      <div class="section-head">
+        <h2 id="why-not-all-subscriptions-title">なぜ全社員サブスク配布で済まないのか</h2>
+        <p class="lead">「全社員に配ればいいのでは」という感覚への直接回答。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>日常的な対話利用なら正しい</h3>
+          <p>社員の<strong>日常的な対話利用</strong>なら、確かに全員サブスク配布が正解に近い。むしろ推奨。</p>
+        </article>
+        <article class="concept-card">
+          <h3>企業が本当にやりたいこと</h3>
+          <p>企業がAIで本当にやりたいことの多くは「<strong>既存業務システムへの組み込み・自動化</strong>」。これはサブスクでは技術的にも規約的にも実現できず、APIが必須。</p>
+        </article>
+        <article class="concept-card">
+          <h3>現実は併用</h3>
+          <p>現実は「<strong>社員の日常利用＝サブスク</strong>」＋「<strong>プロダクト/自動化＝API従量</strong>」の<strong>併用</strong>になる。</p>
+        </article>
+        <article class="concept-card">
+          <h3>巨額請求はAPI側</h3>
+          <p>巨額請求が話題になるのは後者（API）側。前者（サブスク）はコストが読みやすく事故が起きにくい。</p>
+          <p>結論：あなたの感覚は「人の利用」については正しい。巨額化するのは別レイヤー（自動化・組み込み）の話。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="security-personal-data" aria-labelledby="security-personal-data-title">
+      <div class="section-head">
+        <h2 id="security-personal-data-title">セキュリティと個人情報</h2>
+        <p class="lead">AWS/Azure上に自社サーバーを立てるのは、海外AI企業のサーバーに直接データを入れさせないため、という仮説への回答。</p>
+      </div>
+
+      <h3 style="margin: 0 0 0.8rem; color: var(--accent-2);">4-1. 仮説の答え</h3>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>方向性は合っている</h3>
+          <p>方向性は合っている。ただし表現を正確にすると少し違う。</p>
+        </article>
+        <article class="concept-card">
+          <h3>正確にはマネージドAIサービス</h3>
+          <p>実態は「自社サーバーを立てる」というより、<strong>クラウド事業者が自社インフラ内でホストするマネージドAIサービス</strong>を使う。</p>
+          <p>AWS の <strong>Amazon Bedrock</strong>（Claude などをAWS内でホスト）、Azure の <strong>Azure OpenAI Service</strong>（OpenAIモデルをAzure内でホスト）。</p>
+        </article>
+        <article class="concept-card">
+          <h3>契約・監査済みクラウドの境界</h3>
+          <p>AIモデルを、<strong>すでに契約・監査済みのクラウド（AWS/Azure）の境界の中</strong>で動かす。</p>
+          <p>だからデータが Anthropic / OpenAI という<strong>別会社のサーバーへ出ていかない</strong>。</p>
+        </article>
+        <article class="concept-card">
+          <h3>仮説どおりの狙い</h3>
+          <p>「海外AI企業に直接渡さない」という狙い自体は仮説どおり正しい。</p>
+          <p>正確には「自社サーバー構築」ではなく「契約済みクラウド内のAIサービス利用」。</p>
+        </article>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">4-2. 具体的な仕組み</h3>
+      <div class="panel layer-map" aria-label="クラウド経由AI利用の仕組み">
+        <div class="layer-row">
+          <strong>Amazon Bedrock</strong>
+          <span>AnthropicのモデルをAWSが自社データセンター内でホスト。利用者はAWSの自分のアカウント・指定リージョン内でAPIを呼ぶ。入出力データはAWS境界内に留まり、<strong>Anthropic側には送られず、モデル学習にも使われない</strong>。Anthropicはそのトラフィックを見られない。</span>
+        </div>
+        <div class="layer-row">
+          <strong>Azure OpenAI Service</strong>
+          <span>同様にMicrosoftがOpenAIモデルをAzure内でホスト。データは自分のAzureテナント・リージョン内で処理され、<strong>OpenAIには渡らず学習にも使われない</strong>。</span>
+        </div>
+        <div class="layer-row">
+          <strong>共通の統制</strong>
+          <span>リージョン指定（データの保管場所を固定）、通信時・保存時の暗号化、IAMによるアクセス制御、VPC/プライベート接続、監査ログ。</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="data-flow" aria-labelledby="data-flow-title">
+      <div class="section-head">
+        <h2 id="data-flow-title">データの流れ</h2>
+        <p class="lead">AI企業に直接送るルートと、AWS/Azure経由のルートでは、処理されるインフラの境界が変わる。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>① AI企業に直接</h3>
+          <p>OpenAI/Anthropic API 直叩き。流れは、自社 → インターネット → <strong>OpenAI / Anthropic のサーバー</strong>で処理。</p>
+          <p>現在は両社ともAPIの入力をデフォルトで学習に使わず、ゼロデータ保持の選択肢も提供。ただし「<strong>処理は彼らのインフラで行われる</strong>」点は変わらない。</p>
+        </article>
+        <article class="concept-card">
+          <h3>② AWS/Azure経由</h3>
+          <p>Bedrock / Azure OpenAI。流れは、自社 → <strong>AWS/Azureの自分のテナント・指定リージョン内</strong>でモデル推論まで完結。</p>
+          <p><strong>Anthropic / OpenAI のサーバーには飛ばない</strong>。データの宛先が「すでに契約しているクラウド1社」に閉じる。</p>
+        </article>
+      </div>
+
+      <figure class="visual-figure" aria-labelledby="ai-route-title">
+        <svg viewBox="0 0 920 360" width="100%" role="img" aria-labelledby="ai-route-title ai-route-desc">
+          <title id="ai-route-title">AI企業直接ルートとAWS/Azure経由ルートの比較</title>
+          <desc id="ai-route-desc">上段は自社からインターネット経由でOpenAIまたはAnthropicのサーバーへデータが送られる。下段は自社からAWSまたはAzureの境界内へ入り、その破線の箱の中でモデル推論が完結し、AnthropicまたはOpenAIのサーバーへ矢印が出ない。</desc>
+          <defs>
+            <marker id="aiArrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)"></path>
+            </marker>
+          </defs>
+
+          <text class="viz-label" x="40" y="36">上段：AI企業直接ルート</text>
+          <rect class="viz-node viz-node-strong" x="44" y="60" width="160" height="74" rx="8"></rect>
+          <text class="viz-text" x="124" y="92" text-anchor="middle">自社</text>
+          <text class="viz-small" x="124" y="116" text-anchor="middle">業務データ</text>
+
+          <path class="viz-arrow" d="M210 97 H384" marker-end="url(#aiArrowHead)"></path>
+          <text class="viz-small" x="292" y="84" text-anchor="middle">インターネット</text>
+
+          <rect class="viz-node" x="400" y="60" width="220" height="74" rx="8"></rect>
+          <text class="viz-text" x="510" y="92" text-anchor="middle">OpenAI / Anthropic</text>
+          <text class="viz-small" x="510" y="116" text-anchor="middle">AI企業のサーバーで処理</text>
+
+          <path class="viz-arrow" d="M628 97 H784" marker-end="url(#aiArrowHead)"></path>
+          <text class="viz-small" x="704" y="84" text-anchor="middle">データが社外AI企業へ</text>
+          <rect class="viz-node" x="792" y="60" width="86" height="74" rx="8"></rect>
+          <text class="viz-small" x="835" y="93" text-anchor="middle">処理</text>
+          <text class="viz-small" x="835" y="116" text-anchor="middle">完了</text>
+
+          <text class="viz-label" x="40" y="198">下段：AWS/Azure経由ルート</text>
+          <rect class="viz-node viz-node-strong" x="44" y="226" width="160" height="74" rx="8"></rect>
+          <text class="viz-text" x="124" y="258" text-anchor="middle">自社</text>
+          <text class="viz-small" x="124" y="282" text-anchor="middle">業務データ</text>
+
+          <path class="viz-arrow" d="M210 263 H300" marker-end="url(#aiArrowHead)"></path>
+          <text class="viz-small" x="255" y="250" text-anchor="middle">接続</text>
+
+          <rect class="viz-boundary" x="318" y="194" width="520" height="136" rx="12"></rect>
+          <text class="viz-label" x="342" y="220">AWS/Azure 境界（自分のテナント・指定リージョン）</text>
+          <rect class="viz-node" x="354" y="242" width="154" height="58" rx="8"></rect>
+          <text class="viz-small" x="431" y="266" text-anchor="middle">Bedrock /</text>
+          <text class="viz-small" x="431" y="286" text-anchor="middle">Azure OpenAI</text>
+          <path class="viz-arrow" d="M516 271 H600" marker-end="url(#aiArrowHead)"></path>
+          <rect class="viz-node" x="618" y="242" width="154" height="58" rx="8"></rect>
+          <text class="viz-text" x="695" y="266" text-anchor="middle">モデル推論</text>
+          <text class="viz-small" x="695" y="286" text-anchor="middle">箱の中で完結</text>
+
+          <text class="viz-small" x="578" y="346" text-anchor="middle">Anthropic / OpenAI のサーバーへ外向き矢印は出ない</text>
+        </svg>
+        <figcaption>直接ルートはAI企業のサーバーで処理。クラウド経由ルートは契約済みクラウドの境界内で処理が完結する。</figcaption>
+      </figure>
+    </section>
+
+    <section id="trust" aria-labelledby="trust-title">
+      <div class="section-head">
+        <h2 id="trust-title">信頼性の違い</h2>
+        <p class="lead">「AI企業に渡すのはNG、AWS/AzureならOK」とされる理由は、AI企業が信用できないという話ではない。</p>
+      </div>
+
+      <h3 style="margin: 0 0 0.8rem; color: var(--accent-2);">6-1. なぜAWS/AzureならOKとされるのか</h3>
+      <p class="lead">大前提（誤解の訂正）：「AnthropicやOpenAIが信用できない」という話ではない。企業のガバナンス・契約・調達の都合という、組織側の合理性。</p>
+      <div class="panel layer-map" aria-label="AWS/Azureが選ばれる理由">
+        <div class="layer-row">
+          <strong>既存の契約・信頼関係</strong>
+          <span>多くの企業はすでにAWS/Azureと包括契約（データ処理契約・守秘・SLA）を結び監査済み。新たにAI専業ベンダーを審査・契約するコストが要らない。</span>
+        </div>
+        <div class="layer-row">
+          <strong>コンプライアンス認証</strong>
+          <span>AWS/Azureは長年の実績で各種認証（ISO27001、SOC1/2/3、PCI DSS、医療のHIPAA、日本政府調達のISMAP 等）を網羅。法務・調達が承認しやすい。</span>
+        </div>
+        <div class="layer-row">
+          <strong>データレジデンシー</strong>
+          <span>リージョンを指定し「データを特定地域（例：日本国内）から出さない」を契約・技術で担保。海外法（米CLOUD法など）への懸念に対応。</span>
+        </div>
+        <div class="layer-row">
+          <strong>既存セキュリティ基盤との統合</strong>
+          <span>IAM・VPC・鍵管理（KMS）・監査ログなど、既に使っている統制の中にAIを組み込める。管理する経路を増やさない。</span>
+        </div>
+        <div class="layer-row">
+          <strong>責任分界・サポート窓口の一本化</strong>
+          <span>問題時の責任範囲と連絡先が既存ベンダーに集約。</span>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">6-2. 「AWS/Azureも結局は外部企業では？」への明確な回答</h3>
+      <div class="panel">
+        <p class="lead"><strong>その指摘は正しい。</strong> AWSもAzureも、Amazon/Microsoftという外部企業のサーバーであることに変わりはない。</p>
+        <p class="lead">だから安全性の根拠は「<strong>自社所有か外部か</strong>」ではない。本質は「<strong>データの流れを契約・認証・技術で管理（コントロール）できるか</strong>」。</p>
+      </div>
+      <div class="concept-grid" style="margin-top: 1rem;">
+        <article class="concept-card">
+          <h3>宛先が1社に閉じる</h3>
+          <p>既に契約・監査済みのクラウド内で完結し、AI専業ベンダーという「2社目」を経路に増やさない。管理対象が減る。</p>
+        </article>
+        <article class="concept-card">
+          <h3>契約で縛れる</h3>
+          <p>AWS/Azureとは法的拘束力のあるデータ処理契約があり、「学習に使わない・第三者に渡さない・指定リージョンに留める」を契約で強制できる。</p>
+        </article>
+        <article class="concept-card">
+          <h3>第三者監査で検証できる</h3>
+          <p>上記が認証・監査レポートで客観的に確認できる。</p>
+        </article>
+        <article class="concept-card">
+          <h3>安全性の正体</h3>
+          <p>要するに「外部か内部か」ではなく「<strong>コントロールできるか・検証できるか</strong>」が安全性の正体。</p>
+          <p>AI専業ベンダー（Anthropic/OpenAI）も<strong>エンタープライズ契約</strong>を結べば同等の保証（学習不使用・ゼロ保持・各種認証）を得られる場合がある。それでも企業がAWS/Azure経由を好むのは「<strong>すでにある信頼基盤に寄せるほうが、調達・法務・統制が圧倒的に楽</strong>」という実務上の理由が大きい。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="misunderstandings" aria-labelledby="misunderstandings-title">
+      <div class="section-head">
+        <h2 id="misunderstandings-title">よくある誤解の訂正</h2>
+        <p class="lead">安全性・モデル提供元・課金の論点を混ぜない。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>「AI企業＝危険／AWS・Azure＝安全」ではない</h3>
+          <p>単純化しすぎ。両AI企業もエンタープライズ向けに高水準のセキュリティ・認証・ゼロ保持を提供している。選択は「危険回避」より「既存統制への乗せやすさ」。</p>
+        </article>
+        <article class="concept-card">
+          <h3>モデル提供元とインフラ運営者は別</h3>
+          <p><strong>モデルの提供元 と データを処理・保持するインフラの運営者は別概念</strong>。Bedrock上のClaudeも中身はAnthropic製、Azure上のGPTも中身はOpenAI製。「誰が作ったモデルか」と「どこで処理・保管されるか」を分けて考える。</p>
+        </article>
+        <article class="concept-card">
+          <h3>安全性とコストは別々</h3>
+          <p>課金（軸A）とデータ経路（軸B）は独立。<strong>AWS/Azure経由にしてもAPIは従量課金のまま</strong>で、巨額化リスクは消えない。安全性とコストは別々に対策する。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="glossary" aria-labelledby="glossary-title">
+      <div class="section-head">
+        <h2 id="glossary-title">用語集</h2>
+        <p class="lead">このノートで出てきた言葉を、最小限の文脈で整理する。</p>
+      </div>
+      <div class="glossary-grid">
+        <article class="term-card">
+          <h3>従量課金（API）</h3>
+          <p>使ったトークン量に応じて支払う方式。自動化・組み込み向け。上限なく増えうる。</p>
+        </article>
+        <article class="term-card">
+          <h3>サブスクリプション</h3>
+          <p>1人あたり定額。人が対話で使う前提。レート制限あり。</p>
+        </article>
+        <article class="term-card">
+          <h3>トークン</h3>
+          <p>AIが処理する文字のかたまりの単位。課金や上限の基準になる。</p>
+        </article>
+        <article class="term-card">
+          <h3>API</h3>
+          <p>プログラムから機能を呼び出す窓口。人手を介さず大量に呼べる。</p>
+        </article>
+        <article class="term-card">
+          <h3>Amazon Bedrock</h3>
+          <p>AWSが各社のAIモデルを自社インフラ内で提供するマネージドサービス。</p>
+        </article>
+        <article class="term-card">
+          <h3>Azure OpenAI Service</h3>
+          <p>MicrosoftがOpenAIモデルをAzure内で提供するサービス。</p>
+        </article>
+        <article class="term-card">
+          <h3>データレジデンシー</h3>
+          <p>データを保管する地理的場所（リージョン）を指定・固定する考え方。</p>
+        </article>
+        <article class="term-card">
+          <h3>リージョン</h3>
+          <p>クラウドのデータセンターの地理的区分。日本リージョン等を選べる。</p>
+        </article>
+        <article class="term-card">
+          <h3>ゼロデータ保持</h3>
+          <p>入力データをベンダー側に残さない設定／契約オプション。</p>
+        </article>
+        <article class="term-card">
+          <h3>データ処理契約（DPA）</h3>
+          <p>データの取り扱い（学習不使用・第三者非提供等）を法的に縛る契約。</p>
+        </article>
+        <article class="term-card">
+          <h3>コンプライアンス認証</h3>
+          <p>ISO27001 / SOC2 / ISMAP 等、第三者がセキュリティ水準を保証する仕組み。</p>
+        </article>
+        <article class="term-card">
+          <h3>RAG</h3>
+          <p>社内文書などを検索して都度AIに読み込ませる方式。トークン消費が大きくなりやすい。</p>
+        </article>
+        <article class="term-card">
+          <h3>AIエージェント</h3>
+          <p>AIが自律的に複数手順を実行する仕組み。ループでトークンを大量消費しうる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="publication-rules" aria-labelledby="publication-rules-title">
+      <div class="section-head">
+        <h2 id="publication-rules-title">公開ルール適用メモ</h2>
+        <p class="lead">公開前に適用したルール。</p>
+      </div>
+      <div class="warning-box" role="note" aria-label="公開ルール適用メモ">
+        <span class="warning-title">Codexへ</span>
+        <ul>
+          <li>機密検閲：本ノートは一般教育内容で、会社名・取引先・個人情報・秘密値を<strong>含まない</strong>。<code>PUBLICATION_REVIEW.md</code> に「ai-api-vs-subscription：機密情報なし（一般解説）」を1行追記。</li>
+          <li>検索除外：<code>&lt;head&gt;</code> に <code>noindex,nofollow</code> の2メタを必ず入れる（既存ノートと同じ）。</li>
+          <li>冒頭に「← 学習ノート一覧へ戻る」（<code>../index.html</code>）リンク。</li>
+          <li><code>index.html</code> の <code>NOTES</code> 配列<strong>先頭</strong>に1件追加（title/href/date=2026-06-12/summary/tags）。</li>
+          <li>footer は既存ノートに合わせ「2026-06-12 / 公開用に匿名化済み」。</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer">
+    <p>2026-06-12 / 公開用に匿名化済み</p>
+  </footer>
+</body>
+</html>
