@@ -474,6 +474,58 @@
             stroke: var(--accent-2);
         }
 
+        .repo-table-wrap {
+            margin-top: 1rem;
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .repo-table {
+            width: 100%;
+            min-width: 680px;
+            border-collapse: collapse;
+        }
+
+        .repo-table th,
+        .repo-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(168, 182, 200, 0.16);
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .repo-table th {
+            color: var(--accent-2);
+            background: rgba(22, 34, 49, 0.72);
+            font-weight: 800;
+        }
+
+        .repo-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .repo-table td {
+            color: var(--muted);
+        }
+
+        .repo-table code {
+            color: var(--text);
+            overflow-wrap: anywhere;
+        }
+
+        .repo-point {
+            margin: 0.9rem 0 0;
+            color: var(--muted);
+        }
+
+        .repo-url-text {
+            fill: var(--accent-2);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
         .clone-copy {
             animation: clone-copy-move 4.8s ease-in-out infinite;
         }
@@ -767,6 +819,140 @@
           <strong>noindex メタタグ</strong>
           <span>各HTMLの <code>&lt;head&gt;</code> に入れて「検索結果に載せないで」と指示するタグ。robots.txt と合わせることで、URLを知っている人だけが見られる"半非公開"状態にする。</span>
         </div>
+      </div>
+    </section>
+
+    <section id="repo-structure" aria-labelledby="repo-structure-title">
+      <div class="section-head">
+        <h2 id="repo-structure-title">リポジトリの中身と、公開後の見え方</h2>
+        <p class="lead">フォルダ構成がそのままURLの構成になる。実例で「置いたファイル」と「公開後の見え方」を対応づけて理解する。</p>
+      </div>
+
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>フォルダ構造 = URL構造</h3>
+          <p>リポジトリ内のフォルダはURLの階層に、ファイルはURLの末尾になる。フォルダを開くと中の <code>index.html</code> が自動で表示される。</p>
+        </article>
+        <article class="concept-card">
+          <h3>サイト型とアプリ型</h3>
+          <p>リポジトリには2種類ある。①HTMLを置いて「見せる」サイト型（GitHub Pagesで公開）、②コードを「動かして使う」アプリ型（cloneして実行）。中身の構成も用途も違う。</p>
+        </article>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">実例①「このサイト（learning-notes）の構成」＝サイト型</h3>
+      <pre aria-label="learning-notes のファイル構成">learning-notes/
+├─ index.html        ← トップページ（ノート一覧＋検索）
+├─ notes/
+│   ├─ github-for-non-engineers.html   ← このページ
+│   └─ powerpoint-addin.html
+├─ robots.txt        ← 検索エンジン除外の指示
+├─ .nojekyll         ← Jekyll処理を無効化（中身は空）
+└─ README.md         ← リポジトリの説明書</pre>
+
+      <div class="repo-table-wrap" role="region" aria-label="ファイルと公開後の見え方の対応表" tabindex="0">
+        <table class="repo-table">
+          <thead>
+            <tr>
+              <th scope="col">置いたファイル</th>
+              <th scope="col">公開後のURL / 見え方</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>index.html</code></td>
+              <td><code>https://&lt;ユーザー名&gt;.github.io/learning-notes/</code> を開くと表示（フォルダを開くと自動でindex.htmlが出る）</td>
+            </tr>
+            <tr>
+              <td><code>notes/github-for-non-engineers.html</code></td>
+              <td><code>https://&lt;ユーザー名&gt;.github.io/learning-notes/notes/github-for-non-engineers.html</code></td>
+            </tr>
+            <tr>
+              <td><code>robots.txt</code></td>
+              <td><code>https://&lt;ユーザー名&gt;.github.io/learning-notes/robots.txt</code>（検索ロボット向けの指示ファイル）</td>
+            </tr>
+            <tr>
+              <td><code>README.md</code></td>
+              <td>Pagesサイトには出ない。<strong>github.com のリポジトリページ</strong>にそのまま説明として表示される</td>
+            </tr>
+            <tr>
+              <td><code>.nojekyll</code></td>
+              <td>画面には出ない裏方の設定ファイル</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="repo-point"><code>notes/</code> というフォルダを作ったから、URLにも <code>/notes/</code> が入る。フォルダ＝URLの階層、がそのまま対応している。</p>
+
+      <figure class="visual-figure repo-url-figure" aria-labelledby="repo-url-title">
+        <svg viewBox="0 0 920 420" width="100%" role="img" aria-labelledby="repo-url-title repo-url-desc">
+          <title id="repo-url-title">ファイル構成から公開後のURLへの対応</title>
+          <desc id="repo-url-desc">左側のファイルツリーにあるindex.htmlとnotes配下のHTMLファイルが、右側のブラウザ風のURL表示に対応している図。</desc>
+          <defs>
+            <marker id="repoArrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)"></path>
+            </marker>
+          </defs>
+          <g>
+            <rect class="viz-node" x="40" y="52" width="310" height="316" rx="8"></rect>
+            <text class="viz-text" x="70" y="94">learning-notes/</text>
+            <text class="viz-small" x="88" y="142">📄 index.html</text>
+            <text class="viz-small" x="88" y="190">📁 notes/</text>
+            <text class="viz-small" x="120" y="238">📄 github-for-non-engineers.html</text>
+            <text class="viz-small" x="120" y="286">📄 powerpoint-addin.html</text>
+            <text class="viz-small" x="88" y="334">📄 robots.txt</text>
+          </g>
+          <g>
+            <rect class="viz-node" x="535" y="64" width="335" height="122" rx="8"></rect>
+            <rect x="555" y="86" width="295" height="34" rx="7" fill="#071019" stroke="var(--line)"></rect>
+            <text class="repo-url-text" x="570" y="108">...github.io/learning-notes/</text>
+            <text class="viz-small" x="555" y="154">トップページが表示される</text>
+          </g>
+          <g>
+            <rect class="viz-node pages-url" x="535" y="234" width="335" height="132" rx="8"></rect>
+            <rect x="555" y="256" width="295" height="52" rx="7" fill="#071019" stroke="var(--line)"></rect>
+            <text class="repo-url-text" x="570" y="278">.../learning-notes/notes/</text>
+            <text class="repo-url-text" x="570" y="298">github-for-non-engineers.html</text>
+            <text class="viz-small" x="555" y="342">このページが表示される</text>
+          </g>
+          <path class="viz-arrow" d="M210 138 C360 112 420 110 535 118" marker-end="url(#repoArrowHead)"></path>
+          <path class="viz-arrow" d="M310 236 C408 252 454 286 535 292" marker-end="url(#repoArrowHead)"></path>
+        </svg>
+        <figcaption>フォルダ階層がそのままURLの階層になる。</figcaption>
+      </figure>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">実例②「アプリ型リポジトリ」＝動かして使う構成（cloneして実行）</h3>
+      <pre aria-label="Node.jsアプリ型リポジトリのファイル構成">my-web-app/
+├─ src/
+│   ├─ index.js        ← プログラム本体
+│   └─ components/     ← 部品となるコード群
+├─ public/            ← 画像やアイコンなど
+├─ package.json       ← 材料リスト（必要な依存ライブラリの一覧）
+├─ package-lock.json  ← 依存の固定記録
+├─ .gitignore         ← Gitで追跡しないものの指定
+└─ README.md          ← 使い方・動かし方</pre>
+
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>見せるサイトではなく、動かして使うコード</h3>
+          <p>これは「見せる」サイトではなく「動かして使う」コードのリポジトリ。<code>index.html</code>を開けば見える、という性質のものではない。</p>
+        </article>
+        <article class="concept-card">
+          <h3>cloneして実行する</h3>
+          <p>使うには「3つの登場人物」の節のとおり、<code>git clone</code>で手元にコピー → <code>package.json</code>を見て依存をインストール → READMEの手順で実行、という流れになる。</p>
+        </article>
+        <article class="concept-card">
+          <h3>開くものと動かすもの</h3>
+          <p>同じGitHub上のリポジトリでも、<strong>サイト型は「開く」、アプリ型は「動かす」</strong>と用途が分かれる。</p>
+        </article>
+      </div>
+
+      <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">READMEの見え方</h3>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>README.md はリポジトリの表紙</h3>
+          <p><code>README.md</code> は、github.com のリポジトリのトップページを開いたときに、自動的に整形表示される「表紙」。コードの一覧の下に、説明文として大きく出る。</p>
+          <p>だから多くのリポジトリで、READMEを読めばそのプロジェクトの概要・使い方が分かるようになっている。</p>
+        </article>
       </div>
     </section>
 
