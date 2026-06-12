@@ -110,14 +110,21 @@ def normalize_date(value):
     if not value:
         return ""
     match = re.search(r"\d{4}-\d{2}-\d{2}", value)
-    return match.group(0) if match else value[:10]
+    if not match:
+        return ""
+    date_value = match.group(0)
+    try:
+        dt.date.fromisoformat(date_value)
+    except ValueError:
+        return ""
+    return date_value
 
 
 def month_label(date_value):
     try:
         parsed = dt.date.fromisoformat(date_value)
     except ValueError:
-        return "日付未設定"
+        return "日付不明"
     return f"{parsed.year}年{parsed.month}月"
 
 
@@ -164,9 +171,7 @@ def read_clip(path):
     title = first_h1(markdown) or frontmatter.get("title", "").strip() or path.stem
     content = section_content(markdown, "内容メモ") or frontmatter.get("description", "").strip()
     paragraphs = remove_private_paragraphs(content)
-    date_value = normalize_date(
-        frontmatter.get("captured", "") or frontmatter.get("published", "") or frontmatter.get("created", "")
-    )
+    date_value = normalize_date(frontmatter.get("captured", "")) or normalize_date(frontmatter.get("created", ""))
     source = normalize_source_url(frontmatter.get("source", ""), clip_type)
 
     return {
@@ -208,7 +213,7 @@ def render_clip(clip):
             <button type="button" data-action="undo">元に戻す</button>
           </div>
           <div class="clip-meta">
-            <time>{esc(clip['date'] or '日付未設定')}</time>
+            <time>{esc(clip['date'] or '日付不明')}</time>
             <span class="clip-badge">{esc(type_label)}</span>
           </div>
           <h2>{esc(clip['title'])}</h2>
@@ -732,7 +737,11 @@ def build(src, out):
         except OSError:
             excluded["read_error"] += 1
 
-    clips.sort(key=lambda clip: (clip["date"], clip["filename"]), reverse=True)
+    dated = [clip for clip in clips if clip["date"]]
+    undated = [clip for clip in clips if not clip["date"]]
+    dated.sort(key=lambda clip: (clip["date"], clip["filename"]), reverse=True)
+    undated.sort(key=lambda clip: clip["filename"])
+    clips = dated + undated
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_html(clips), encoding="utf-8", newline="\n")
     return clips, excluded
