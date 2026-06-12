@@ -141,6 +141,43 @@
       font-size: 0.92rem;
     }
 
+    .note-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: -0.8rem 0 1.2rem;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .meta-pill.level-intro {
+      color: var(--accent);
+      background: rgba(88, 214, 194, 0.15);
+      border-color: rgba(88, 214, 194, 0.35);
+    }
+
+    .meta-pill.level-basic {
+      color: var(--info);
+      background: rgba(119, 170, 255, 0.15);
+      border-color: rgba(119, 170, 255, 0.35);
+    }
+
+    .meta-pill.level-advanced {
+      color: var(--accent-2);
+      background: rgba(242, 201, 76, 0.15);
+      border-color: rgba(242, 201, 76, 0.35);
+    }
+
     section {
       padding: 4.5rem 0;
       border-top: 1px solid rgba(168, 182, 200, 0.14);
@@ -590,6 +627,11 @@
     <p class="eyebrow">Technical case study</p>
     <h1>PowerPointアドイン開発記 — 保存失敗の真因を切り分ける</h1>
     <p class="hero-summary">既存業務アドイン風PowerPointアドインの開発で、保存失敗、信頼設定、セキュリティ製品隔離が連鎖した。結論は「OOXML保存の破損」ではなく、1箇所の型宣言と環境ポリシーの分離だった。</p>
+    <div class="note-meta-row" aria-label="ノートのメタ情報">
+      <span class="meta-pill level-advanced">難易度: 応用</span>
+      <span class="meta-pill">カテゴリ: Office・自動化</span>
+      <span class="meta-pill">更新日: 2026-06-12</span>
+    </div>
     <ul class="hero-meta" aria-label="主要トピック">
       <li class="tag">VBA + RibbonX</li>
       <li class="tag">PowerPoint .ppam</li>

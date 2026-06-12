@@ -141,6 +141,43 @@
       font-size: 0.92rem;
     }
 
+    .note-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: -0.8rem 0 1.2rem;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .meta-pill.level-intro {
+      color: var(--accent);
+      background: rgba(88, 214, 194, 0.15);
+      border-color: rgba(88, 214, 194, 0.35);
+    }
+
+    .meta-pill.level-basic {
+      color: var(--info);
+      background: rgba(119, 170, 255, 0.15);
+      border-color: rgba(119, 170, 255, 0.35);
+    }
+
+    .meta-pill.level-advanced {
+      color: var(--accent-2);
+      background: rgba(242, 201, 76, 0.15);
+      border-color: rgba(242, 201, 76, 0.35);
+    }
+
     section {
       padding: 4.5rem 0;
       border-top: 1px solid rgba(168, 182, 200, 0.14);
@@ -643,6 +680,11 @@
     <p class="eyebrow">Non-engineer guide</p>
     <h1>非エンジニアのためのGitHub入門 — 公開・実行の仕組みを理解する</h1>
     <p class="hero-summary">GitHubは難しそうに見えるが、非エンジニアが触る範囲は意外と少ない。「ファイルを保管・公開する場所」という核を押さえれば、サイト公開もコード実行も同じ仕組みの上で理解できる。</p>
+    <div class="note-meta-row" aria-label="ノートのメタ情報">
+      <span class="meta-pill level-intro">難易度: 入門</span>
+      <span class="meta-pill">カテゴリ: 開発・GitHub</span>
+      <span class="meta-pill">更新日: 2026-06-12</span>
+    </div>
     <ul class="hero-meta" aria-label="主要トピック">
       <li class="tag">GitHub</li>
       <li class="tag">GitHub Pages</li>

@@ -17,6 +17,7 @@
       --line: #2b3a4b;
       --accent: #58d6c2;
       --accent-2: #f2c94c;
+      --info: #77aaff;
       --shadow: rgba(0, 0, 0, 0.35);
       --max: 980px;
     }
@@ -99,6 +100,31 @@
       font-size: 0.9rem;
     }
 
+    .category-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+    }
+
+    .category-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font: inherit;
+      font-size: 0.88rem;
+      line-height: 1;
+      padding: 0.55rem 0.85rem;
+      cursor: pointer;
+    }
+
+    .category-chip[aria-pressed="true"] {
+      border-color: var(--accent);
+      color: var(--text);
+      box-shadow: 0 0 0 2px rgba(88, 214, 194, 0.16);
+    }
+
     .note-list {
       display: grid;
       gap: 1rem;
@@ -138,6 +164,45 @@
     .note-date {
       color: var(--muted);
       font-size: 0.85rem;
+    }
+
+    .note-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 999px;
+      padding: 0.18rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .category-badge {
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(17, 24, 33, 0.58);
+    }
+
+    .category-dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .level-badge.level-intro {
+      color: var(--accent);
+      background: rgba(88, 214, 194, 0.15);
+    }
+
+    .level-badge.level-basic {
+      color: var(--info);
+      background: rgba(119, 170, 255, 0.15);
+    }
+
+    .level-badge.level-advanced {
+      color: var(--accent-2);
+      background: rgba(242, 201, 76, 0.15);
     }
 
     .note-card h2 {
@@ -207,6 +272,7 @@
         placeholder="キーワードで検索（例: ppam, VBA, 保存失敗, セキュリティ）"
         aria-label="ノートを検索"
         autocomplete="off">
+      <div class="category-filter" id="category-filter" aria-label="カテゴリで絞り込み"></div>
       <p class="count" id="count"></p>
     </div>
 
@@ -226,6 +292,8 @@
         href: "notes/ai-api-vs-subscription.html",
         date: "2026-06-12",
         summary: "「全社員にサブスクを配ればいい」という感覚と、企業がAPIで1日数十万〜数百万円を使う現実のズレを解く。課金モデル(サブスク/API従量)とデータ経路(AI企業直接/AWS・Azure経由=Bedrock・Azure OpenAI)の2軸を分け、セキュリティ・データの流れ・信頼性の違いを非エンジニア目線で整理。",
+        category: "ai",
+        level: "基礎",
         tags: ["AI導入","API","従量課金","サブスクリプション","Amazon Bedrock","Azure OpenAI","セキュリティ","データレジデンシー","エンタープライズ","コスト","Claude Code","Codex","AIエージェント"]
       },
       {
@@ -233,6 +301,8 @@
         href: "notes/github-for-non-engineers.html",
         date: "2026-06-12",
         summary: "GitHubの基本構造（リポジトリ・コミット・履歴）から、ナレッジをWebサイトとして公開するGitHub Pagesの仕組み、そして公開コードをClaude Code/Codexが読み込んで動かす原理までを、非エンジニア目線で整理。",
+        category: "dev",
+        level: "入門",
         tags: ["GitHub", "GitHub Pages", "リポジトリ", "git clone", "静的サイト", "Claude Code", "Codex", "入門", "ファイル構成"]
       },
       {
@@ -240,13 +310,23 @@
         href: "notes/powerpoint-addin.html",
         date: "2026-06-12",
         summary: "VBA + RibbonX で .ppam アドインを作る過程で、保存がE_FAILで失敗し続けた。真犯人は壊れた保存経路ではなく、PowerPointに存在しない型 As Window の1単語だった、というデバッグ叙事詩。",
+        category: "office",
+        level: "応用",
         tags: ["VBA", "RibbonX", "PowerPoint", "ppam", "E_FAIL", "遅延コンパイル", "セキュリティ製品", "デバッグ"]
       }
+    ];
+
+    var CATEGORIES = [
+      { id: "dev",    label: "開発・GitHub" },
+      { id: "ai",     label: "AI・データ活用" },
+      { id: "office", label: "Office・自動化" }
     ];
 
     var listEl = document.getElementById("list");
     var countEl = document.getElementById("count");
     var searchEl = document.getElementById("search");
+    var categoryFilterEl = document.getElementById("category-filter");
+    var activeCategory = "all";
 
     function escapeHtml(s) {
       return s.replace(/[&<>"']/g, function (c) {
@@ -254,20 +334,43 @@
       });
     }
 
+    function getCategoryLabel(id) {
+      var found = CATEGORIES.find(function (c) { return c.id === id; });
+      return found ? found.label : id;
+    }
+
+    function getLevelClass(level) {
+      return {
+        "入門": "level-intro",
+        "基礎": "level-basic",
+        "応用": "level-advanced"
+      }[level] || "level-basic";
+    }
+
+    function renderCategoryChips() {
+      var chips = [{ id: "all", label: "すべて" }].concat(CATEGORIES);
+      categoryFilterEl.innerHTML = chips.map(function (c) {
+        return '<button class="category-chip" type="button" data-category="' + escapeHtml(c.id) + '" aria-pressed="' + (activeCategory === c.id ? "true" : "false") + '">' + escapeHtml(c.label) + '</button>';
+      }).join("");
+    }
+
     function render(query) {
       var q = (query || "").trim().toLowerCase();
       var matched = NOTES.filter(function (n) {
+        var categoryMatch = activeCategory === "all" || n.category === activeCategory;
+        if (!categoryMatch) return false;
         if (!q) return true;
-        var hay = (n.title + " " + n.summary + " " + n.tags.join(" ")).toLowerCase();
+        var hay = (n.title + " " + n.summary + " " + n.tags.join(" ") + " " + getCategoryLabel(n.category) + " " + n.level).toLowerCase();
         return q.split(/\s+/).every(function (term) { return hay.indexOf(term) !== -1; });
       });
 
       countEl.textContent = q
         ? matched.length + " 件ヒット（全 " + NOTES.length + " 件）"
-        : "全 " + NOTES.length + " 件";
+        : matched.length + " 件表示（全 " + NOTES.length + " 件）";
 
       if (matched.length === 0) {
-        listEl.innerHTML = '<li class="empty">「' + escapeHtml(query) + '」に一致するノートはありませんでした。</li>';
+        var emptyLabel = q ? "「" + escapeHtml(query) + "」" : "選択中のカテゴリ";
+        listEl.innerHTML = '<li class="empty">' + emptyLabel + 'に一致するノートはありませんでした。</li>';
         return;
       }
 
@@ -275,10 +378,15 @@
         var tags = n.tags.map(function (t) {
           return '<li class="tag">' + escapeHtml(t) + "</li>";
         }).join("");
+        var categoryLabel = getCategoryLabel(n.category);
         return (
           '<li class="note-card">' +
             '<a class="note-link" href="' + encodeURI(n.href) + '">' +
-              '<div class="note-meta"><span class="note-date">' + escapeHtml(n.date) + "</span></div>" +
+              '<div class="note-meta">' +
+                '<span class="note-date">' + escapeHtml(n.date) + "</span>" +
+                '<span class="note-badge category-badge"><span class="category-dot" aria-hidden="true"></span>' + escapeHtml(categoryLabel) + "</span>" +
+                '<span class="note-badge level-badge ' + getLevelClass(n.level) + '">' + escapeHtml(n.level) + "</span>" +
+              "</div>" +
               "<h2>" + escapeHtml(n.title) + "</h2>" +
               "<p>" + escapeHtml(n.summary) + "</p>" +
               '<ul class="tag-row">' + tags + "</ul>" +
@@ -289,6 +397,14 @@
     }
 
     searchEl.addEventListener("input", function () { render(searchEl.value); });
+    categoryFilterEl.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-category]");
+      if (!button) return;
+      activeCategory = button.getAttribute("data-category");
+      renderCategoryChips();
+      render(searchEl.value);
+    });
+    renderCategoryChips();
     render("");
   </script>
 </body>

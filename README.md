@@ -31,3 +31,42 @@ learning-notes/
 2. **検索除外** … `robots.txt` の `Disallow: /` ＋ 全HTMLの `noindex,nofollow` メタ。
 
 詳細は vault: `04_Context/AgentOps/Docs/github-pages-publish-rules.md`。
+
+## コンテンツ作成ルール
+
+### 標準構成
+
+戻るリンク → ヒーロー（メタ行） → TL;DR（結論先行） → 図解（最低1つ） → 本文 → 用語集 → footer。
+
+### メタデータ
+
+新ノートは `notes/_template.html` を複製して作り、`index.html` の `NOTES` に `title` / `href` / `date` / `summary` / `tags` / `category` / `level` を登録する。
+
+### 難易度
+
+`入門` / `基礎` / `応用` の3段階。
+
+### カテゴリ
+
+- `dev` = 開発・GitHub
+- `ai` = AI・データ活用
+- `office` = Office・自動化
+
+カテゴリが増えたら `index.html` の `CATEGORIES` に追加する。
+
+### ファイル名
+
+半角小文字ケバブケースにする。例: `github-for-non-engineers.html`
+
+### 必須
+
+- `<head>` に `noindex,nofollow`
+- 冒頭に戻るリンク
+- 図解を最低1つ
+- レスポンシブ
+- アニメーションを入れる場合は `prefers-reduced-motion` 対応
+
+### 公開2大ルール
+
+1. **機密検閲**: 会社名・取引先・個人情報・秘密値を伏字または削除し、`PUBLICATION_REVIEW.md` に記録する。
+2. **検索除外**: `robots.txt` と各HTMLの `noindex` で検索除外する。

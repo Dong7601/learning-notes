@@ -25,3 +25,4 @@
 ### 検索除外
 - robots.txt に `Disallow: /` を設置。
 - 全HTMLの `<head>` に `noindex, nofollow` メタを設置。
+- notes/_template.html：ひな型（プレースホルダのみ・機密情報なし）

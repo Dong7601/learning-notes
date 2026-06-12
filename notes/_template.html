@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>（ノートタイトル）</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0f14;
+      --panel: #111821;
+      --panel-2: #162231;
+      --text: #eef4fb;
+      --muted: #a8b6c8;
+      --line: #2b3a4b;
+      --accent: #58d6c2;
+      --accent-2: #f2c94c;
+      --danger: #ff6b7a;
+      --ok: #8be28b;
+      --info: #77aaff;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --max: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(88, 214, 194, 0.12), transparent 34rem),
+        linear-gradient(180deg, #0b0f14 0%, #101721 46%, #0b0f14 100%);
+      color: var(--text);
+      font-family: "Yu Gothic UI", "Meiryo", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+      line-height: 1.75;
+    }
+
+    a { color: var(--accent); }
+
+    .wrap {
+      width: min(100% - 2rem, var(--max));
+      margin: 0 auto;
+    }
+
+    .back-link {
+      display: inline-flex;
+      margin-top: 1.2rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+    }
+
+    .hero {
+      min-height: 72vh;
+      display: grid;
+      align-content: center;
+      padding: 5rem 0 4rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--accent);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(2.25rem, 6vw, 5.2rem);
+    }
+
+    .hero-summary {
+      max-width: 780px;
+      margin: 1.4rem 0 2rem;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+    }
+
+    .note-meta-row,
+    .hero-meta,
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .note-meta-row {
+      margin: -0.8rem 0 1.2rem;
+    }
+
+    .meta-pill,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meta-pill {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.86rem;
+    }
+
+    .tag {
+      min-height: 2.25rem;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.92rem;
+    }
+
+    .meta-pill.level-intro {
+      color: var(--accent);
+      background: rgba(88, 214, 194, 0.15);
+      border-color: rgba(88, 214, 194, 0.35);
+    }
+
+    .meta-pill.level-basic {
+      color: var(--info);
+      background: rgba(119, 170, 255, 0.15);
+      border-color: rgba(119, 170, 255, 0.35);
+    }
+
+    .meta-pill.level-advanced {
+      color: var(--accent-2);
+      background: rgba(242, 201, 76, 0.15);
+      border-color: rgba(242, 201, 76, 0.35);
+    }
+
+    section {
+      padding: 4.5rem 0;
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(18rem, 1fr);
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 1.6rem;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .panel,
+    .tldr {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(22, 34, 49, 0.92), rgba(17, 24, 33, 0.92));
+      box-shadow: 0 18px 45px var(--shadow);
+    }
+
+    .tldr {
+      padding: 1.2rem;
+    }
+
+    .tldr ul {
+      margin: 0.7rem 0 0;
+      padding-left: 1.4rem;
+      color: var(--muted);
+    }
+
+    .concept-grid,
+    .cards,
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .concept-card,
+    .lesson-card,
+    .term-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      padding: 1rem;
+    }
+
+    .concept-card h3,
+    .lesson-card h3,
+    .term-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--accent-2);
+      font-size: 1.1rem;
+    }
+
+    .concept-card p,
+    .lesson-card p,
+    .term-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .layer-map {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .layer-row {
+      display: grid;
+      grid-template-columns: minmax(8rem, 0.26fr) minmax(0, 1fr);
+      gap: 1rem;
+      border: 1px solid rgba(168, 182, 200, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.9rem;
+    }
+
+    .layer-row strong {
+      color: var(--accent);
+    }
+
+    .layer-row span {
+      color: var(--muted);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 8.5rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      padding: 1rem;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--accent-2);
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #071019;
+      padding: 1rem;
+      color: #e9f2ff;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .visual-figure {
+      margin: 1.25rem 0 1.5rem;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(22, 34, 49, 0.72), rgba(17, 24, 33, 0.88));
+    }
+
+    .visual-figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 920px;
+      margin: 0 auto;
+      overflow: visible;
+    }
+
+    .visual-figure figcaption {
+      margin-top: 0.75rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .viz-node {
+      fill: var(--panel-2);
+      stroke: var(--line);
+      stroke-width: 2;
+    }
+
+    .viz-node-strong {
+      stroke: var(--accent);
+    }
+
+    .viz-line,
+    .viz-arrow {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .viz-text {
+      fill: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .viz-small {
+      fill: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    footer {
+      padding: 3rem 0;
+      color: var(--muted);
+      border-top: 1px solid rgba(168, 182, 200, 0.14);
+    }
+
+    footer p { margin: 0; }
+
+    @media (max-width: 860px) {
+      .section-head,
+      .flow,
+      .concept-grid,
+      .cards,
+      .glossary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .layer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step {
+        min-height: auto;
+      }
+
+      .flow-step:not(:last-child)::after {
+        content: "↓";
+        right: 1rem;
+        top: auto;
+        bottom: -1rem;
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back-link" href="../index.html">← 学習ノート一覧へ戻る</a>
+
+    <header id="hero" class="hero">
+      <!-- eyebrowにはカテゴリ名やシリーズ名を書く。例: 開発・GitHub / AI・データ活用 / Office・自動化 -->
+      <p class="eyebrow">（カテゴリ名）</p>
+      <h1>（ノートタイトル）</h1>
+      <!-- summaryには、誰が何を理解できるノートかを1〜3文で書く。 -->
+      <p class="hero-summary">（ここにノートの要約を書く）</p>
+      <div class="note-meta-row" aria-label="ノートのメタ情報">
+        <!-- 難易度は level-intro=入門 / level-basic=基礎 / level-advanced=応用 から選ぶ。 -->
+        <span class="meta-pill level-intro">難易度: 入門</span>
+        <span class="meta-pill">カテゴリ: （カテゴリ名）</span>
+        <span class="meta-pill">更新日: YYYY-MM-DD</span>
+        <span class="meta-pill">所要時間: （任意）分</span>
+      </div>
+      <ul class="hero-meta" aria-label="主要トピック">
+        <!-- 検索に効かせたい主要トピックを3〜8個程度に絞る。 -->
+        <li class="tag">（タグ1）</li>
+        <li class="tag">（タグ2）</li>
+        <li class="tag">（タグ3）</li>
+      </ul>
+    </header>
+
+    <main>
+      <section id="tldr" aria-labelledby="tldr-title">
+        <div class="section-head">
+          <h2 id="tldr-title">TL;DR</h2>
+          <p class="lead">結論を先に置き、読み手が本文に入る前に全体像をつかめるようにする。</p>
+        </div>
+        <div class="tldr">
+          <!-- 3〜5項目。細かい説明ではなく、結論・判断基準・覚えるべき構造を書く。 -->
+          <ul>
+            <li>（ここに結論を書く）</li>
+            <li>（ここに重要な見分け方を書く）</li>
+            <li>（ここに実務での使いどころを書く）</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="diagram" aria-labelledby="diagram-title">
+        <div class="section-head">
+          <h2 id="diagram-title">図解</h2>
+          <p class="lead">本文の核となる関係を、最低1つの図で示す。</p>
+        </div>
+        <figure class="visual-figure" aria-labelledby="sample-diagram-title">
+          <!-- ここに概念を表すインラインSVG。アニメを入れる場合は @media (prefers-reduced-motion: reduce) で停止する。 -->
+          <svg viewBox="0 0 920 260" width="100%" role="img" aria-labelledby="sample-diagram-title sample-diagram-desc">
+            <title id="sample-diagram-title">（図のタイトル）</title>
+            <desc id="sample-diagram-desc">（図が何を表すかを1文で説明する）</desc>
+            <rect class="viz-node viz-node-strong" x="90" y="78" width="220" height="104" rx="8"></rect>
+            <text class="viz-text" x="200" y="124" text-anchor="middle">（概念A）</text>
+            <text class="viz-small" x="200" y="152" text-anchor="middle">（短い説明）</text>
+            <path class="viz-arrow" d="M330 130 H590"></path>
+            <rect class="viz-node" x="610" y="78" width="220" height="104" rx="8"></rect>
+            <text class="viz-text" x="720" y="124" text-anchor="middle">（概念B）</text>
+            <text class="viz-small" x="720" y="152" text-anchor="middle">（短い説明）</text>
+          </svg>
+          <figcaption>（図が何を助けるかを1行で書く）</figcaption>
+        </figure>
+      </section>
+
+      <section id="body" aria-labelledby="body-title">
+        <div class="section-head">
+          <h2 id="body-title">本文</h2>
+          <p class="lead">背景、仕組み、判断基準、実務での使い方を順に整理する。</p>
+        </div>
+
+        <!-- concept-gridは、対比・分類・重要ポイントの整理に使う。 -->
+        <div class="concept-grid">
+          <article class="concept-card">
+            <h3>（見出しA）</h3>
+            <p>（ここに概念や背景を書く）</p>
+          </article>
+          <article class="concept-card">
+            <h3>（見出しB）</h3>
+            <p>（ここに比較対象や注意点を書く）</p>
+          </article>
+        </div>
+
+        <!-- layer-mapは、登場人物・責務・構成要素の対応整理に使う。 -->
+        <div class="panel layer-map" aria-label="（構成要素の対応）">
+          <div class="layer-row">
+            <strong>（要素1）</strong>
+            <span>（ここに役割を書く）</span>
+          </div>
+          <div class="layer-row">
+            <strong>（要素2）</strong>
+            <span>（ここに役割を書く）</span>
+          </div>
+        </div>
+
+        <!-- flowは、手順・処理順・意思決定の流れに使う。 -->
+        <div class="flow" aria-label="（処理の流れ）">
+          <div class="flow-step">
+            <strong>1. （手順名）</strong>
+            <span>（ここに最初の手順を書く）</span>
+          </div>
+          <div class="flow-step">
+            <strong>2. （手順名）</strong>
+            <span>（ここに次の手順を書く）</span>
+          </div>
+          <div class="flow-step">
+            <strong>3. （手順名）</strong>
+            <span>（ここに最後の手順を書く）</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="glossary" aria-labelledby="glossary-title">
+        <div class="section-head">
+          <h2 id="glossary-title">用語集</h2>
+          <p class="lead">本文を読むために必要な言葉だけを、短く定義する。</p>
+        </div>
+        <div class="glossary-grid">
+          <article class="term-card">
+            <h3>（用語1）</h3>
+            <p>（ここに定義を書く）</p>
+          </article>
+          <article class="term-card">
+            <h3>（用語2）</h3>
+            <p>（ここに定義を書く）</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>YYYY-MM-DD / 公開用に匿名化済み</p>
+    </footer>
+  </div>
+</body>
+</html>

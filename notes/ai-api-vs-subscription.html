@@ -141,6 +141,43 @@
       font-size: 0.92rem;
     }
 
+    .note-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: -0.8rem 0 1.2rem;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .meta-pill.level-intro {
+      color: var(--accent);
+      background: rgba(88, 214, 194, 0.15);
+      border-color: rgba(88, 214, 194, 0.35);
+    }
+
+    .meta-pill.level-basic {
+      color: var(--info);
+      background: rgba(119, 170, 255, 0.15);
+      border-color: rgba(119, 170, 255, 0.35);
+    }
+
+    .meta-pill.level-advanced {
+      color: var(--accent-2);
+      background: rgba(242, 201, 76, 0.15);
+      border-color: rgba(242, 201, 76, 0.35);
+    }
+
     section {
       padding: 4.5rem 0;
       border-top: 1px solid rgba(168, 182, 200, 0.14);
@@ -463,6 +500,11 @@
     <p class="eyebrow">Enterprise AI guide</p>
     <h1>企業のAI導入：API従量課金 と サブスクの違い — なぜ「全員サブスク」で済まないのか</h1>
     <p class="hero-summary">「全社員にサブスクを配ればいい」という感覚は、<strong>人が画面に向かって使う用途</strong>では正しい。だが企業がAPIで1日数十万〜数百万円を使うのは、APIが<strong>人手を介さず自動でシステムに組み込む</strong>ためのもので、用途も課金の仕組みも別物だから。さらに「データを海外AI企業に直接渡したくない」という別の理由から、AWSやAzure経由（Amazon Bedrock / Azure OpenAI）で使う構成が選ばれる。この2つの論点を分けて理解する。</p>
+    <div class="note-meta-row" aria-label="ノートのメタ情報">
+      <span class="meta-pill level-basic">難易度: 基礎</span>
+      <span class="meta-pill">カテゴリ: AI・データ活用</span>
+      <span class="meta-pill">更新日: 2026-06-12</span>
+    </div>
     <ul class="hero-meta" aria-label="主要トピック">
       <li class="tag">AI導入</li>
       <li class="tag">API</li>
