@@ -403,7 +403,182 @@
         transition: none !important;
       }
     }
-  </style>
+        .visual-figure {
+            margin: 1.25rem 0 1.5rem;
+            padding: 1rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(22, 34, 49, .72), rgba(17, 24, 33, .88));
+        }
+
+        .visual-figure svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 920px;
+            margin: 0 auto;
+            overflow: visible;
+        }
+
+        .visual-figure figcaption {
+            margin-top: .75rem;
+            color: var(--muted);
+            font-size: .95rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .viz-node {
+            fill: var(--panel-2);
+            stroke: var(--line);
+            stroke-width: 2;
+        }
+
+        .viz-node-strong {
+            stroke: var(--accent);
+        }
+
+        .viz-line,
+        .viz-arrow {
+            fill: none;
+            stroke: var(--line);
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+
+        .viz-text {
+            fill: var(--text);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .viz-small {
+            fill: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .viz-label {
+            fill: var(--accent-2);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .pages-packet {
+            fill: var(--accent);
+            filter: drop-shadow(0 0 8px rgba(88, 214, 194, .8));
+            animation: pages-packet-move 4.6s linear infinite;
+        }
+
+        .pages-url {
+            stroke: var(--accent-2);
+        }
+
+        .clone-copy {
+            animation: clone-copy-move 4.8s ease-in-out infinite;
+        }
+
+        .bridge-pulse {
+            animation: bridge-pulse 2.4s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        .piece-code {
+            animation: piece-code-move 4.8s ease-in-out infinite;
+        }
+
+        .piece-runtime {
+            animation: piece-runtime-move 4.8s ease-in-out infinite;
+        }
+
+        .piece-libs {
+            animation: piece-libs-move 4.8s ease-in-out infinite;
+        }
+
+        .run-light {
+            fill: var(--accent);
+            opacity: .55;
+            animation: run-light-pulse 4.8s ease-in-out infinite;
+        }
+
+        @keyframes pages-packet-move {
+            0% { transform: translate(88px, 106px); opacity: 0; }
+            8% { opacity: 1; }
+            30% { transform: translate(292px, 106px); }
+            55% { transform: translate(494px, 106px); }
+            82% { transform: translate(694px, 106px); opacity: 1; }
+            100% { transform: translate(786px, 106px); opacity: 0; }
+        }
+
+        @keyframes clone-copy-move {
+            0%, 18% { transform: translate(0, 0); opacity: 0; }
+            26% { opacity: 1; }
+            62% { transform: translate(-205px, 192px); opacity: 1; }
+            78%, 100% { transform: translate(-205px, 192px); opacity: 0; }
+        }
+
+        @keyframes bridge-pulse {
+            0%, 100% { opacity: .72; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.035); }
+        }
+
+        @keyframes piece-code-move {
+            0%, 12% { transform: translate(-120px, 0); opacity: .72; }
+            42%, 76% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(-120px, 0); opacity: .72; }
+        }
+
+        @keyframes piece-runtime-move {
+            0%, 12% { transform: translate(120px, 0); opacity: .72; }
+            42%, 76% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(120px, 0); opacity: .72; }
+        }
+
+        @keyframes piece-libs-move {
+            0%, 12% { transform: translate(0, 92px); opacity: .72; }
+            42%, 76% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(0, 92px); opacity: .72; }
+        }
+
+        @keyframes run-light-pulse {
+            0%, 36% { opacity: .2; }
+            48%, 76% { opacity: 1; filter: drop-shadow(0 0 10px rgba(88, 214, 194, .8)); }
+            100% { opacity: .2; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pages-packet,
+            .clone-copy,
+            .bridge-pulse,
+            .piece-code,
+            .piece-runtime,
+            .piece-libs,
+            .run-light {
+                animation: none;
+            }
+
+            .pages-packet {
+                transform: translate(494px, 106px);
+                opacity: 1;
+            }
+
+            .clone-copy {
+                transform: translate(-205px, 192px);
+                opacity: 1;
+            }
+
+            .piece-code,
+            .piece-runtime,
+            .piece-libs {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+
+            .run-light {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 <body>
   <a class="skip-link" href="#main">本文へ移動</a>
@@ -519,6 +694,45 @@
         </article>
       </div>
 
+      <figure class="visual-figure pages-flow-figure" aria-labelledby="pages-flow-title">
+        <svg viewBox="0 0 920 220" width="100%" role="img" aria-labelledby="pages-flow-title pages-flow-desc">
+          <title id="pages-flow-title">GitHub Pages 公開フロー</title>
+          <desc id="pages-flow-desc">自分のPCからGitHubリポジトリへpushし、自動ビルドを経て公開URLへ届く流れを示す図。</desc>
+          <defs>
+            <marker id="pagesArrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)"></path>
+            </marker>
+          </defs>
+          <path class="viz-arrow" d="M190 110 H300" marker-end="url(#pagesArrowHead)"></path>
+          <path class="viz-arrow" d="M390 110 H500" marker-end="url(#pagesArrowHead)"></path>
+          <path class="viz-arrow" d="M590 110 H700" marker-end="url(#pagesArrowHead)"></path>
+          <text class="viz-label" x="238" y="84" text-anchor="middle">push</text>
+          <text class="viz-label" x="650" y="84" text-anchor="middle">公開</text>
+          <g>
+            <rect class="viz-node viz-node-strong" x="30" y="58" width="160" height="104" rx="8"></rect>
+            <text class="viz-text" x="110" y="99" text-anchor="middle">💻 自分のPC</text>
+            <text class="viz-small" x="110" y="128" text-anchor="middle">HTMLファイル</text>
+          </g>
+          <g>
+            <rect class="viz-node" x="300" y="58" width="160" height="104" rx="8"></rect>
+            <text class="viz-text" x="380" y="99" text-anchor="middle">☁️ GitHub</text>
+            <text class="viz-small" x="380" y="128" text-anchor="middle">リポジトリ</text>
+          </g>
+          <g>
+            <rect class="viz-node" x="500" y="58" width="160" height="104" rx="8"></rect>
+            <text class="viz-text" x="580" y="99" text-anchor="middle">⚙️ 自動ビルド</text>
+            <text class="viz-small" x="580" y="128" text-anchor="middle">Pagesが処理</text>
+          </g>
+          <g>
+            <rect class="viz-node pages-url" x="700" y="58" width="180" height="104" rx="8"></rect>
+            <text class="viz-text" x="790" y="99" text-anchor="middle">🌐 公開URL</text>
+            <text class="viz-small" x="790" y="128" text-anchor="middle">世界から見える</text>
+          </g>
+          <circle class="pages-packet" cx="0" cy="0" r="8"></circle>
+        </svg>
+        <figcaption>pushしたHTMLがGitHub Pagesの自動処理を通り、公開URLとして見えるまでの流れです。</figcaption>
+      </figure>
+
       <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">公開までのフロー</h3>
       <div class="flow" aria-label="GitHub Pages 公開フロー">
         <div class="flow-step">
@@ -579,6 +793,44 @@
         </div>
       </div>
 
+      <figure class="visual-figure clone-flow-figure" aria-labelledby="clone-flow-title">
+        <svg viewBox="0 0 920 420" width="100%" role="img" aria-labelledby="clone-flow-title clone-flow-desc">
+          <title id="clone-flow-title">git clone と3者の関係</title>
+          <desc id="clone-flow-desc">GitHubに残ったコードが複製され、自分のPCへコピーされる。Claude CodeとCodexは操作を橋渡しする。</desc>
+          <defs>
+            <marker id="cloneArrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)"></path>
+            </marker>
+          </defs>
+          <g>
+            <rect class="viz-node viz-node-strong" x="350" y="34" width="220" height="122" rx="8"></rect>
+            <text class="viz-text" x="460" y="76" text-anchor="middle">☁️ GitHub</text>
+            <text class="viz-small" x="460" y="104" text-anchor="middle">保管庫</text>
+            <rect x="410" y="118" width="100" height="24" rx="4" fill="rgba(88, 214, 194, .18)" stroke="var(--accent)"></rect>
+            <text class="viz-small" x="460" y="136" text-anchor="middle">&lt;/code&gt;</text>
+          </g>
+          <path class="viz-arrow" d="M430 160 C380 210 300 230 245 282" marker-end="url(#cloneArrowHead)"></path>
+          <text class="viz-label" x="305" y="224" text-anchor="middle">git clone（丸ごとコピー）</text>
+          <g class="clone-copy">
+            <rect x="410" y="118" width="100" height="24" rx="4" fill="rgba(88, 214, 194, .22)" stroke="var(--accent)"></rect>
+            <text class="viz-small" x="460" y="136" text-anchor="middle">&lt;/code&gt;</text>
+          </g>
+          <g>
+            <rect class="viz-node" x="80" y="280" width="250" height="110" rx="8"></rect>
+            <text class="viz-text" x="205" y="323" text-anchor="middle">💻 自分のPC</text>
+            <text class="viz-small" x="205" y="352" text-anchor="middle">実行場所</text>
+            <rect x="155" y="362" width="100" height="18" rx="4" fill="rgba(88, 214, 194, .18)" stroke="var(--accent)"></rect>
+          </g>
+          <g class="bridge-pulse">
+            <rect class="viz-node" x="600" y="248" width="250" height="122" rx="8"></rect>
+            <text class="viz-text" x="725" y="292" text-anchor="middle">🤖 Claude Code / Codex</text>
+            <text class="viz-small" x="725" y="321" text-anchor="middle">橋渡しして操作する</text>
+          </g>
+          <path class="viz-line" d="M602 309 C525 308 440 330 330 335" stroke-dasharray="9 10"></path>
+        </svg>
+        <figcaption>コードはGitHubに残ったまま、cloneで手元へコピーされ、Claude Code / Codex がその操作を橋渡しします。</figcaption>
+      </figure>
+
       <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">git clone の原理</h3>
       <div class="concept-grid">
         <article class="concept-card">
@@ -624,6 +876,34 @@
           <span>README 等の手順に従って起動コマンドを実行する。ここで初めてコードが「動く」状態になる。</span>
         </div>
       </div>
+
+      <figure class="visual-figure runtime-assembly-figure" aria-labelledby="runtime-assembly-title">
+        <svg viewBox="0 0 920 300" width="100%" role="img" aria-labelledby="runtime-assembly-title runtime-assembly-desc">
+          <title id="runtime-assembly-title">コードは材料が揃って初めて動く</title>
+          <desc id="runtime-assembly-desc">コード本体、ランタイム、依存ライブラリの3つの部品が中央で噛み合い、実行中の表示が点灯する図。</desc>
+          <g class="piece-code">
+            <path d="M96 88 h192 v52 h-32 v28 h32 v52 H96 z" fill="var(--panel-2)" stroke="var(--accent)" stroke-width="2"></path>
+            <text class="viz-text" x="184" y="145" text-anchor="middle">コード本体</text>
+            <text class="viz-small" x="184" y="174" text-anchor="middle">アプリの中身</text>
+          </g>
+          <g class="piece-runtime">
+            <path d="M632 88 h192 v132 H632 v-52 h32 v-28 h-32 z" fill="var(--panel-2)" stroke="var(--info)" stroke-width="2"></path>
+            <text class="viz-text" x="736" y="145" text-anchor="middle">ランタイム</text>
+            <text class="viz-small" x="736" y="174" text-anchor="middle">Node / Python</text>
+          </g>
+          <g class="piece-libs">
+            <path d="M340 176 h64 v-28 h112 v28 h64 v72 H340 z" fill="var(--panel-2)" stroke="var(--accent-2)" stroke-width="2"></path>
+            <text class="viz-text" x="460" y="212" text-anchor="middle">依存ライブラリ</text>
+            <text class="viz-small" x="460" y="238" text-anchor="middle">外部部品</text>
+          </g>
+          <g>
+            <circle class="run-light" cx="460" cy="74" r="33"></circle>
+            <rect x="350" y="42" width="220" height="64" rx="8" fill="rgba(88, 214, 194, .12)" stroke="var(--accent)" stroke-width="2"></rect>
+            <text class="viz-text" x="460" y="82" text-anchor="middle">▶ 実行中</text>
+          </g>
+        </svg>
+        <figcaption>コード本体だけでなく、ランタイムと依存ライブラリが揃って初めて実行できます。</figcaption>
+      </figure>
 
       <h3 style="margin: 2rem 0 0.8rem; color: var(--accent-2);">なぜ「動くとき」と「動かないとき」があるのか</h3>
       <div class="concept-grid">
