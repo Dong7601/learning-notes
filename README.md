@@ -10,8 +10,10 @@ Claude Code / Codex との実装会話を、非エンジニアでも後から学
 ```
 learning-notes/
 ├─ index.html          トップ：ノート一覧 + キーワード検索
+├─ clips/              クリップフィード（生成HTML）
 ├─ notes/              個別ノート（HTML 1ファイル = 1テーマ）
 │   └─ powerpoint-addin.html
+├─ tools/              生成スクリプト
 ├─ robots.txt          検索エンジン除外（Disallow: /）
 ├─ .nojekyll           Jekyll 処理を無効化
 └─ PUBLICATION_REVIEW.md  公開前の機密検閲ログ
@@ -31,6 +33,13 @@ learning-notes/
 2. **検索除外** … `robots.txt` の `Disallow: /` ＋ 全HTMLの `noindex,nofollow` メタ。
 
 詳細は vault: `04_Context/AgentOps/Docs/github-pages-publish-rules.md`。
+
+## クリップフィード
+
+Obsidian の外部記事/X投稿クリップを `clips/index.html` に静的HTMLとして生成する。
+ビルド: `python tools/build_clips.py --src <Obsidianのクリップフォルダ>`。
+生成HTMLの `noindex, nofollow` は維持する。
+公開対象は外部記事/X投稿の要約と公開URLのみ。備考段落は非公開、`memo` / `prompt` タイプは除外する。
 
 ## コンテンツ作成ルール
 

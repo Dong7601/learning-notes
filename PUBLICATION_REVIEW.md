@@ -22,6 +22,11 @@
 ### notes/ai-api-vs-subscription.html
 - ai-api-vs-subscription：機密情報なし（一般教育内容。会社名・取引先・個人情報・秘密値を含まない）
 
+### clips/index.html / tools/build_clips.py
+- 公開対象は外部記事/X投稿の要約と公開URLのみ。
+- 生成時に備考段落、`memo` / `prompt` タイプ、Slack permalink などの内部向けリンクは除外する。
+- 生成HTMLは `noindex, nofollow` メタを維持する。ローカル絶対パスは出力しない。
+
 ### 検索除外
 - robots.txt に `Disallow: /` を設置。
 - 全HTMLの `<head>` に `noindex, nofollow` メタを設置。

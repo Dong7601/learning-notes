@@ -68,6 +68,31 @@
       font-size: clamp(1rem, 2vw, 1.2rem);
     }
 
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.4rem;
+    }
+
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17, 24, 33, 0.78);
+      color: var(--accent);
+      font-weight: 700;
+      line-height: 1;
+      padding: 0.7rem 1rem;
+      text-decoration: none;
+    }
+
+    .hero-link:hover {
+      border-color: var(--accent);
+      text-decoration: underline;
+    }
+
     .search-wrap {
       position: sticky;
       top: 0;
@@ -261,6 +286,9 @@
     <p class="eyebrow">Engineering knowledge notes</p>
     <h1>学習ノート</h1>
     <p class="hero-summary">Claude Code や Codex との実装会話から、非エンジニアでも後から学べる形に整理したナレッジ集。気になるキーワードで検索して、開いて読むだけ。</p>
+    <div class="hero-actions">
+      <a class="hero-link" href="clips/index.html">📎 クリップフィード</a>
+    </div>
   </header>
 
   <main>
