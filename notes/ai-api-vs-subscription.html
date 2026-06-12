@@ -567,6 +567,38 @@
       </div>
     </section>
 
+    <section id="agent-chat-no-api" aria-labelledby="agent-chat-no-api-title">
+      <div class="section-head">
+        <h2 id="agent-chat-no-api-title">チャットツール／エージェント導入ならAPIは不要か？</h2>
+        <p class="lead">既存システムへの組み込みではなく、AIをチャットツールとして配る・Claude Code / Codex のようなエージェントを導入するだけなら、APIではなくサブスクで足りることが多い。</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <h3>チャットツールとして導入 → サブスクでOK</h3>
+          <p>社員が ChatGPT / Claude をチャットで使うだけなら、per-seat サブスク（ChatGPT Team/Enterprise、Claude Team/Enterprise）が適切。APIは不要。最初の感覚どおり。</p>
+        </article>
+        <article class="concept-card">
+          <h3>「エージェント導入」＝「API」ではない</h3>
+          <p>Claude Code も Codex も<strong>サブスクプランで使える</strong>。Claude Code は Claude Pro/Max 等の定額プランに含まれ、Codex も ChatGPT 有料プランに含まれる。<strong>人がそのエージェントを手で操作する</strong>かぎりサブスク席で導入できる。</p>
+          <p>APIキーやBedrock/Vertex経由の従量で使う選択肢もあるが必須ではない。</p>
+        </article>
+        <article class="concept-card">
+          <h3>判断の分かれ目は「人が操作するか／無人で動かすか」</h3>
+          <p>人が手で操作（チャットもエージェントも）→サブスクで足りることが多くコストも定額で読みやすい。プログラムから自動・無人で回す／自社システムに組み込む／自社プロダクトに載せる→API。</p>
+          <p>元ノートの「対話 vs 組み込み」をより正確に言い換えた線引き。</p>
+        </article>
+        <article class="concept-card">
+          <h3>注意：サブスクにも上限はある</h3>
+          <p>エージェントは裏で大量トークンを消費（ファイル読込・多段ループ）。サブスクにも利用上限（レート/週次キャップ）があり、ヘビーに使うと上限に当たる。その場合に初めてAPI従量を検討。<strong>「1日数百万」の事故は基本、無人の自動化・API側で起きる</strong>もので、人が操作する範囲では起きにくい。</p>
+        </article>
+      </div>
+      <div class="warning-box" role="note" aria-label="チャットツールとエージェント導入のまとめ">
+        <span class="warning-title">まとめ</span>
+        <p>あなたの感覚は正しい。<strong>チャットツール導入も、人が使うエージェント導入も、サブスクで始められる。</strong> APIが要るのは「無人の自動化」「自社システムへの組み込み」「自社プロダクト化」のとき。</p>
+        <p>補足として、エージェントでも「データを社外に出したくない」要件があれば Claude Code を Bedrock 経由で使う等の構成になり、その場合はそのクラウドの従量課金になる。課金（軸A）とデータ経路（軸B）が独立なのはエージェントでも同じ。</p>
+      </div>
+    </section>
+
     <section id="security-personal-data" aria-labelledby="security-personal-data-title">
       <div class="section-head">
         <h2 id="security-personal-data-title">セキュリティと個人情報</h2>
