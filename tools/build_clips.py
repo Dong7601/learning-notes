@@ -106,6 +106,20 @@ def remove_private_paragraphs(text):
     return public
 
 
+def remove_leading_author_sentence(text):
+    stripped = text.lstrip()
+    removed_prefix_len = len(text) - len(stripped)
+    if not (stripped.startswith("投稿者:") or stripped.startswith("投稿者：")):
+        return text
+    end = stripped.find("。")
+    if end == -1:
+        return text
+    updated = stripped[end + 1 :].lstrip()
+    if not updated:
+        return text
+    return text[:removed_prefix_len] + updated
+
+
 def normalize_date(value):
     if not value:
         return ""
@@ -170,6 +184,7 @@ def read_clip(path):
 
     title = first_h1(markdown) or frontmatter.get("title", "").strip() or path.stem
     content = section_content(markdown, "内容メモ") or frontmatter.get("description", "").strip()
+    content = remove_leading_author_sentence(content)
     paragraphs = remove_private_paragraphs(content)
     date_value = normalize_date(frontmatter.get("captured", "")) or normalize_date(frontmatter.get("created", ""))
     source = normalize_source_url(frontmatter.get("source", ""), clip_type)
