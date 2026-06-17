@@ -31,3 +31,12 @@
 - robots.txt に `Disallow: /` を設置。
 - 全HTMLの `<head>` に `noindex, nofollow` メタを設置。
 - notes/_template.html：ひな型（プレースホルダのみ・機密情報なし）
+
+---
+
+## 2026-06-17
+
+### notes/claude-dynamic-workflow-effort.html
+- 内容: Claude Code の Dynamic Workflow / モデル（Opus・Sonnet・Haiku・Fable）の使い分け / 工数(effort)・Ultracode の解説。Anthropic 一次ドキュメントに基づく一般公開情報。
+- 検閲結果: 会社名・取引先名・固有プロジェクト名・部署名・個人情報・秘密値なし。記載は公開モデルID・公開価格・公開ドキュメントURLのみ。**問題なし。**
+- 検索除外: `<head>` に `noindex, nofollow` / `googlebot noindex, nofollow` メタを維持。

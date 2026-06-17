@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>Claude Code: Dynamic Workflow・モデル・工数の使い分け</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --bg-soft: #10182c;
+      --panel: #121d34;
+      --panel-2: #17243e;
+      --line: rgba(148, 163, 184, 0.24);
+      --text: #e5edf8;
+      --muted: #9fb0c9;
+      --faint: #708099;
+      --accent: #68d8b8;
+      --accent-2: #80a8ff;
+      --accent-3: #f5c76b;
+      --danger: #ff8f9a;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --radius: 8px;
+      --max: 1120px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(104, 216, 184, 0.13), transparent 30rem),
+        linear-gradient(180deg, #0b1020 0%, #0e1425 55%, #090d18 100%);
+      color: var(--text);
+      line-height: 1.8;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover,
+    a:focus-visible {
+      text-decoration: underline;
+    }
+
+    .wrap {
+      width: min(100% - 40px, var(--max));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .hero {
+      padding: 42px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    h1 {
+      max-width: 980px;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .hero-summary {
+      max-width: 900px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .note-meta-row,
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .meta-pill,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(18, 29, 52, 0.78);
+      color: var(--muted);
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+
+    .level-advanced {
+      color: #ffd88a;
+      border-color: rgba(245, 199, 107, 0.42);
+      background: rgba(245, 199, 107, 0.12);
+    }
+
+    main {
+      display: grid;
+      gap: 34px;
+      padding-top: 34px;
+    }
+
+    section {
+      scroll-margin-top: 24px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: clamp(1.45rem, 3vw, 2.25rem);
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      font-size: 1.16rem;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    strong {
+      color: var(--text);
+    }
+
+    code {
+      padding: 0.12em 0.36em;
+      border: 1px solid rgba(128, 168, 255, 0.24);
+      border-radius: 5px;
+      background: rgba(128, 168, 255, 0.09);
+      color: #d6e1ff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    .panel {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(18, 29, 52, 0.78);
+      box-shadow: var(--shadow);
+    }
+
+    .lead {
+      border-color: rgba(104, 216, 184, 0.36);
+      background: linear-gradient(135deg, rgba(104, 216, 184, 0.13), rgba(18, 29, 52, 0.86));
+    }
+
+    .tldr-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tldr-list li {
+      position: relative;
+      padding-left: 30px;
+      color: var(--muted);
+    }
+
+    .tldr-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.72em;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(104, 216, 184, 0.12);
+    }
+
+    .visual-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .visual-figure {
+      margin: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(11, 16, 32, 0.62);
+      overflow: hidden;
+    }
+
+    .visual-figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .visual-figure figcaption {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .viz-node {
+      fill: rgba(23, 36, 62, 0.98);
+      stroke: rgba(128, 168, 255, 0.72);
+      stroke-width: 2;
+    }
+
+    .viz-node-accent {
+      fill: rgba(104, 216, 184, 0.16);
+      stroke: rgba(104, 216, 184, 0.85);
+    }
+
+    .viz-node-warn {
+      fill: rgba(245, 199, 107, 0.14);
+      stroke: rgba(245, 199, 107, 0.82);
+    }
+
+    .viz-arrow {
+      fill: none;
+      stroke: rgba(159, 176, 201, 0.8);
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .viz-text {
+      fill: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .viz-small {
+      fill: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .viz-label {
+      fill: var(--accent-3);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .note-list,
+    .ordered-list {
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+
+    .note-list li,
+    .ordered-list li {
+      margin: 8px 0;
+      padding-left: 0.2rem;
+    }
+
+    .layer-map {
+      display: grid;
+      gap: 12px;
+    }
+
+    .layer-card {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(11, 16, 32, 0.42);
+    }
+
+    .layer-name {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .layer-desc {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(11, 16, 32, 0.42);
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--text);
+      background: rgba(128, 168, 255, 0.08);
+      font-size: 0.92rem;
+    }
+
+    td {
+      color: var(--muted);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .term-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(11, 16, 32, 0.44);
+    }
+
+    .term-card h3 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .term-card p {
+      margin: 0;
+      font-size: 0.94rem;
+    }
+
+    .footer {
+      margin-top: 44px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      color: var(--faint);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 860px) {
+      .wrap {
+        width: min(100% - 28px, var(--max));
+        padding-top: 22px;
+      }
+
+      .hero {
+        padding-top: 24px;
+      }
+
+      .visual-grid,
+      .glossary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 18px;
+      }
+
+      .layer-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back-link" href="../index.html">← 一覧へ戻る</a>
+
+    <header class="hero">
+      <p class="eyebrow">AI・データ活用</p>
+      <h1>Claude Code徹底ガイド：Dynamic Workflow・モデル・工数（effort）の使い分け</h1>
+      <p class="hero-summary">Opus 4.8を普段使いする人向けに、「Dynamic Workflowで何ができるか」「モデル(Opus/Sonnet/Haiku/Fable)の使い分け」「工数(low〜max＋Ultracode)の選び方」を、2026年6月時点のAnthropic一次情報をもとに整理。</p>
+      <div class="note-meta-row" aria-label="メタ情報">
+        <span class="meta-pill level-advanced">難易度: 応用</span>
+        <span class="meta-pill">カテゴリ: AI・データ活用</span>
+        <span class="meta-pill">更新日: 2026-06-17</span>
+      </div>
+      <div class="hero-meta" aria-label="タグ">
+        <span class="tag">Claude Code</span>
+        <span class="tag">Dynamic Workflow</span>
+        <span class="tag">サブエージェント</span>
+        <span class="tag">工数(effort)</span>
+        <span class="tag">Ultracode</span>
+        <span class="tag">モデル選択</span>
+        <span class="tag">Opus 4.8</span>
+        <span class="tag">Fable 5</span>
+        <span class="tag">xhigh</span>
+        <span class="tag">レート制限</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel lead" aria-labelledby="tldr">
+        <h2 id="tldr">TL;DR</h2>
+        <ul class="tldr-list">
+          <li><strong>Dynamic Workflow</strong> = Claudeがその場でJavaScriptの台本を書き、裏で多数のサブエージェント（同時最大16・1実行で合計1,000まで）を束ねる仕組み。中間結果は台本に溜まり、会話の文脈には最終回答だけ返る。</li>
+          <li><strong>工数(effort)</strong>は「賢さ ↔ 速さ/節約」のスライダー。low / medium / high / xhigh / max ＋ Claude Code専用の ultracode。Opus 4.8の既定はhigh。</li>
+          <li><strong>Ultracode</strong>はモデルの工数レベルではなくClaude Codeの設定。xhigh＋「実質的なタスクごとにClaudeが自分でワークフローを組む」モード。最も徹底的・最も低速・消費が最大で、セッション限定。</li>
+          <li>公式の原則は「モデルを変えるより工数を回す方が良いレバー」。Sonnet=日常の万能、Opus=難所、Haiku=単純/大量・サブエージェント、Fable=一回で終わらない大仕事。</li>
+          <li>普段使い(Opus 4.8)の推奨: highのまま → 重い調査・長文比較・複雑な計画はxhigh → maxはほぼ不要 → Ultracodeは大規模並列だけ（消費最大なのでレート残量に注意）。</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="visuals">
+        <h2 id="visuals">図解</h2>
+        <div class="visual-grid">
+          <figure class="visual-figure">
+            <svg viewBox="0 0 620 430" role="img" aria-labelledby="workflow-title workflow-desc">
+              <title id="workflow-title">Dynamic Workflowのファンアウト図</title>
+              <desc id="workflow-desc">メインエージェントがワークフロー台本を作り、同時最大16・合計1,000までの並列サブエージェントを束ね、統合された最終回答だけを会話文脈へ戻す流れ。</desc>
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                  <path d="M0,0 L9,3 L0,6 Z" fill="rgba(159, 176, 201, 0.9)"></path>
+                </marker>
+              </defs>
+              <rect class="viz-node viz-node-accent" x="205" y="24" width="210" height="72" rx="8"></rect>
+              <text class="viz-text" x="310" y="54" text-anchor="middle">メインエージェント</text>
+              <text class="viz-small" x="310" y="78" text-anchor="middle">依頼を理解して設計</text>
+
+              <path class="viz-arrow" d="M310 96 V126" marker-end="url(#arrowhead)"></path>
+              <rect class="viz-node" x="185" y="128" width="250" height="78" rx="8"></rect>
+              <text class="viz-text" x="310" y="160" text-anchor="middle">ワークフロー台本</text>
+              <text class="viz-small" x="310" y="184" text-anchor="middle">JavaScript / ループ・分岐・中間結果</text>
+
+              <path class="viz-arrow" d="M310 206 C310 238 104 236 104 270" marker-end="url(#arrowhead)"></path>
+              <path class="viz-arrow" d="M310 206 C310 238 242 236 242 270" marker-end="url(#arrowhead)"></path>
+              <path class="viz-arrow" d="M310 206 C310 238 378 236 378 270" marker-end="url(#arrowhead)"></path>
+              <path class="viz-arrow" d="M310 206 C310 238 516 236 516 270" marker-end="url(#arrowhead)"></path>
+
+              <rect class="viz-node viz-node-warn" x="24" y="270" width="160" height="66" rx="8"></rect>
+              <text class="viz-text" x="104" y="298" text-anchor="middle">サブ1</text>
+              <text class="viz-small" x="104" y="319" text-anchor="middle">調査・編集・検証</text>
+              <rect class="viz-node viz-node-warn" x="162" y="270" width="160" height="66" rx="8"></rect>
+              <text class="viz-text" x="242" y="298" text-anchor="middle">サブ2</text>
+              <text class="viz-small" x="242" y="319" text-anchor="middle">別視点で処理</text>
+              <rect class="viz-node viz-node-warn" x="298" y="270" width="160" height="66" rx="8"></rect>
+              <text class="viz-text" x="378" y="298" text-anchor="middle">サブ3</text>
+              <text class="viz-small" x="378" y="319" text-anchor="middle">並列に進行</text>
+              <rect class="viz-node viz-node-warn" x="436" y="270" width="160" height="66" rx="8"></rect>
+              <text class="viz-text" x="516" y="298" text-anchor="middle">サブN</text>
+              <text class="viz-small" x="516" y="319" text-anchor="middle">同時最大16</text>
+              <text class="viz-label" x="310" y="252" text-anchor="middle">1実行で合計1,000まで</text>
+
+              <path class="viz-arrow" d="M104 336 C104 374 310 354 310 386" marker-end="url(#arrowhead)"></path>
+              <path class="viz-arrow" d="M242 336 C242 365 310 360 310 386" marker-end="url(#arrowhead)"></path>
+              <path class="viz-arrow" d="M378 336 C378 365 310 360 310 386" marker-end="url(#arrowhead)"></path>
+              <path class="viz-arrow" d="M516 336 C516 374 310 354 310 386" marker-end="url(#arrowhead)"></path>
+              <rect class="viz-node viz-node-accent" x="185" y="348" width="250" height="62" rx="8"></rect>
+              <text class="viz-text" x="310" y="374" text-anchor="middle">統合された最終回答</text>
+              <text class="viz-small" x="310" y="396" text-anchor="middle">会話文脈へ戻るのはここだけ</text>
+            </svg>
+            <figcaption>中間結果は台本側に溜め、会話文脈には最終回答だけを戻すので、大量処理で文脈を汚しにくい。</figcaption>
+          </figure>
+
+          <figure class="visual-figure">
+            <svg viewBox="0 0 620 430" role="img" aria-labelledby="effort-title effort-desc">
+              <title id="effort-title">工数のはしご図</title>
+              <desc id="effort-desc">low、medium、high(既定)、xhigh、max、ultracodeを、速い/安いから賢い/高コストへ並べたはしご図。</desc>
+              <defs>
+                <marker id="ladder-arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                  <path d="M0,0 L9,3 L0,6 Z" fill="rgba(159, 176, 201, 0.9)"></path>
+                </marker>
+              </defs>
+              <text class="viz-label" x="74" y="52" text-anchor="middle">速い/安い</text>
+              <text class="viz-label" x="530" y="52" text-anchor="middle">賢い/高コスト</text>
+              <path class="viz-arrow" d="M92 70 H520" marker-end="url(#ladder-arrowhead)"></path>
+
+              <rect class="viz-node" x="56" y="110" width="122" height="58" rx="8"></rect>
+              <text class="viz-text" x="117" y="136" text-anchor="middle">low</text>
+              <text class="viz-small" x="117" y="156" text-anchor="middle">最速最安</text>
+              <path class="viz-arrow" d="M178 139 H214" marker-end="url(#ladder-arrowhead)"></path>
+
+              <rect class="viz-node" x="214" y="110" width="122" height="58" rx="8"></rect>
+              <text class="viz-text" x="275" y="136" text-anchor="middle">medium</text>
+              <text class="viz-small" x="275" y="156" text-anchor="middle">バランス</text>
+              <path class="viz-arrow" d="M336 139 H372" marker-end="url(#ladder-arrowhead)"></path>
+
+              <rect class="viz-node viz-node-accent" x="372" y="110" width="146" height="58" rx="8"></rect>
+              <text class="viz-text" x="445" y="136" text-anchor="middle">high(既定)</text>
+              <text class="viz-small" x="445" y="156" text-anchor="middle">釣り合い</text>
+
+              <path class="viz-arrow" d="M445 168 V210" marker-end="url(#ladder-arrowhead)"></path>
+              <rect class="viz-node" x="310" y="212" width="122" height="58" rx="8"></rect>
+              <text class="viz-text" x="371" y="238" text-anchor="middle">xhigh</text>
+              <text class="viz-small" x="371" y="258" text-anchor="middle">深い推論</text>
+              <path class="viz-arrow" d="M432 241 H468" marker-end="url(#ladder-arrowhead)"></path>
+
+              <rect class="viz-node viz-node-warn" x="468" y="212" width="122" height="58" rx="8"></rect>
+              <text class="viz-text" x="529" y="238" text-anchor="middle">max</text>
+              <text class="viz-small" x="529" y="258" text-anchor="middle">最大思考</text>
+
+              <path class="viz-arrow" d="M529 270 V316" marker-end="url(#ladder-arrowhead)"></path>
+              <rect class="viz-node viz-node-warn" x="382" y="318" width="208" height="70" rx="8"></rect>
+              <text class="viz-text" x="486" y="346" text-anchor="middle">ultracode</text>
+              <text class="viz-small" x="486" y="368" text-anchor="middle">Claude Code設定 / 消費最大</text>
+              <text class="viz-small" x="486" y="388" text-anchor="middle">xhigh＋自動ワークフロー</text>
+            </svg>
+            <figcaption>工数はモデル変更より先に調整しやすいレバー。高いほど深くなるが、レート消費も速くなる。</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="dynamic-workflow">
+        <h2 id="dynamic-workflow">1. Dynamic Workflowとは / 何ができるか</h2>
+        <p>Dynamic Workflowは、Claudeが書いたJavaScriptの台本を専用ランタイムが裏で実行し、サブエージェントを大規模に束ねる機能です。台本がループ・分岐・中間結果を保持するので、自分の会話文脈は最終回答だけで済みます。つまり、文脈を汚さず大量処理できます。</p>
+        <p>向いているのは、1会話では捌けない規模の作業です。コードベース全体のバグ掃討、500ファイル級の一括移行、出典を相互照合するリサーチ、複数視点からの計画づくりが代表例です。</p>
+
+        <h3>オーケストレーションの型（6つ）</h3>
+        <ol class="ordered-list">
+          <li>ファンアウト→集約→統合。</li>
+          <li>パイプライン。各アイテムが段を独立して流れ、全件揃える時だけバリアを置く。</li>
+          <li>敵対的検証。1発見につき複数の懐疑エージェントに反証させ、過半数生存で採用する。</li>
+          <li>多視点検証。正しさ/セキュリティ/性能/再現性を別担当に分ける。</li>
+          <li>審査パネル。N案→並列ジャッジ→勝ち案から統合する。</li>
+          <li>枯れるまでループ。新発見がK回連続ゼロまで回し、既出は重複排除する。</li>
+        </ol>
+
+        <h3>制限・コスト</h3>
+        <ul class="note-list">
+          <li>同時実行は最大16体です。CPUコアが少ないと減ります。</li>
+          <li>1実行で合計1,000体までです。これは暴走防止のための上限です。</li>
+          <li>実行中はユーザー入力不可です。エージェントの権限確認だけが停止点になります。</li>
+          <li>台本自身はファイル/シェルに直接触れません。読み書き・コマンドはサブエージェントが担当します。</li>
+          <li>サブエージェントは常にacceptEditsモードで動きツール許可リストを継承し、ファイル編集は自動承認されます。</li>
+          <li><strong>トークン消費は通常セッションより大幅に多く、プラン使用量・レート制限を普通に消費します。</strong>まず狭い範囲(1ディレクトリ/絞った問い)で試し、<code>/workflows</code>で消費を見て、重要でない段は小さいモデルに回すのが現実的です。</li>
+        </ul>
+
+        <h3>入口/使い方</h3>
+        <p>入口は、プロンプトに <code>ultracode</code> キーワードを書く、自然文で「ワークフローで」と頼む、または <code>/effort ultracode</code> を使う、の3つです。</p>
+        <p>標準同梱の <code>/deep-research &lt;問い&gt;</code> は、複数角度でWeb検索し、出典を相互照合し、各主張に投票し、生き残った主張だけで出典付きレポートを作ります。自作台本は <code>/workflows</code> で <code>s</code> キー保存し、<code>/&lt;名前&gt;</code> で再利用できます。</p>
+        <p>要件は、Claude Code v2.1.154以降、全有料プランです。Proは <code>/config</code> でONにします。API・Amazon Bedrock・Google Vertex AI・Microsoft Foundryで利用できます。無効化は <code>/config</code>、<code>settings.json</code> の <code>"disableWorkflows": true</code>、環境変数 <code>CLAUDE_CODE_DISABLE_WORKFLOWS=1</code> で行います。</p>
+      </section>
+
+      <section class="panel" aria-labelledby="effort">
+        <h2 id="effort">2. 工数(effort)の使い分け</h2>
+        <p>工数は、「どれだけ考え・ツールを呼び・説明するか」の行動シグナルです。厳密なトークン上限ではありません。低いほど速く安くレート消費も遅く、高いほど深く考え、ツール呼び出しも増えます。</p>
+
+        <div class="layer-map" aria-label="工数レベル表">
+          <div class="layer-card">
+            <div class="layer-name">low</div>
+            <p class="layer-desc">最も効率的・最速最安。リネーム/誤字修正/grep/分類、サブエージェント向き。</p>
+          </div>
+          <div class="layer-card">
+            <div class="layer-name">medium</div>
+            <p class="layer-desc">バランス寄り・コスト削減。</p>
+          </div>
+          <div class="layer-card">
+            <div class="layer-name">high</div>
+            <p class="layer-desc">賢さと効率の釣り合い（既定）。</p>
+          </div>
+          <div class="layer-card">
+            <div class="layer-name">xhigh</div>
+            <p class="layer-desc">より深い推論・消費増。コーディング/エージェント作業の推奨スタート点、探索・検索系。</p>
+          </div>
+          <div class="layer-card">
+            <div class="layer-name">max</div>
+            <p class="layer-desc">上限なしの最大思考。フロンティア級のみ、過剰思考・効果逓減に注意。</p>
+          </div>
+          <div class="layer-card">
+            <div class="layer-name">ultracode</div>
+            <p class="layer-desc">モデルのレベルではなくClaude Code設定。詳しくはセクション3。</p>
+          </div>
+        </div>
+
+        <h3>対応モデルと既定値</h3>
+        <p>Fable 5 / Opus 4.8 / Opus 4.7 は low/medium/high/xhigh/max。Opus 4.6 / Sonnet 4.6 は low/medium/high/max（xhighなし）。Haiku 4.5 は max非対応です。</p>
+        <p>既定値は、Fable 5・Opus 4.8・Opus 4.6・Sonnet 4.6 は high、Opus 4.7 は xhigh。<code>high</code>指定は「指定なし」と同じ挙動です。</p>
+        <p>永続性も違います。low/medium/high/xhigh はセッションをまたいで保持されます。max と ultracode は当該セッションのみで、新規セッションでリセットされます。スケールはモデルごとに別物なので、同じ"high"でも量は違います。</p>
+
+        <h3>設定方法</h3>
+        <p><code>/effort</code> は引数なしでスライダーを開き、<code>/effort xhigh</code> で直接指定、<code>/effort auto</code> で既定に戻せます。<code>/model</code>の左右キー、起動時 <code>--effort</code>、環境変数 <code>CLAUDE_CODE_EFFORT_LEVEL</code>、<code>settings.json</code>の <code>effortLevel</code>（low〜xhighのみ）、skill・subagentのフロントマターでも設定できます。優先順位は 環境変数 &gt; 設定値 &gt; モデル既定です。</p>
+        <p>単発で深く考えさせたい時は、プロンプトに <code>ultrathink</code> と書きます。その1ターンだけで、セッション設定やAPIのeffortは変えません。</p>
+
+        <h3>公式指針</h3>
+        <p>公式指針は「モデルを変えるより工数を回す方が良いレバー」です。Opus 4.8/4.7のコーディング・エージェント作業は xhigh から始め、賢さが要る作業は high が最低ライン、コスト重視は medium、max は xhigh で伸びしろが実測できた時だけにします。高い工数はレート制限を速く消費し、低い工数は速く安くレート消費も遅いので、サブスクのレート節約の第一レバーは工数を下げることです。</p>
+      </section>
+
+      <section class="panel" aria-labelledby="ultracode">
+        <h2 id="ultracode">3. Ultracodeの正体</h2>
+        <p>Ultracodeは、モデルの工数レベルではなく<strong>Claude Codeの設定</strong>です。xhighをモデルに送りつつ、「実質的なタスクごとにClaudeが自分の判断でワークフローを組む」常設許可を与えます。</p>
+        <p>素のxhighは推論を深めるだけで、ワークフローは自分で頼んで初めて発動します。Ultracodeはキーワード不要でClaudeが勝手に判断し、1つの依頼が「理解→変更→検証」と複数ワークフローに連鎖することもあります。</p>
+        <p>最も徹底的・最も低速・消費が最大です。普通の1ファイル編集には使わず、大規模で並列化が効くタスク、たとえばコードベース規模の移行、横断監査、相互照合リサーチに限ります。</p>
+        <p>全セッションで入れるなら <code>/effort ultracode</code>、単発なら <code>ultracode:</code> キーワードを使います。戻すときは <code>/effort high</code> です。</p>
+        <p>Ultracodeはセッション限定で、新しいセッションを始めるとリセットされます。タブを閉じる/アプリ再起動はその一例です。手動で <code>/effort</code> を変えても戻せます。xhigh対応モデルでのみ <code>/effort</code> メニューに出ます。</p>
+      </section>
+
+      <section class="panel" aria-labelledby="models">
+        <h2 id="models">4. モデルの使い分け（2026-06時点）</h2>
+        <div class="table-wrap" role="region" aria-label="モデル比較表" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th>モデル</th>
+                <th>モデルID</th>
+                <th>価格（$/100万トークンの 入力/出力）</th>
+                <th>文脈・最大出力</th>
+                <th>主な使いどころ</th>
+                <th>メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Fable 5</td>
+                <td><code>claude-fable-5</code></td>
+                <td>$10/$50</td>
+                <td>文脈1M・最大出力128K</td>
+                <td>一般提供で最強。一回で終わらない大仕事・曖昧な根本原因調査・長時間自律。</td>
+                <td><code>/model fable</code> か別名 <code>best</code>。既定ではない。常にadaptive thinking（OFF不可）。</td>
+              </tr>
+              <tr>
+                <td>Opus 4.8</td>
+                <td><code>claude-opus-4-8</code></td>
+                <td>$5/$25</td>
+                <td>文脈1M・最大出力128K</td>
+                <td>Opus級フラッグシップ・複雑推論の推奨既定。大規模リファクタ・繊細なバグ・設計・長期自律エージェント。</td>
+                <td>難所に寄せる時の主力。</td>
+              </tr>
+              <tr>
+                <td>Sonnet 4.6</td>
+                <td><code>claude-sonnet-4-6</code></td>
+                <td>$3/$15</td>
+                <td>文脈1M・最大出力64K</td>
+                <td>速度と知性のバランス。日常コーディングの万能既定・量産。</td>
+                <td>普段の作業を広く任せやすい。</td>
+              </tr>
+              <tr>
+                <td>Haiku 4.5</td>
+                <td><code>claude-haiku-4-5</code></td>
+                <td>$1/$5</td>
+                <td>文脈200K・最大出力64K</td>
+                <td>最速・最安・準フロンティア。単純/大量・分類・抽出・サブエージェント。</td>
+                <td>max・adaptive thinking非対応。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>既定モデルはプラン依存</h3>
+        <p>Max/Team Premium/Enterprise従量/API → Opus 4.8。Pro/Team Standard/Enterpriseシート → Sonnet 4.6。AWS版 → Opus 4.7。Bedrock/Vertex/Foundry → Sonnet 4.5。</p>
+
+        <h3>選び方</h3>
+        <p>Sonnetを日常の既定にし、詰まったらOpus、単純/大量はHaiku、1回で終わらない曖昧な難問はFable、という整理が実務では使いやすいです。opusplan=計画モードはOpus・実行は自動でSonnetに切替。品質が落ちたらモデル/工数を上げる前に <code>/clear</code> で文脈整理します。文脈が埋まると性能が落ちます。</p>
+      </section>
+
+      <section class="panel" aria-labelledby="daily-use">
+        <h2 id="daily-use">5. 普段使い(Opus 4.8)の運用方針</h2>
+        <div class="table-wrap" role="region" aria-label="場面ごとの工数対応表" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th>場面</th>
+                <th>工数</th>
+                <th>運用メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ノート編集・要約・軽い整形</td>
+                <td>high（既定のまま）</td>
+                <td>単純作業は medium でレート節約も可。</td>
+              </tr>
+              <tr>
+                <td>深いリサーチ・長文の比較分析・複雑な計画</td>
+                <td>xhigh</td>
+                <td>調査や探索の質を優先する。</td>
+              </tr>
+              <tr>
+                <td>フロンティア級の難問（稀）</td>
+                <td>max</td>
+                <td>常用しない・テストしてから。</td>
+              </tr>
+              <tr>
+                <td>横断リサーチ／一括監査／大量ファイル処理</td>
+                <td>Ultracode</td>
+                <td>消費最大なので残量を見て狭く絞る。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>運用の順番</h3>
+        <ol class="ordered-list">
+          <li><code>/clear</code>で文脈を整える。</li>
+          <li>一番難しい部分に合わせてモデル選択、または opusplan を使う。</li>
+          <li>難所はxhigh、品質が保てるならmedium/lowに落として節約する。</li>
+          <li>max/Ultracodeはフロンティア・大規模並列だけにし、まず狭く試す。</li>
+        </ol>
+        <p>Ultracodeとmaxは消費が跳ねるので残量を見て発動し、終わったら <code>/effort high</code> に戻します。</p>
+      </section>
+
+      <section class="panel" aria-labelledby="sources">
+        <h2 id="sources">一次ソース</h2>
+        <ul class="source-list">
+          <li>工数API仕様: <a href="https://platform.claude.com/docs/en/build-with-claude/effort">https://platform.claude.com/docs/en/build-with-claude/effort</a></li>
+          <li>Claude Code モデル/工数設定: <a href="https://code.claude.com/docs/en/model-config">https://code.claude.com/docs/en/model-config</a></li>
+          <li>Dynamic Workflows公式: <a href="https://code.claude.com/docs/en/workflows">https://code.claude.com/docs/en/workflows</a></li>
+          <li>Dynamic Workflows発表(2026-05-28): <a href="https://claude.com/blog/introducing-dynamic-workflows-in-claude-code">https://claude.com/blog/introducing-dynamic-workflows-in-claude-code</a></li>
+          <li>モデル一覧/価格: <a href="https://platform.claude.com/docs/en/about-claude/models/overview">https://platform.claude.com/docs/en/about-claude/models/overview</a></li>
+          <li>モデルの選び方: <a href="https://platform.claude.com/docs/en/about-claude/models/choosing-a-model">https://platform.claude.com/docs/en/about-claude/models/choosing-a-model</a></li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="glossary">
+        <h2 id="glossary">用語集</h2>
+        <div class="glossary-grid">
+          <article class="term-card">
+            <h3>Dynamic Workflow</h3>
+            <p>ClaudeがJavaScriptの台本を作り、専用ランタイムでサブエージェントを束ねる仕組み。中間結果を台本側に保持し、最終回答だけを会話文脈へ戻します。</p>
+          </article>
+          <article class="term-card">
+            <h3>サブエージェント</h3>
+            <p>Dynamic Workflowの中で、調査・編集・検証などを担当する裏側の作業者。重要でない段は小さいモデルに回すと消費を抑えやすくなります。</p>
+          </article>
+          <article class="term-card">
+            <h3>工数(effort)</h3>
+            <p>「どれだけ考え・ツールを呼び・説明するか」を調整する行動シグナル。厳密なトークン上限ではありません。</p>
+          </article>
+          <article class="term-card">
+            <h3>xhigh</h3>
+            <p>より深い推論・消費増の工数レベル。Opus 4.8/4.7のコーディング・エージェント作業では推奨スタート点です。</p>
+          </article>
+          <article class="term-card">
+            <h3>Ultracode</h3>
+            <p>モデルの工数レベルではなくClaude Codeの設定。xhigh＋「実質的なタスクごとにClaudeが自分でワークフローを組む」モードです。</p>
+          </article>
+          <article class="term-card">
+            <h3>adaptive thinking</h3>
+            <p>モデル側の思考量を適応的に扱う仕組み。Fable 5は常にadaptive thinking（OFF不可）で、Haiku 4.5はadaptive thinking非対応です。</p>
+          </article>
+          <article class="term-card">
+            <h3>opusplan</h3>
+            <p>計画モードはOpus・実行は自動でSonnetに切替する使い方。難しい設計と日常的な実行を分けたい時に使います。</p>
+          </article>
+          <article class="term-card">
+            <h3><code>/deep-research</code></h3>
+            <p>標準同梱のワークフロー。複数角度でWeb検索し、出典を相互照合し、各主張に投票して、生き残った主張だけで出典付きレポートを作ります。</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>2026-06-17 / 公開用に匿名化済み</p>
+    </footer>
+  </div>
+</body>
+</html>
