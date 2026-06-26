@@ -55,8 +55,10 @@
     .chip{border:1px solid var(--line);border-radius:999px;background:rgba(17,24,33,.78);color:var(--muted);
       font:inherit;font-size:.85rem;line-height:1;padding:.5rem .8rem;cursor:pointer}
     .chip[aria-pressed="true"]{border-color:var(--accent);color:var(--text);box-shadow:0 0 0 2px rgba(88,214,194,.16)}
-    .chip.toggle[aria-pressed="true"]{border-color:var(--accent-2);box-shadow:0 0 0 2px rgba(242,201,76,.18)}
-    .fcount{color:var(--muted);font-size:.85rem;margin:.6rem 0 0}
+    .style-chips .chip[aria-pressed="true"]{border-color:var(--accent-2);box-shadow:0 0 0 2px rgba(242,201,76,.18)}
+    .chip-group{margin-bottom:.55rem}
+    .cg-label{display:block;font-size:.72rem;color:var(--muted);font-weight:700;margin:0 0 .3rem}
+    .fcount{color:var(--muted);font-size:.85rem;margin:.4rem 0 0}
     /* format cards */
     .fmt-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin:0 0 2rem;padding:0;list-style:none}
     .fmt-card{border:1px solid var(--line);border-radius:14px;padding:1rem 1.05rem;
@@ -70,6 +72,8 @@
     .g-comedy{color:#ff9ec4;background:rgba(255,120,180,.13)}
     .g-education{color:#9ec4ff;background:rgba(120,160,255,.13)}
     .g-tips{color:#9ee6e0;background:rgba(90,214,200,.14)}
+    .g-talk{color:#d7c0ff;background:rgba(170,130,255,.15)}
+    .schip{font-size:.72rem;font-weight:700;border-radius:999px;padding:.14rem .5rem;color:var(--accent-2);border:1px solid rgba(242,201,76,.4);background:rgba(242,201,76,.08)}
     .prio{font-size:.74rem;font-weight:700;border-radius:999px;padding:.16rem .55rem}
     .p-high{color:#0b0f14;background:var(--accent)}
     .p-mid{color:var(--info);background:rgba(119,170,255,.16)}
@@ -123,7 +127,7 @@
         <span class="pill">📅 2026-06-26</span>
         <span class="pill">🎯 業務活用＋便利な日常活用（副業/稼ぐ系は除外）</span>
         <span class="pill">🌏 海外IG・Xトレンド発のネタ</span>
-        <span class="pill">🎬 他ジャンル由来の33フォーマット</span>
+        <span class="pill">🎬 トーク/アフレコ/寸劇/無言 計39フォーマット</span>
       </div>
       <div class="tldr">
         <b>勝ち筋：「海外で実証済みの業務AIネタ」×「他ジャンルの完成された型」の掛け算。</b>
@@ -148,14 +152,16 @@
     </div>
 
     <!-- ============ フォーマット ============ -->
-    <h2>2. フォーマット集（他ジャンル転用・33型）</h2>
+    <h2>2. フォーマット集（演者スタイル×他ジャンル・39型）</h2>
     <div class="legend">
-      各カードに <b>どんなフォーマットか</b>・<b>AI業務への落とし込み</b>・<b>撮影/編集工数</b>・<b>優先度</b>・<b>参考ショート動画（タップで再生）</b> を収録。
+      各カードに <b>🎬演者スタイル</b>・<b>どんなフォーマットか</b>・<b>AI業務への落とし込み</b>・<b>撮影/編集工数</b>・<b>優先度</b>・<b>参考ショート動画（タップで再生）</b> を収録。
+      <b>演者スタイル</b>と<b>元ジャンル</b>の2軸で絞り込めます（例: 「トーク」だけ、「料理」だけ）。<b>トーク／アフレコ系6型</b>を追加済み。
       工数色＝<i class="lv-l">低</i>/<i class="lv-m">中</i>/<i class="lv-h">高</i>。
       <span class="vchip v-true">確認済</span>＝動画の実在をoEmbed等で確認、<span class="vchip v-partial">部分</span>＝URL形式は正しいが直接確認不可（TikTok/IG）。
     </div>
     <div class="controls">
-      <div class="chips" id="genre-chips"></div>
+      <div class="chip-group"><span class="cg-label">演者スタイル（トーク/アフレコ/寸劇/無言）</span><div class="chips" id="style-chips"></div></div>
+      <div class="chip-group"><span class="cg-label">元ジャンル</span><div class="chips" id="genre-chips"></div></div>
       <p class="fcount" id="fcount"></p>
     </div>
     <ul class="fmt-list" id="fmt-list"></ul>
@@ -219,7 +225,18 @@
   ];
 
   /* ---------------- フォーマット data ---------------- */
-  var GLABEL={cooking:"料理",fitness:"筋トレ",finance:"金融",comedy:"お笑い/寸劇",education:"教育",tips:"Tips/満足感"};
+  var GLABEL={cooking:"料理",fitness:"筋トレ",finance:"金融",comedy:"お笑い/寸劇",education:"教育",tips:"Tips/満足感",talk:"トーク/アフレコ"};
+  /* 演者スタイル（トーク/アフレコ/寸劇/無言・実演）。元ジャンルとは別軸。 */
+  var STYLE_MAP={
+    c1:"無言・実演",c2:"無言・実演",c3:"無言・実演",c4:"アフレコ",c5:"アフレコ",
+    f1:"無言・実演",f2:"アフレコ",f3:"無言・実演",f4:"アフレコ",f5:"アフレコ",
+    m1:"トーク",m2:"アフレコ",m3:"トーク",m4:"アフレコ",m5:"アフレコ",
+    k1:"寸劇",k2:"寸劇",k3:"寸劇",k4:"無言・実演",k5:"寸劇",k6:"寸劇",
+    e1:"アフレコ",e2:"アフレコ",e3:"無言・実演",e4:"トーク",e5:"アフレコ",e6:"寸劇",
+    t1:"無言・実演",t2:"アフレコ",t3:"無言・実演",t4:"アフレコ",t5:"アフレコ",t6:"無言・実演",
+    tk1:"トーク",tk2:"トーク",tk3:"トーク",tk4:"トーク",vo1:"アフレコ",vo2:"アフレコ"
+  };
+  var STYLES=["トーク","アフレコ","寸劇","無言・実演"];
   var FORMATS=[
     {id:"c1",genre:"cooking",name:"手元のみPOV・無言ASMR調理",
      kind:"手元だけを固定俯瞰で写し、1動作1カット＋環境音強調・テロップ最小。冒頭は「手が動作を始める瞬間」でフック。",
@@ -390,7 +407,38 @@
      kind:"完成した美しいノートをチラ見せ→「作り方」予告→俯瞰で白紙から書き進める→色分け・見出しの構造化→完成全景で保存促す。",
      ai:"「白紙が、AIとの協働で設計書/議事録に育つ過程」を俯瞰ライティング。手で考える×AIで整えるのハイブリッド。",
      shoot:"中",edit:"中",prio:"低",idea:0,
-     embed:{url:"https://www.youtube.com/shorts/5IukkmuNTW0",platform:"youtube_shorts",verified:"true",title:"Aesthetic Study Notes（ノート術・Short）"}}
+     embed:{url:"https://www.youtube.com/shorts/5IukkmuNTW0",platform:"youtube_shorts",verified:"true",title:"Aesthetic Study Notes（ノート術・Short）"}},
+
+    {id:"tk1",genre:"talk",name:"結論ファースト・1テーマのトーク解説",
+     kind:"カメラに語りかけるトーキングヘッド。冒頭で結論を断言→根拠を1〜3点→b-rollや字幕で補強→最後にCTA。1本=1メッセージ。",
+     ai:"「議事録は“録音→AIで90秒”が正解」と結論先出し→手順を3点で語る→画面を一瞬差し込み→「保存して試して」。顔出しで信頼を作る王道。",
+     shoot:"中",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/Fz3FnH3IaOA",platform:"youtube_shorts",verified:"true",title:"Feel-Good Productivity / Ali Abdaal（結論先出しトーク）"}},
+    {id:"tk2",genre:"talk",name:"ホットテイク・逆張りトーク",
+     kind:"「〇〇するの、もうやめて」と断言する意見・逆張りトーキングヘッド。常識を否定→理由→代替案→賛否を呼ぶCTA。",
+     ai:"「“便利なAIツール探し”もうやめて」と逆張り→「大事なのはツールでなく業務の切り出し方」→1例→コメント誘発。意見で記憶に残す。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=dvR0wiRAZO8",platform:"youtube_shorts",verified:"true",title:"The #1 Finance Mistake / Zac Hartley（逆張りトーク）"}},
+    {id:"tk3",genre:"talk",name:"実体験ストーリートーク（storytime）",
+     kind:"本人がカメラに「〇〇した話」を語る体験談。掴み（結末/転機）→経緯→学び→視聴者への一言。感情と一次体験が武器。",
+     ai:"「AIで残業を月40時間消した話」を本人が語る→最初の失敗→転機の使い方→学び。クライアント事例の自分語り化にも。",
+     shoot:"低",edit:"低",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=4anxopI3smY",platform:"youtube",verified:"true",title:"I Quit My Job at 40 / Natasha Theresa（storytime）"}},
+    {id:"tk4",genre:"talk",name:"2人対談・ポッドキャストクリップ",
+     kind:"2人が喋るポッドキャストの切り抜き。一番おいしい発言を冒頭に→掛け合いで展開→字幕必須→30〜60秒で1トピック。",
+     ai:"同僚/専門家と「AIで実際どう変わった?」を対談→刺さる一言を冒頭に切り抜き→字幕。1回の収録から複数本量産できる。",
+     shoot:"中",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/7cFF0dhsmaw",platform:"youtube_shorts",verified:"true",title:"Diary of a CEO 切り抜き（対談クリップ）"}},
+    {id:"vo1",genre:"talk",name:"アフレコ・ハウツー実況（画面/手元＋ナレ）",
+     kind:"顔出しせず、画面録画や手元映像にボイスオーバーで手順を実況。「こうやってる」を声で導線づけ、テロップで要点。",
+     ai:"「自分のメール処理、こうやってます」と画面にナレ→AIに貼る→整える→送る。顔出し不要で量産しやすい王道アフレコ。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/rIjgvIuCCp8",platform:"youtube_shorts",verified:"true",title:"Notionで経費管理 / Easlo（VOハウツー）"}},
+    {id:"vo2",genre:"talk",name:"アフレコ・b-roll語り（顔出さずナレ＋映像）",
+     kind:"顔を出さず、ナレーション＋b-roll/ストック映像で語る。物語や解説をVOで進め、映像はムード作り。faceless運用に最適。",
+     ai:"「AIに仕事を任せる人と任せない人の差」をナレ＋オフィスb-rollで語る→具体例→結論。顔出しせず世界観で見せる。",
+     shoot:"低",edit:"高",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/7NfpuqIUDjA",platform:"youtube_shorts",verified:"true",title:"Faceless ナレ＋b-roll（Stoic Mindset）"}}
   ];
 
   /* ---------------- render helpers ---------------- */
@@ -426,9 +474,11 @@
   /* formats */
   var PRIOW={"高":3,"中":2,"低":1};
   var activeGenre="all";
+  var activeStyle="all";
   var listEl=document.getElementById("fmt-list");
   var fcountEl=document.getElementById("fcount");
   var chipsEl=document.getElementById("genre-chips");
+  var styleChipsEl=document.getElementById("style-chips");
 
   function ytId(u){var m=u.match(/(?:v=|\/shorts\/|youtu\.be\/|\/embed\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:"";}
   function ttId(u){var m=u.match(/\/video\/(\d+)/);return m?m[1]:"";}
@@ -467,7 +517,8 @@
     var src=f.embed&&f.embed.title?'<span class="src">例: '+esc(f.embed.title)+'</span>':"";
     var openA=f.embed&&f.embed.url?'<a href="'+esc(f.embed.url)+'" target="_blank" rel="noopener">別タブで開く ↗</a>':"";
     return '<li class="fmt-card" data-genre="'+f.genre+'" data-prio="'+f.prio+'">'+
-      '<div class="fmt-head"><span class="gchip g-'+f.genre+'">'+esc(GLABEL[f.genre])+'</span>'+
+      '<div class="fmt-head"><span class="schip">🎬 '+esc(STYLE_MAP[f.id])+'</span>'+
+        '<span class="gchip g-'+f.genre+'">'+esc(GLABEL[f.genre])+'</span>'+
         '<span class="prio '+pcls+'">優先度 '+f.prio+'</span>'+idea+'</div>'+
       '<h3>'+esc(f.name)+'</h3>'+
       '<p class="fmt-kind">'+esc(f.kind)+'</p>'+
@@ -482,12 +533,14 @@
   }
 
   function renderFormats(){
-    var items=FORMATS.filter(function(f){return activeGenre==="all"||f.genre===activeGenre;});
+    var items=FORMATS.filter(function(f){
+      return (activeGenre==="all"||f.genre===activeGenre) && (activeStyle==="all"||STYLE_MAP[f.id]===activeStyle);
+    });
     items.sort(function(a,b){
       var d=PRIOW[b.prio]-PRIOW[a.prio]; if(d)return d;
       return a.id<b.id?-1:1;
     });
-    listEl.innerHTML=items.map(cardHtml).join("");
+    listEl.innerHTML=items.length?items.map(cardHtml).join(""):'<li class="embed-none" style="aspect-ratio:auto;padding:1.4rem">この組み合わせに該当する型はありません。</li>';
     fcountEl.textContent=items.length+" 型を表示（全 "+FORMATS.length+" 型）・優先度の高い順";
   }
   function renderChips(){
@@ -497,16 +550,26 @@
       return '<button class="chip" type="button" data-genre="'+c.id+'" aria-pressed="'+(activeGenre===c.id?"true":"false")+'">'+esc(c.label)+'</button>';
     }).join("");
   }
+  function renderStyleChips(){
+    var chips=[{id:"all",label:"すべて"}].concat(STYLES.map(function(s){return {id:s,label:s};}));
+    styleChipsEl.innerHTML=chips.map(function(c){
+      return '<button class="chip" type="button" data-style="'+esc(c.id)+'" aria-pressed="'+(activeStyle===c.id?"true":"false")+'">'+esc(c.label)+'</button>';
+    }).join("");
+  }
   chipsEl.addEventListener("click",function(ev){
     var b=ev.target.closest("[data-genre]");if(!b)return;
     activeGenre=b.getAttribute("data-genre");renderChips();renderFormats();
+  });
+  styleChipsEl.addEventListener("click",function(ev){
+    var b=ev.target.closest("[data-style]");if(!b)return;
+    activeStyle=b.getAttribute("data-style");renderStyleChips();renderFormats();
   });
   document.addEventListener("click",function(ev){
     var btn=ev.target.closest(".embed-facade");if(!btn)return;
     var e=JSON.parse(decodeURIComponent(btn.getAttribute("data-embed")));
     injectEmbed(btn.closest(".embed-wrap"),e);
   });
-  renderChips();renderFormats();
+  renderStyleChips();renderChips();renderFormats();
   </script>
 </body>
 </html>
