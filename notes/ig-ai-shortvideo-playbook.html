@@ -74,6 +74,9 @@
     .g-tips{color:#9ee6e0;background:rgba(90,214,200,.14)}
     .g-talk{color:#d7c0ff;background:rgba(170,130,255,.15)}
     .schip{font-size:.72rem;font-weight:700;border-radius:999px;padding:.14rem .5rem;color:var(--accent-2);border:1px solid rgba(242,201,76,.4);background:rgba(242,201,76,.08)}
+    .rchip{font-size:.72rem;font-weight:700;border-radius:999px;padding:.14rem .5rem}
+    .r-jp{color:#ff9eb0;background:rgba(255,90,120,.15)}
+    .r-ov{color:#9ee6e0;background:rgba(90,214,200,.12)}
     .prio{font-size:.74rem;font-weight:700;border-radius:999px;padding:.16rem .55rem}
     .p-high{color:#0b0f14;background:var(--accent)}
     .p-mid{color:var(--info);background:rgba(119,170,255,.16)}
@@ -127,7 +130,7 @@
         <span class="pill">📅 2026-06-26</span>
         <span class="pill">🎯 業務活用＋便利な日常活用（副業/稼ぐ系は除外）</span>
         <span class="pill">🌏 海外IG・Xトレンド発のネタ</span>
-        <span class="pill">🎬 トーク/アフレコ/寸劇/無言 計39フォーマット</span>
+        <span class="pill">🎬 計63フォーマット（🌏海外39＋🇯🇵日本24）</span>
       </div>
       <div class="tldr">
         <b>勝ち筋：「海外で実証済みの業務AIネタ」×「他ジャンルの完成された型」の掛け算。</b>
@@ -152,14 +155,15 @@
     </div>
 
     <!-- ============ フォーマット ============ -->
-    <h2>2. フォーマット集（演者スタイル×他ジャンル・39型）</h2>
+    <h2>2. フォーマット集（地域×演者スタイル×他ジャンル・63型）</h2>
     <div class="legend">
       各カードに <b>🎬演者スタイル</b>・<b>どんなフォーマットか</b>・<b>AI業務への落とし込み</b>・<b>撮影/編集工数</b>・<b>優先度</b>・<b>参考ショート動画（タップで再生）</b> を収録。
-      <b>演者スタイル</b>と<b>元ジャンル</b>の2軸で絞り込めます（例: 「トーク」だけ、「料理」だけ）。<b>トーク／アフレコ系6型</b>を追加済み。
+      <b>地域（日本/海外）</b>・<b>演者スタイル</b>・<b>元ジャンル</b>の3軸で絞り込めます。フォーマットは海外39型に加え、<b>日本の他ジャンル発24型</b>（リュウジ式断言・ゆっくり解説・本要約漫画・スカッと漫画・2chスレ・マコなり式TOP3・切り抜き 等）を追加済み。
       工数色＝<i class="lv-l">低</i>/<i class="lv-m">中</i>/<i class="lv-h">高</i>。
       <span class="vchip v-true">確認済</span>＝動画の実在をoEmbed等で確認、<span class="vchip v-partial">部分</span>＝URL形式は正しいが直接確認不可（TikTok/IG）。
     </div>
     <div class="controls">
+      <div class="chip-group"><span class="cg-label">地域（日本/海外）</span><div class="chips" id="region-chips"></div></div>
       <div class="chip-group"><span class="cg-label">演者スタイル（トーク/アフレコ/寸劇/無言）</span><div class="chips" id="style-chips"></div></div>
       <div class="chip-group"><span class="cg-label">元ジャンル</span><div class="chips" id="genre-chips"></div></div>
       <p class="fcount" id="fcount"></p>
@@ -438,7 +442,129 @@
      kind:"顔を出さず、ナレーション＋b-roll/ストック映像で語る。物語や解説をVOで進め、映像はムード作り。faceless運用に最適。",
      ai:"「AIに仕事を任せる人と任せない人の差」をナレ＋オフィスb-rollで語る→具体例→結論。顔出しせず世界観で見せる。",
      shoot:"低",edit:"高",prio:"中",idea:0,
-     embed:{url:"https://www.youtube.com/shorts/7NfpuqIUDjA",platform:"youtube_shorts",verified:"true",title:"Faceless ナレ＋b-roll（Stoic Mindset）"}}
+     embed:{url:"https://www.youtube.com/shorts/7NfpuqIUDjA",platform:"youtube_shorts",verified:"true",title:"Faceless ナレ＋b-roll（Stoic Mindset）"}},
+
+    /* ===== 日本の他ジャンル発フォーマット（24型・検証済み） ===== */
+    {id:"jp1",region:"日本",genre:"cooking",name:"至高の断言フック型レシピ（リュウジ式）",style:"トーク",
+     kind:"フック(0-3秒)=完成品ドアップ＋強い断言ナレ「肉無しでこんなにうめえのかよ」で常識を覆す宣言。構成=(1)結論先出し『これが至高の◯◯』(2)主役食材1つに絞る理由を一言(3)手元アップで工程を高速テンポ＋効果音(4)隠し味の決めゼリフ(5)完成→一口リアクションで締め。30-50秒、テロップは強調ワードのみ大きく。断言フック＋1食材集中＋決めゼリフという日本の料理短尺の王道。",
+     ai:"『至高の◯◯（議事録/メール返信/リサーチ）』として完成アウトプットを先に画面に出し『これ手作業でやってた人、もう戻れません』と断言フックで入る。主役を1ツール・1プロンプトに絞り、手元アップ＝画面録画の高速早送り。隠し味＝プロンプトの決め一文（例:『箇条書きで、語尾は体言止め』）を決めゼリフ化。最後に生成結果へのリアクションで締める。1動画1タスク厳守。",
+     shoot:"中",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=W0-Ciq9LWUY",platform:"youtube_shorts",verified:"true",title:"例: 料理研究家リュウジのバズレシピ"}},
+    {id:"jp2",region:"日本",genre:"cooking",name:"「知らなきゃ損」3選・裏ワザ列挙型（テロップ駆動）",style:"無言・実演",
+     kind:"フック(0-3秒)=『知らなきゃ損』『考えた人、天才』など強テロップ＋手元で一瞬の意外な動作で『え、それでいいの?』を作る。構成=(1)番号付きで『裏技3選』と本数を宣言(2)1つ目をビフォー(面倒)→アフター(一瞬)で対比(3)同テンポで2,3つ目を畳みかけ(4)『全部やってみて』で保存促し。声なし・BGM＋大テロップで完結、各技10秒前後。",
+     ai:"『知らなきゃ損なChatGPT時短3選』として各技をビフォー(手作業の面倒)→アフター(AIで一瞬)の対比画面録画で。番号宣言で離脱を防ぎ1本に3つ詰めて『保存版』感を出す。声を入れず大テロップで進めるので顔出し不要・量産しやすい。締めは『全部試して→保存』で保存数(=おすすめ流入)を狙う。",
+     shoot:"低",edit:"高",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=B4fsPqy5N0g",platform:"youtube_shorts",verified:"true",title:"例: Tasty Japan"}},
+    {id:"jp3",region:"日本",genre:"cooking",name:"無言・音ASMR没入型（手元＋調理音のみ）",style:"無言・実演",
+     kind:"フック(0-3秒)=包丁/油/水の生活音＋手元クローズアップだけで『何ができるんだろう』と引き込む。構成=(1)語りゼロ、調理音(切る・焼く・注ぐ)を主役に(2)落ち着いた一定テンポで工程を淡々と(3)テロップは材料・分量を最小限(4)盛り付け→湯気/シズルで余韻。声・BGMを削り、音と映像の心地よさで最後まで見せる。",
+     ai:"喧しい解説系が多いジャンルで『無言でAIが資料を作る様子』を画面録画＋キー音/通知音のASMR的演出で淡々と流す逆張り。テロップで使用ツール名・所要時間だけ提示し解説しない『作業の心地よさ』で没入。落ち着いた世界観＝ブランディングになり、深夜帯・ながら見層に刺さる。1工程=1カットで反復制作しやすい。",
+     shoot:"高",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=NtJjIqTAqBs",platform:"youtube",verified:"true",title:"例: yuki cramped room - くらんぷとるーむ -"}},
+    {id:"jp4",region:"日本",genre:"cooking",name:"数字制約チャレンジ・まとめ献立型（ナレーション）",style:"アフレコ",
+     kind:"フック(0-3秒)=『3日間で1,500円以内』など具体的数値制約を提示し『本当に足りる?』の興味を喚起。構成=(1)制約条件と達成目標を明示(2)買い物→各メニューをナレで紹介(3)1品ごとに金額/時間を小テロップで可視化(4)合計を最後に集計『達成』で安心。顔出さず声＋手元映像、複数品まとめで保存価値を出す。",
+     ai:"『1時間で◯件のメール、AIだけで返してみた』『無料ツールだけで資料3本』など数値制約チャレンジに転用。冒頭で制約(時間/金額/件数)を宣言し達成過程をナレで実況、各ステップに所要時間/コストの小テロップを重ねて可視化、最後に合計集計『達成』で締めると検証コンテンツとして強い。複数事例まとめ＝保存・リスト追加を誘発。",
+     shoot:"中",edit:"高",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=ra-GiXAqfQs",platform:"youtube",verified:"true",title:"例: macaroni | マカロニ"}},
+    {id:"jp5",region:"日本",genre:"fitness",name:"超ポジティブ全肯定ワンフレーズ実演（きんに君式）",style:"アフレコ",
+     kind:"フック(0-3秒)=開口一番の決めゼリフ＋『1日30秒で脂肪燃焼!』と効果を秒で宣言。構成=(1)キメ顔/挨拶で掴む(2)『今日はコレだけ』と種目を1つに絞る(3)膝つき等の初心者配慮で実演(4)『これでいいんです、ハイ完璧!』と全肯定で締め。終始ハイテンションと全肯定で『キツくない・続けられる』を演出。",
+     ai:"『1日◯分で◯◯が終わる』の超ポジティブ全肯定で。超ハイテンションで掴み→『今日はコレだけ、文字起こしをChatGPTに貼るだけ!』と1アクションに絞り→画面で1回やって見せ→『これで30秒、ハイ完璧です!』と全肯定で締め。難しさを排除し『あなたでもできる』を声のテンションで担保。AIワザは1動画1個に限定。",
+     shoot:"中",edit:"低",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=S078Fl4Gdb0",platform:"youtube",verified:"true",title:"例: なかやまきんに君（引用元:日曜日の初耳学【公式】）"}},
+    {id:"jp6",region:"日本",genre:"fitness",name:"一緒にやろう型『◯分チャレンジ』伴走実演（やせるダンス）",style:"無言・実演",
+     kind:"フック(0-3秒)=『地獄の11分!飛ばない脂肪燃焼ダンス!』と所要時間＋効果＋制約(マンションOK/飛ばない)を即提示し『今すぐ一緒に』感を作る。構成=(1)所要時間と『◯◯でもOK』の制約解除を宣言(2)カウントとお手本で視聴者を巻き込み(3)『あと半分!』等の寄り添い声かけで離脱防止(4)やり切った達成感で締め。視聴者が同時実行する設計。",
+     ai:"『5分チャレンジ:今からあなたのメール返信を一緒にAIで片付けます』とタイトルコール→画面に手順を映し『まずここに貼って…はい次!』とカウント式に視聴者の手を動かさせ→『あと2ステップ!』と寄り添い→『はい完了、お疲れさま!』。視聴でなく“同時に手を動かす”体験にするのが宅トレ型の強み。『PC1台でOK』等の制約解除コピーも有効。",
+     shoot:"中",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=KxzZJwmB8qc",platform:"youtube",verified:"true",title:"例: 竹脇まりな（Marina Takewaki）"}},
+    {id:"jp7",region:"日本",genre:"fitness",name:"正解 vs NG フォーム『2分割比較』解説",style:"トーク",
+     kind:"フック(0-3秒)=『そのやり方、効いてません』系の断定で不安を刺激し『正しいのはコレ』と即提示。構成=(1)ありがちなNG動作を先に見せ『これやってない?』と当事者化(2)何がダメか1点に絞って理由(3)正しいフォームを実演し違いを対比(4)『これだけ意識すればOK』とワンポイントで締め。NG→理由→正解の3点比較が型。",
+     ai:"『そのChatGPTプロンプト、損してます』と断定フック→『◯◯して、で丸投げ』のNG例を先に見せ→『AIは前提を知らないからズレる』と理由を1点→『役割・前提・出力形式を足すだけ』と正しい型を実演対比→『これだけでOK』で締め。1動画1ミス＝1改善に絞ると刺さる。",
+     shoot:"中",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=HhQqQhftRBo",platform:"youtube",verified:"true",title:"例: MELOS -メロス-"}},
+    {id:"jp8",region:"日本",genre:"fitness",name:"ビフォーアフター数値フック『◯kg→◯kg』訴求",style:"無言・実演",
+     kind:"フック(0-3秒)=冒頭テロップで『71kg→56kg』『1時間歩くより痩せる』と具体数値＋誇張比較を真っ先に提示し『何それ知りたい』を発火。構成=(1)数値ビフォーアフター＋意外な比較を冒頭で(2)『たったコレだけ』と方法を1つ(3)実演で再現性を示す(4)『勝手に痩せる体に』と継続便益で締め。数字を最初に置くのが命。",
+     ai:"『作業3時間→15分。手作業より速いAI整理術』とサムネ数値フック→『やることはコレだけ』と1手法に絞り→画面で実演し再現性を担保→『これで毎週2時間浮く体質に』と継続便益で締め。盛りすぎ・嘘の数値は厳禁、実測ベースのbefore→after数字を最初の1秒に置くと視聴維持が伸びる。",
+     shoot:"低",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=tcHCChqogx8",platform:"youtube",verified:"true",title:"例: 整体院 文-AYA-文野靖友"}},
+    {id:"jp9",region:"日本",genre:"finance",name:"失敗あるある逆算型（NG行動◯選の切り抜きトーク）",style:"トーク",
+     kind:"フック(0-3秒)=『これやってる人、一生お金貯まりません』など断定＋否定で危機感を煽り指を止めさせる。構成=(1)結論を冒頭で言い切る『不幸になるお金の使い方◯選』(2)1項目ずつあるあるNG行動を短文テロップ＋語りでテンポよく列挙(3)各項目に一言の理由/正解(4)『1つでも当てはまったら見直そう』で行動喚起。長尺ライブの刺さる1分を縦型に切り抜く。",
+     ai:"『これやってるとAIに仕事奪われます』『時間をドブに捨てるAIの使い方◯選』のNG列挙型に。コピペ依存/プロンプト丸投げ/出力を検証しない/無料版で消耗を1つずつ斬り、各々に正しいやり方を1行添える。自分の長尺解説ライブやセミナーから刺さる60秒を切り抜く運用が相性◎。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=l-MRGPGeNVg",platform:"youtube",verified:"true",title:"例: 両学長 リベラルアーツ大学"}},
+    {id:"jp10",region:"日本",genre:"finance",name:"やめたら得した引き算リスト型（◯選の逆説的節約）",style:"トーク",
+     kind:"フック(0-3秒)=『これ\"やめた\"だけで5000万貯まりました』と\"やらないこと\"の逆説で好奇心を刺激。構成=(1)実績数字＋『やめたら節約になったこと◯選』を宣言(2)世間の常識(保険/サブスク/付き合い)を1つずつ\"やめた理由\"とセットで(3)各項目はテロップ見出し＋短い語りでテンポ維持(4)『足すより引くが最強』でまとめ。引き算フレームが新鮮。",
+     ai:"『AI導入で\"やめた\"作業◯選』の引き算型に。手動コピペ/議事録の手打ち/毎回ゼロから書く/全部自分で調べる、を\"やめた→AIに任せた\"理由付きで列挙。\"何を足すか\"より\"何をやめられるか\"で語ると、ツール紹介より行動変容として刺さる。各項目は見出しテロップで一覧性を担保。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=n8wbzky3Ohs",platform:"youtube",verified:"true",title:"例: 倹者の流儀"}},
+    {id:"jp11",region:"日本",genre:"finance",name:"専門家ニュース解説型（◯◯はおかしい！と斬る切り抜き）",style:"トーク",
+     kind:"フック(0-3秒)=『年収1000万以下は所得税ゼロ!?それ、むちゃくちゃな政策ですよ』と時事ネタ＋専門家の断定的ツッコミで立ち止まらせる。構成=(1)旬のニュース/制度を一言で提示(2)専門家(税理士)が『それ実はこういうこと』と噛み砕き＋私見をズバッと(3)身近な例で影響を翻訳(4)『だから今こう動くべき』で結論。資格保有者の顔出しトーク切り抜き。",
+     ai:"『この新AI、業務で使うとここがヤバい』『◯◯規制で仕事こう変わる』の専門家ニュース解説型に。最新モデル/法改正/新機能を旬ネタに取り上げ\"自分の業務にどう効くか\"を断定気味に翻訳。中立解説より『私はこう見る』の私見を入れると人格が立ちフォロー動機になる。発信者の専門性が信頼の土台。",
+     shoot:"低",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=x3Arf_D754k",platform:"youtube",verified:"true",title:"例: 大河内薫 / お金の教育"}},
+    {id:"jp12",region:"日本",genre:"finance",name:"アニメ・図解アフレコ型（顔出しなし・声＋図で初級解説）",style:"アフレコ",
+     kind:"フック(0-3秒)=『支出の固定費を下げれば人生が身軽になる』と得する原理を一言提示し、アニメキャラ＋図解で続きを見せる。構成=(1)テーマを一文で提示(2)用語を図解＋やさしいナレで定義(3)具体項目(通信/保険/家賃)を1つずつ図で可視化(4)『まず固定費から見直そう』で行動提案。顔出し不要・声＋アニメ/図解で初心者に噛み砕く。",
+     ai:"『AIで業務効率化の基本』『プロンプトの型を図解』など顔出し不要のアニメ・図解アフレコ型に。専門用語を図で定義→具体例を可視化→最初の一歩、の順で初心者向けに。撮影不要で量産しやすく、声＋スライド/簡易アニメだけで成立。AI入門解説と相性が極めて良い。",
+     shoot:"低",edit:"高",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=HLOp9KTK7tw",platform:"youtube",verified:"true",title:"例: 両学長 リベラルアーツ大学"}},
+    {id:"jp13",region:"日本",genre:"comedy",name:"上司×部下のドッキリ合戦型（オフィス2人芝居）",style:"寸劇",
+     kind:"フック(0-3秒)=真面目なリモート会議の絵で『この後とんでもないことに』とテロップ→いきなり異常な状況(背景がガチの絶景等)。構成=(1)日常的な業務シーンで油断させる(2)片方が密かに仕掛けを起動(3)『気付くか?』のサスペンスでテロップ煽り(4)相手のリアクションでオチ(5)二人の関係性が見える一言で締め。固定カメラ+大きめテロップ、会社あるある×ドッキリ。",
+     ai:"『上司=AIを知らない人』『部下=AIをこっそり使う人』の2人芝居に。(1)普通の会議/資料作成で油断(2)部下が裏でAI(議事録自動化・要約・スライド生成)を仕掛ける(3)『上司は気付くか?』と煽り(4)上司が成果物の速さ/精度に驚くオチ(5)『実はAIでした』のネタばらしでツール名提示。ドッキリの体裁で効率化を共感ネタに。『次は経費精算をAIで…』と無限展開可。",
+     shoot:"高",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=sBtNN7eP1Lo",platform:"youtube",verified:"true",title:"例: けーさんとたろー"}},
+    {id:"jp14",region:"日本",genre:"comedy",name:"ナレーション主導のあるある再現劇型",style:"アフレコ",
+     kind:"フック(0-3秒)=状況説明ナレ『放課後の教室にて』等＋共感テロップを被せ、芝居は最小限から開始。構成=(1)ナレーターが状況と人物を一言で説明(2)あるある場面を演者が再現しナレが心の声/ツッコミを補完(3)細かすぎる『分かる』描写で共感を積む(4)ナレのキレたツッコミでオチ(5)『#あるある』で締め。声(ナレ)が主、映像が従の日本的アフレコ寸劇。",
+     ai:"ナレを『AIあるある実況』に。映像は社員がPCに向かう淡々とした再現、ナレが『はい出ました、ChatGPTにそのままコピペして上司に提出する人〜』と心の声でツッコむ。状況説明ナレ→AI活用/誤用シーン再現→『分かる』細部(丸投げ・未確認)を積む→ツッコミで教訓をオチ化→正しい一手を添える。アフレコ主導で顔出し負担が低く量産でき、教育色を笑いで中和。",
+     shoot:"低",edit:"高",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/BLZgXmJ8QAU",platform:"youtube_shorts",verified:"true",title:"例: テセサクch"}},
+    {id:"jp15",region:"日本",genre:"comedy",name:"職種あるある寸劇型（現場再現一人二役）",style:"寸劇",
+     kind:"フック(0-3秒)=職場テロップ(例『居酒屋バイトあるある』)＋いきなり濃いキャラのセリフから入る。構成=(1)特定職種・現場を宣言(2)現場特有の『困った人』と『耐える側』を一人二役で演じる(3)経験者だけ分かる固有ディテールで共感(4)耐える側の小さな反撃/本音でオチ(5)無言締め。15-30秒、職種特化×あるあるが刺さる。",
+     ai:"『職種別AI活用あるある』に。営業・経理・人事など職種を宣言し『AIを使いこなす人』vs『手作業で消耗する人』を一人二役で対比。例『経理あるある』=Excelを手で延々集計する先輩 vs AIで一瞬の後輩。職種宣言→演じ分け→職種固有の地味な苦行ディテールで共感→AI側のドヤ/楽勝オチ→ツール/プロンプトを一言。職種ごとに横展開しやすい。",
+     shoot:"中",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/nv00JkXCpCk",platform:"youtube_shorts",verified:"true",title:"例: バイトな日常"}},
+    {id:"jp16",region:"日本",genre:"comedy",name:"死亡フラグ回避ミニアニメ（フラグ寸劇型）",style:"寸劇",
+     kind:"フック(0-3秒)=キャラが何気ない一言を発した瞬間『立ちました！○○フラグです！』のお決まりコールで状況反転、何のフラグかを2秒で提示。構成=(1)平凡な状況設定(2)誰もがやりがちな行動/発言=フラグ宣言(3)回避しようと足掻く(4)ベタな結末orひねりオチ(5)決めゼリフで締め。テンポ良い短尺アニメ＋ボケツッコミ会話劇という日本独自型。",
+     ai:"『AI業務あるある“やりがちNGフラグ”』を寸劇化。『この程度ならAIに丸投げで大丈夫っしょ』→『立ちました！誤情報そのまま提出フラグです！』のように、プロンプト丸投げ・ファクト未確認・社外秘貼付け等の失敗フラグをキャラ会話で。回避法(検証/確認プロンプト)をオチで提示すれば笑い＋実用Tipsが両立。シリーズ化でキャラ資産も作れる。",
+     shoot:"低",edit:"高",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=ZYrkCqENSdE",platform:"youtube_shorts",verified:"true",title:"例: 全力回避フラグちゃん! / Flag Chan!"}},
+    {id:"jp17",region:"日本",genre:"education",name:"漫画キャラ対話で本要約（フェルミ漫画大学式）",style:"アフレコ",
+     kind:"フック(0-3秒)=漫画作画＋『【要約】人を動かす』のタイトルテロップで本のベネフィットを即提示。構成=(1)先生キャラと生徒キャラの掛け合いで悩み提起(2)『この本によると〜』と要点を吹き出し＋ナレで解説(3)生徒が素朴な疑問・ボケで視聴者を代弁(4)具体例を漫画シーンで再現(5)『つまり〜』で1行に集約。顔出し不要・テロップ駆動・対話でテンポを作る日本独自の漫画動画型。",
+     ai:"『AIで資料作成が10倍速くなる技』を題材に先生キャラと『AI苦手な会社員』キャラの対話劇に。生徒役『プロンプトって何書けばいいの?』→先生役が実プロンプトを吹き出し表示。実作業画面(ChatGPT等)を漫画コマ風に挟みビフォーアフターを再現。合成音声でOKなので顔出し不要・量産しやすく、対話形式で初心者の疑問を先回りして潰すのがAI解説と相性抜群。",
+     shoot:"低",edit:"高",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=8a4urd5MPeI",platform:"youtube",verified:"true",title:"例: フェルミ漫画大学"}},
+    {id:"jp18",region:"日本",genre:"education",name:"ゆっくり/ずんだもん雑学ショート",style:"アフレコ",
+     kind:"フック(0-3秒)=『実は175年間誰もが勘違いを信じてた』と常識を覆す一文＋ゆっくりボイスで冒頭1秒に最大の意外性。構成=(1)衝撃の事実/問いを断言(2)『でも本当は〜』と通説を否定(3)ゆっくりキャラ(霊夢・魔理沙/ずんだもん)の掛け合いで理由を段階解説(4)図解・テロップで数字や仕組みを補強(5)『というわけで〜』のオチ。合成音声＋ゆっくり立ち絵＋大量テロップで縦型60秒に圧縮する日本独自型。",
+     ai:"『実は9割が知らないAIの裏ワザ』形式で冒頭に『そのコピペ、AIに1秒でやらせられます』と常識破りの一撃。ずんだもん/ゆっくり2キャラの掛け合いで『なんでできるの?』『プロンプトに〇〇足すだけ』と段階解説。画面はAI操作のスクショ＋矢印テロップで図解。VOICEVOX等の合成音声で顔出し不要、テロップ駆動で1日複数本量産でき毎日投稿でアルゴリズムに乗せやすい。",
+     shoot:"低",edit:"高",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=lw42KPdyxhw",platform:"youtube_shorts",verified:"true",title:"例: 化け学のふしぎ【ゆっくり解説】"}},
+    {id:"jp19",region:"日本",genre:"education",name:"テロップ駆動の本要約サクッとショート",style:"無言・実演",
+     kind:"フック(0-3秒)=『とにかくメンタル強くしたいんですが、どうしたらいいですか?』と視聴者の悩みを疑問文でそのまま提示し自分ごと化。構成=(1)悩み・問いを大テロップで提示(2)本の結論を1枚で即回答(3)根拠/方法を3点に絞りテロップを高速切り替え(4)図やキーワードを強調(5)『詳しくは本で』で締め。BGM＋テロップ主体でナレ最小、縦型30〜60秒に圧縮。制作コスト最小の無言テロップ型。",
+     ai:"『AIにメール代筆させたいんですが、どうしたらいいですか?』と業務の悩みを疑問文フックに。1枚目で結論(このプロンプトで一発)を即回答→根拠・手順を3点に絞りテロップを高速切り替え→AI画面のキーワードを強調→『詳しくは概要欄』で締め。録音・撮影が最小でスマホ1台量産可。1悩み1動画で大量シリーズ化でき検索・保存されやすい。AI Tips発信の入口に最適。",
+     shoot:"低",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=MA1ieTcvMp4",platform:"youtube_shorts",verified:"true",title:"例: サクッと要約チャンネル"}},
+    {id:"jp20",region:"日本",genre:"tips",name:"スカッと漫画動画（ストーリー漫画ナレーション型）",style:"アフレコ",
+     kind:"フック(0-3秒)=いきなり修羅場の一枚絵＋強い一言テロップ『義母「あなたなんて家政婦以下よw」』を読み上げ被害状況を即提示し『この後、衝撃の展開が…』で引き込む。構成=(1)理不尽な悪役の攻撃(2)主人公が我慢する谷(3)伏線=実は隠れた立場/証拠(4)一発逆転の反撃(5)悪役の自滅オチで読後スッキリ。静止漫画コマ＋合成音声/声優ナレ＋効果音＋テロップで進行する日本独自型。",
+     ai:"『AIを舐めていた上司/同僚が手作業に固執→主人公がAIで一発逆転』のスカッと型に。残業を押し付ける先輩に対し議事録・資料作成をAIで5分で終え定時退社→先輩が深夜まで手打ち、というオチ。悪役=非効率を強要する人、伏線=主人公が裏でAIワークフローを構築済み、逆転=Before/After時間比較を数字で。1動画1業務(議事録/Excel関数/メール返信)に絞ると刺さる。",
+     shoot:"低",edit:"高",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=o9gupbCkSmU",platform:"youtube",verified:"true",title:"例: エトラちゃんは見た!"}},
+    {id:"jp21",region:"日本",genre:"tips",name:"2chスレ×実演（掲示板UI・スレ再現型）",style:"アフレコ",
+     kind:"フック(0-3秒)=『ワイ、最高の○○を作る』とスレ主の宣言＋いきなり美味そうな具材/工程のドアップで興味を刺激。構成=(1)スレ主が無謀/こだわりの目標宣言(2)>>レス民の茶々・期待コメントが画面に流れる(3)手元実演を淡々と進行(4)途中の失敗or神工程で盛り上がる(5)完成→『うまそうｗｗ』のスレ反応でオチ。合成音声＋2ch掲示板UIテロップ＋実演映像という日本独自型。",
+     ai:"掲示板スレ形式の様式美を流用し『ワイ、AIで○○を自動化する』スレを実演。スレ主『経費精算をAIで全自動にするわ』→レス民『無理やろｗ』→実際の画面操作を淡々と実演→完成して『有能すぎワロタ』オチ。料理の工程を見せる気持ちよさをAIワークフロー構築の画面録画に置換。掲示板の合いの手テロップが解説を兼ね、堅い業務ネタを軽く見せられる。",
+     shoot:"中",edit:"高",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=MeA-hRg1Dto",platform:"youtube",verified:"true",title:"例: 2ch面白キッチン"}},
+    {id:"jp22",region:"日本",genre:"talk",name:"2ch修羅場/スカッとスレ ゆっくり解説（物語朗読型）",style:"アフレコ",
+     kind:"フック(0-3秒)=タイトルがそのまま強烈なあらすじ『嫁“生活費60万くれ”→お望み通り出て行った結果』＋衝撃の一場面で即引き。構成=(1)登場人物と理不尽な発端を要約提示(2)ゆっくり/合成音声でスレを朗読・キャラ立ち絵で会話劇化(3)スレ民の反応を挟みテンポ調整(4)主人公の反撃/真相(5)因果応報オチ＋『スレ民大爆笑www』。立ち絵＋掲示板風テロップ＋ナレで顔出し不要の日本固有朗読型。",
+     ai:"“物語仕立てで一気に聞かせる”構造をAI導入のビフォーアフター実話に転用。『AI禁止の上司“手作業が一番”→現場が無断でAI使った結果、全社展開された話』を、登場人物・対立・転機・結末の物語フォーマットで朗読。スレ民の合いの手=視聴者の代弁ツッコミとして専門用語を噛み砕く役に。1本=1社/1部署の導入ストーリーで連作化しやすい。",
+     shoot:"低",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=kbLAla041JY",platform:"youtube",verified:"true",title:"例: 2chスカッとムービー"}},
+    {id:"jp23",region:"日本",genre:"talk",name:"1テーマ結論ジャッジ型（賛否を白黒つける）",style:"トーク",
+     kind:"フック(0-3秒)=共感必至のオフィスあるある問い『返信遅いは仕事できない?』を【粉砕】等の強テロップで提示。構成=(1)誰もが迷う二択の問いを冒頭で(2)出演者が即座に立場表明(結論先出し)(3)理由を1〜2個だけ歯切れよく(4)『◯◯or✕✕』とジャッジで締め。短尺特化で1テーマ完結、テロップ駆動で無音視聴対応。",
+     ai:"AI業務活用に最適。『AIに丸投げは手抜き?』『プロンプトは覚えるべき?』など職場の賛否ネタを1本1テーマで量産。冒頭で自分の結論を断言→理由を1つ→『私は◯◯派、理由は再現性』で白黒。週5本の連投がしやすく、コメント欄で賛否が割れて伸びやすい。テロップ強調必須。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=IrHX3S0upHs",platform:"youtube_shorts",verified:"true",title:"例: BLACK or WHITE【公式切り抜き】"}},
+    {id:"jp24",region:"日本",genre:"talk",name:"結論先出しTOP3トーク型（カメラ直話・自己啓発）",style:"トーク",
+     kind:"フック(0-3秒)=断定タイトル『会社で落ちこぼれになる行動TOP3』を読み上げ＋強テロップ。構成=(1)強い言い切りタイトルで結論先出し(2)『重要なことは3つ』と数を予告し『次が気になる』を作る(3)各項目を具体例＋あるあるで(4)シームレスなジャンプカットで離脱を防ぐ。1人カメラ語りで撮影負荷が低い王道型。",
+     ai:"AI業務活用の解説に直結。『仕事が遅い人がAIで損してる使い方TOP3』『無能とバレるプロンプトTOP3』等、ランキング＋断定で。冒頭でTOP3を予告→各項目を実例(毎回ゼロから書く/丸写し/検証しない)で→最後に正解アクション1つ。テロップとジャンプカットで密度を上げると視聴維持率が伸びる。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=Sr-8m0FL0J0",platform:"youtube",verified:"true",title:"例: マコなり社長"}}
   ];
 
   /* ---------------- render helpers ---------------- */
@@ -479,6 +605,10 @@
   var fcountEl=document.getElementById("fcount");
   var chipsEl=document.getElementById("genre-chips");
   var styleChipsEl=document.getElementById("style-chips");
+  var activeRegion="all";
+  var regionChipsEl=document.getElementById("region-chips");
+  function styleOf(f){return f.style||STYLE_MAP[f.id];}
+  function regionOf(f){return f.region||(f.id.indexOf("jp")===0?"日本":"海外");}
 
   function ytId(u){var m=u.match(/(?:v=|\/shorts\/|youtu\.be\/|\/embed\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:"";}
   function ttId(u){var m=u.match(/\/video\/(\d+)/);return m?m[1]:"";}
@@ -517,7 +647,8 @@
     var src=f.embed&&f.embed.title?'<span class="src">例: '+esc(f.embed.title)+'</span>':"";
     var openA=f.embed&&f.embed.url?'<a href="'+esc(f.embed.url)+'" target="_blank" rel="noopener">別タブで開く ↗</a>':"";
     return '<li class="fmt-card" data-genre="'+f.genre+'" data-prio="'+f.prio+'">'+
-      '<div class="fmt-head"><span class="schip">🎬 '+esc(STYLE_MAP[f.id])+'</span>'+
+      '<div class="fmt-head"><span class="rchip '+(regionOf(f)==="日本"?"r-jp":"r-ov")+'">'+(regionOf(f)==="日本"?"🇯🇵 日本":"🌏 海外")+'</span>'+
+        '<span class="schip">🎬 '+esc(styleOf(f))+'</span>'+
         '<span class="gchip g-'+f.genre+'">'+esc(GLABEL[f.genre])+'</span>'+
         '<span class="prio '+pcls+'">優先度 '+f.prio+'</span>'+idea+'</div>'+
       '<h3>'+esc(f.name)+'</h3>'+
@@ -534,7 +665,7 @@
 
   function renderFormats(){
     var items=FORMATS.filter(function(f){
-      return (activeGenre==="all"||f.genre===activeGenre) && (activeStyle==="all"||STYLE_MAP[f.id]===activeStyle);
+      return (activeRegion==="all"||regionOf(f)===activeRegion) && (activeGenre==="all"||f.genre===activeGenre) && (activeStyle==="all"||styleOf(f)===activeStyle);
     });
     items.sort(function(a,b){
       var d=PRIOW[b.prio]-PRIOW[a.prio]; if(d)return d;
@@ -542,6 +673,12 @@
     });
     listEl.innerHTML=items.length?items.map(cardHtml).join(""):'<li class="embed-none" style="aspect-ratio:auto;padding:1.4rem">この組み合わせに該当する型はありません。</li>';
     fcountEl.textContent=items.length+" 型を表示（全 "+FORMATS.length+" 型）・優先度の高い順";
+  }
+  function renderRegionChips(){
+    var chips=[{id:"all",label:"すべて"},{id:"日本",label:"🇯🇵 日本"},{id:"海外",label:"🌏 海外"}];
+    regionChipsEl.innerHTML=chips.map(function(c){
+      return '<button class="chip" type="button" data-region="'+esc(c.id)+'" aria-pressed="'+(activeRegion===c.id?"true":"false")+'">'+esc(c.label)+'</button>';
+    }).join("");
   }
   function renderChips(){
     var chips=[{id:"all",label:"すべて"}];
@@ -556,6 +693,10 @@
       return '<button class="chip" type="button" data-style="'+esc(c.id)+'" aria-pressed="'+(activeStyle===c.id?"true":"false")+'">'+esc(c.label)+'</button>';
     }).join("");
   }
+  regionChipsEl.addEventListener("click",function(ev){
+    var b=ev.target.closest("[data-region]");if(!b)return;
+    activeRegion=b.getAttribute("data-region");renderRegionChips();renderFormats();
+  });
   chipsEl.addEventListener("click",function(ev){
     var b=ev.target.closest("[data-genre]");if(!b)return;
     activeGenre=b.getAttribute("data-genre");renderChips();renderFormats();
@@ -569,7 +710,7 @@
     var e=JSON.parse(decodeURIComponent(btn.getAttribute("data-embed")));
     injectEmbed(btn.closest(".embed-wrap"),e);
   });
-  renderStyleChips();renderChips();renderFormats();
+  renderRegionChips();renderStyleChips();renderChips();renderFormats();
   </script>
 </body>
 </html>
