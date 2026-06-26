@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>AI業務活用 ショート動画 ネタ×フォーマット プレイブック</title>
+  <style>
+    :root{
+      color-scheme: dark;
+      --bg:#0b0f14; --panel:#111821; --panel-2:#162231; --text:#eef4fb; --muted:#a8b6c8;
+      --line:#2b3a4b; --accent:#58d6c2; --accent-2:#f2c94c; --info:#77aaff; --rose:#ff8a8a;
+      --shadow:rgba(0,0,0,.35); --max:1040px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;color:var(--text);line-height:1.7;
+      font-family:"Yu Gothic UI","Meiryo","Hiragino Kaku Gothic ProN",system-ui,sans-serif;
+      background:radial-gradient(circle at top left,rgba(88,214,194,.12),transparent 34rem),
+        linear-gradient(180deg,#0b0f14 0%,#101721 46%,#0b0f14 100%);}
+    a{color:var(--accent)}
+    header,main,footer{width:min(100% - 1.6rem,var(--max));margin:0 auto}
+    .back{display:inline-block;margin:1.4rem 0 .4rem;color:var(--muted);text-decoration:none;font-size:.9rem}
+    .back:hover{color:var(--accent)}
+    .hero{padding:1rem 0 1.4rem}
+    .eyebrow{margin:0 0 .6rem;color:var(--accent);font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    h1{margin:0;font-size:clamp(1.6rem,4.6vw,2.8rem);line-height:1.22}
+    .meta-row{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 0}
+    .pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--line);border-radius:999px;
+      background:rgba(17,24,33,.7);color:var(--muted);font-size:.8rem;padding:.3rem .7rem}
+    .tldr{margin:1.2rem 0 0;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
+      background:linear-gradient(180deg,rgba(22,34,49,.7),rgba(17,24,33,.7));padding:1rem 1.1rem}
+    .tldr b{color:var(--text)}
+    .tldr ul{margin:.5rem 0 0;padding-left:1.2rem;color:var(--muted)}
+    .tldr li{margin:.25rem 0}
+    h2{margin:2.4rem 0 .4rem;font-size:clamp(1.3rem,3.4vw,1.8rem);border-bottom:1px solid var(--line);padding-bottom:.45rem}
+    .sec-note{color:var(--muted);font-size:.9rem;margin:.2rem 0 1rem}
+    h3.cat{margin:1.6rem 0 .5rem;font-size:1.06rem;color:var(--accent)}
+    /* topic tables */
+    .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:rgba(17,24,33,.5)}
+    table{border-collapse:collapse;width:100%;min-width:660px;font-size:.9rem}
+    th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+    th{color:var(--muted);font-weight:700;background:rgba(22,34,49,.7);position:sticky;top:0}
+    td .nm{font-weight:700;color:var(--text)}
+    td a{word-break:break-all}
+    .nov,.conf{white-space:nowrap;font-weight:700;font-size:.8rem;border-radius:999px;padding:.1rem .5rem}
+    .h{color:var(--accent);background:rgba(88,214,194,.14)}
+    .m{color:var(--info);background:rgba(119,170,255,.14)}
+    .l{color:var(--muted);background:rgba(168,182,200,.12)}
+    /* controls */
+    .controls{position:sticky;top:0;z-index:5;padding:.8rem 0;margin:.4rem 0 1rem;
+      background:linear-gradient(180deg,rgba(11,15,20,.96) 70%,rgba(11,15,20,0))}
+    .chips{display:flex;flex-wrap:wrap;gap:.45rem}
+    .chip{border:1px solid var(--line);border-radius:999px;background:rgba(17,24,33,.78);color:var(--muted);
+      font:inherit;font-size:.85rem;line-height:1;padding:.5rem .8rem;cursor:pointer}
+    .chip[aria-pressed="true"]{border-color:var(--accent);color:var(--text);box-shadow:0 0 0 2px rgba(88,214,194,.16)}
+    .chip.toggle[aria-pressed="true"]{border-color:var(--accent-2);box-shadow:0 0 0 2px rgba(242,201,76,.18)}
+    .fcount{color:var(--muted);font-size:.85rem;margin:.6rem 0 0}
+    /* format cards */
+    .fmt-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin:0 0 2rem;padding:0;list-style:none}
+    .fmt-card{border:1px solid var(--line);border-radius:14px;padding:1rem 1.05rem;
+      background:linear-gradient(180deg,rgba(22,34,49,.9),rgba(17,24,33,.92));box-shadow:0 12px 30px var(--shadow);
+      display:flex;flex-direction:column}
+    .fmt-head{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.5rem}
+    .gchip{font-size:.74rem;font-weight:700;border-radius:999px;padding:.16rem .55rem;border:1px solid var(--line)}
+    .g-cooking{color:#ffd9a8;background:rgba(255,170,90,.12)}
+    .g-fitness{color:#a8e6c0;background:rgba(90,220,150,.12)}
+    .g-finance{color:#f2c94c;background:rgba(242,201,76,.13)}
+    .g-comedy{color:#ff9ec4;background:rgba(255,120,180,.13)}
+    .g-education{color:#9ec4ff;background:rgba(120,160,255,.13)}
+    .g-tips{color:#9ee6e0;background:rgba(90,214,200,.14)}
+    .prio{font-size:.74rem;font-weight:700;border-radius:999px;padding:.16rem .55rem}
+    .p-high{color:#0b0f14;background:var(--accent)}
+    .p-mid{color:var(--info);background:rgba(119,170,255,.16)}
+    .p-low{color:var(--muted);background:rgba(168,182,200,.12)}
+    .ideabadge{font-size:.72rem;font-weight:700;color:var(--accent-2);border:1px dashed rgba(242,201,76,.5);border-radius:999px;padding:.14rem .5rem}
+    .fmt-card h3{margin:.1rem 0 .4rem;font-size:1.12rem;line-height:1.35}
+    .fmt-kind{margin:0 0 .6rem;color:var(--muted);font-size:.9rem}
+    .fmt-ai{margin:0 0 .7rem;font-size:.9rem;border-radius:8px;background:rgba(88,214,194,.07);border:1px solid rgba(88,214,194,.18);padding:.5rem .6rem}
+    .fmt-ai .lbl{display:block;color:var(--accent);font-weight:700;font-size:.74rem;margin-bottom:.15rem}
+    .effort-row{display:flex;gap:.5rem;margin:0 0 .7rem}
+    .effort{flex:1;border:1px solid var(--line);border-radius:8px;padding:.4rem .5rem;background:rgba(17,24,33,.5);font-size:.78rem;color:var(--muted);text-align:center}
+    .effort b{display:block;font-size:.72rem;font-weight:600;margin-bottom:.2rem}
+    .effort i{font-style:normal;font-weight:700}
+    .lv-h{color:var(--rose)} .lv-m{color:var(--accent-2)} .lv-l{color:var(--accent)} .lv-n{color:var(--muted)}
+    .embed-wrap{margin:auto 0 .5rem;border-radius:10px;overflow:hidden}
+    .embed-frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden}
+    .embed-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .embed-facade{position:relative;display:flex;align-items:flex-end;justify-content:center;width:100%;aspect-ratio:16/9;
+      border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#0d141d center/cover no-repeat;padding:0;overflow:hidden}
+    .embed-facade::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,15,20,.05),rgba(11,15,20,.78))}
+    .embed-facade .facade-label{position:relative;z-index:1;margin-bottom:.6rem;background:rgba(11,15,20,.78);border:1px solid var(--accent);
+      color:var(--accent);font-weight:700;font-size:.82rem;border-radius:999px;padding:.4rem .8rem}
+    .embed-facade:hover .facade-label{background:var(--accent);color:#0b0f14}
+    .embed-none{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:.85rem}
+    .embed-foot{display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:center;font-size:.78rem;color:var(--muted)}
+    .embed-foot .src{flex:1 1 100%;color:var(--muted)}
+    .embed-foot a{text-decoration:none}
+    .embed-foot a:hover{text-decoration:underline}
+    .vchip{border-radius:999px;padding:.08rem .45rem;font-size:.7rem;font-weight:700}
+    .v-true{color:var(--accent);background:rgba(88,214,194,.14)}
+    .v-partial{color:var(--accent-2);background:rgba(242,201,76,.14)}
+    .legend{border:1px solid var(--line);border-radius:10px;background:rgba(17,24,33,.5);padding:.8rem 1rem;color:var(--muted);font-size:.85rem;margin:0 0 1rem}
+    .legend b{color:var(--text)}
+    .warn{border:1px solid rgba(242,201,76,.4);border-left:3px solid var(--accent-2);border-radius:10px;
+      background:rgba(242,201,76,.06);padding:.8rem 1rem;color:var(--muted);font-size:.86rem;margin:1rem 0}
+    footer{padding:2.5rem 0 3.5rem;color:var(--muted);border-top:1px solid rgba(168,182,200,.14);font-size:.86rem;margin-top:2rem}
+    footer p{margin:.3rem 0}
+    @media(max-width:520px){
+      .fmt-list{grid-template-columns:1fr}
+      .effort-row{flex-direction:row}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="../index.html">← 学習ノート一覧へ</a>
+    <div class="hero">
+      <p class="eyebrow">Instagram short-video playbook</p>
+      <h1>AI業務活用 ショート動画<br>ネタ×フォーマット プレイブック</h1>
+      <div class="meta-row">
+        <span class="pill">📅 2026-06-26</span>
+        <span class="pill">🎯 業務活用＋便利な日常活用（副業/稼ぐ系は除外）</span>
+        <span class="pill">🌏 海外IG・Xトレンド発のネタ</span>
+        <span class="pill">🎬 他ジャンル由来の33フォーマット</span>
+      </div>
+      <div class="tldr">
+        <b>勝ち筋：「海外で実証済みの業務AIネタ」×「他ジャンルの完成された型」の掛け算。</b>
+        <ul>
+          <li>日本のAI発信は「便利ツール5選」「画面録画＋テロップ」に偏在。料理/筋トレ/金融/お笑い/教育/Tipsの型を借りるだけで“絵”が差別化される。</li>
+          <li>量産の柱は<b>手元POV無言ASMR</b>と<b>ノールック工程</b>（声・顔出し不要、倍速・海外に強い）。</li>
+          <li>「便利ツール5選」を捨て<b>失敗あるある添削</b>に振ると専門家ポジションが立つ。</li>
+          <li>最初の3本＝<b>付箋=工数の規模ショック / 現場AI時短突撃 / 上司2役寸劇</b>。</li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ ネタ ============ -->
+    <h2>1. ネタ案カタログ</h2>
+    <p class="sec-note">海外Instagram発で伸びているネタ（A）と、Xでトレンドだが未ショート動画化のネタ（B）。確度は検証結果（高/中/低）。<b>未開拓</b>＝日本での新規性。</p>
+    <div id="topics"></div>
+
+    <div class="warn">
+      ⚠️ <b>ネタ運用の注意</b>：稼ぐ系に寄りやすいアカウント（@imanoubou / @leadgenman / @danmartell）は業務効率化の投稿のみ参照。出典URLの取り違えが一部あり（@copilottips / @mattshumer_ 多角検証 / @minchoi / Crash Course）＝企画化前に正URL再特定。X由来はx.comが直接取得不可のため確度を割り引いて扱う。
+    </div>
+
+    <!-- ============ フォーマット ============ -->
+    <h2>2. フォーマット集（他ジャンル転用・33型）</h2>
+    <div class="legend">
+      各カードに <b>どんなフォーマットか</b>・<b>AI業務への落とし込み</b>・<b>撮影/編集工数</b>・<b>優先度</b>・<b>参考ショート動画（タップで再生）</b> を収録。
+      工数色＝<i class="lv-l">低</i>/<i class="lv-m">中</i>/<i class="lv-h">高</i>。
+      <span class="vchip v-true">確認済</span>＝動画の実在をoEmbed等で確認、<span class="vchip v-partial">部分</span>＝URL形式は正しいが直接確認不可（TikTok/IG）。
+    </div>
+    <div class="controls">
+      <div class="chips" id="genre-chips"></div>
+      <p class="fcount" id="fcount"></p>
+    </div>
+    <ul class="fmt-list" id="fmt-list"></ul>
+
+    <div class="warn">
+      📌 表示の参考動画は「そのフォーマットの本家ジャンルの実例（多くは非AI・海外）」です。AI発信者の模倣ではなく“型”を借りる目的で選定。動画はタップ時のみ読み込まれます（モバイル軽量化）。
+    </div>
+  </main>
+
+  <footer>
+    <p>非公開メモ（検索エンジン除外設定済み）。URLを知っている人だけが閲覧できます。</p>
+    <p>検証済みリサーチ（海外IG/X・他ジャンルのショート動画フォーマット）をもとに作成。最終更新: 2026-06-26</p>
+  </footer>
+
+  <script>
+  /* ---------------- ネタ data ---------------- */
+  var TOPICS = [
+    {cat:"A-1 汎用オフィス業務（メール・資料・文章）", rows:[
+      {nm:"非エンジニア事務職のCopilot/ChatGPT時短",show:"長文メール要約→返信ドラフト、メモを整った文書化、Office内Copilotで下書き",why:"「AIが怖い非エンジニア会社員」最大層に1本1機能で刺さる",nov:"高",conf:"高",url:"https://www.instagram.com/heather_aifnt/",ul:"@heather_aifnt"},
+      {nm:"「AIを30秒で」1本1ツール超短尺",show:"1本=1ツール=1ベネフィットを画面操作つき・忖度なしレビュー",why:"30秒固定で離脱前に価値が伝わり量産できる",nov:"中",conf:"高",url:"https://www.instagram.com/HANDLYTECH/",ul:"@handlytech"},
+      {nm:"Excel Copilotで自然言語→数式・分析",show:"Excel内蔵Copilotの場所と、自然言語での数式生成・整形",why:"事務職の共通言語Excel。「関数が分からない」層に即効",nov:"中",conf:"高",url:"https://www.instagram.com/reel/DWk-VMzAe8V/",ul:"@mylearningsheet"},
+      {nm:"Copilotで会議メール→予定調整・可視化",show:"Outlookスレッド分析→会議自動調整、Excelダッシュボード生成",why:"「いつものツール内で完結」が会社員に刺さる",nov:"中",conf:"中",url:"https://www.instagram.com/copilottips/",ul:"@copilottips ※reel帰属要差替"},
+      {nm:"1プロンプト→多チャネル分の原稿量産",show:"ネタ出し→計画→ドラフト→IG/LinkedIn/メール展開（Vocable.ai）",why:"コンテンツ作成は時間泥棒。圧縮インパクト大",nov:"中",conf:"中",url:"https://www.instagram.com/imanoubou/",ul:"@imanoubou ※稼ぐ訴求に接近"}
+    ]},
+    {cat:"A-2 データ実務（Excel/SQL）", rows:[
+      {nm:"英語→Excel数式 / 英語→SQL のAI変換",show:"ExcelFormulaBot・Text2SQL等で「暗記なし」を実演＋キャリア助言",why:"「数式・SQL暗記が苦痛」という普遍的痛点を一発解決",nov:"高",conf:"高",url:"https://www.instagram.com/onestopdata/reel/CpsE7lWD-Jz/",ul:"@onestopdata"}
+    ]},
+    {cat:"A-3 リサーチ・学習（NotebookLM）", rows:[
+      {nm:"NotebookLMでリサーチを使える知識に",show:"資料/リンクを束ね要約・出典付きQ&A・Audio Overview生成",why:"「積ん読が読めない」に直撃、出典紐付けで安心",nov:"中",conf:"高",url:"https://www.instagram.com/reel/DTVzyftklsR/",ul:"@sadie.stlawrence"},
+      {nm:"散歩しながらNotebookLMで耳学習",show:"記事/リンク→ポッドキャスト音声化し移動中に聴く",why:"「読む時間がない」に既存の散歩を載せるだけ",nov:"高",conf:"高",url:"https://www.instagram.com/reel/DJX26Y5SBID/",ul:"@therubberduckieee"}
+    ]},
+    {cat:"A-4 AIエージェント・業務自動化", rows:[
+      {nm:"一緒に作業するAI vs 代わりに働くエージェント",show:"その都度プロンプト型 と 自動化型 を具体例で対比",why:"「毎回プロンプト止まり」から一段上へ。焦り＋好奇心",nov:"高",conf:"高",url:"https://www.instagram.com/p/DXcTd1yAtJH/",ul:"@seancannell"},
+      {nm:"最新エージェントを非エンジニア向けに実演",show:"コードなしで成果物生成、リサーチをエージェントに委任",why:"話題の最新エージェントを難しさを感じさせず届ける",nov:"中",conf:"高",url:"https://www.instagram.com/realrileybrown/",ul:"@realrileybrown"},
+      {nm:"n8n/ノーコードで業務フロー自動化",show:"取込→AIで仕分け・要約→シート/通知へ連携をノードで可視化",why:"「一度組めば二度とやらない」時短、実務デモが薄い",nov:"高",conf:"低",url:"https://www.instagram.com/thekeshavkrishnan/",ul:"@thekeshavkrishnan"},
+      {nm:"経営者が会社の事務・スケール業務を自動化",show:"反復事務をAIに巻き取らせ人の時間を空ける「仕組みで回す」",why:"「社員を増やさず捌く」経営者の悩みに解",nov:"中",conf:"中",url:"https://www.instagram.com/danmartell/",ul:"@danmartell ※経営寄り"}
+    ]},
+    {cat:"A-5 職種特化（教師・営業・中小・マーケ等）", rows:[
+      {nm:"教師がAIで授業準備を週7時間時短",show:"教材生成・読解レベル書換・所見/保護者メール下書き",why:"採点・教材・保護者対応の普遍的痛みに直撃",nov:"高",conf:"高",url:"https://www.instagram.com/magicschoolai/",ul:"@magicschoolai"},
+      {nm:"現役教師がChatGPTで教材・FB自作",show:"「教師向け時短プロンプト集」を自分の教室での使い方で配布",why:"ベンダーでなく現場一教師の一次体験＝信頼",nov:"高",conf:"高",url:"https://www.instagram.com/helloteacherlady/reels/",ul:"@helloteacherlady"},
+      {nm:"中小企業の業務をノーコードAI自動化",show:"問い合わせ対応・データ整理を画面に従って組むだけで実演",why:"IT不在の小規模事業者でも真似できる手触り",nov:"高",conf:"中",url:"https://www.instagram.com/automatewithmarko/",ul:"@automatewithmarko"},
+      {nm:"営業の見込み客対応をエージェントで自動化",show:"DMエンリッチ→CRM→スコアリング→返信の構築画面",why:"「営業フォローが追いつかない」課題に完成デモ",nov:"中",conf:"中",url:"https://www.instagram.com/leadgenman/",ul:"@leadgenman ※マネタイズ寄り"},
+      {nm:"デザイナー/フリーランスの制作効率化",show:"Canvaのコツ・素材生成・バリエ量産・構成案作成",why:"同業フリーランスの「制作を速く」の痛みに直結",nov:"中",conf:"低",url:"https://www.instagram.com/designwithtoshi/",ul:"@designwithtoshi"}
+    ]},
+    {cat:"A-6 便利な日常活用（家事・育児・旅行・片付け）", rows:[
+      {nm:"ChatGPTで人生を1年でアップグレード連載",show:"大掃除段取り・週末計画・健康習慣・コーデ提案を日替わり",why:"生活密着＋毎日連載で継続フォロー・保存",nov:"高",conf:"中",url:"https://www.instagram.com/upgradingkatie/",ul:"@upgradingkatie"},
+      {nm:"AI for Mums 見えない家事を軽減",show:"献立＋買い物リスト一括、お手伝い表、家族ルーティン設計",why:"言語化されにくい「メンタルロード」を解消、子育て層が拡散",nov:"高",conf:"中",url:"https://www.instagram.com/paigeelles/",ul:"@paigeelles"},
+      {nm:"旅リールをDM→AIが旅程に変換",show:"Expedia Trip Matching：リールをDM→AIが3日間プラン生成",why:"「保存したまま行かない」願望に“DMするだけ”の驚き",nov:"高",conf:"高",url:"https://www.expedia.com/tripmatching",ul:"Expedia Trip Matching"},
+      {nm:"冷蔵庫を1枚撮るだけ→AIが献立",show:"冷蔵庫写真→手持ち食材で作れる複数レシピ",why:"「今日のごはん何にしよう」を写真1枚で解決、保存最強",nov:"中",conf:"中",url:"https://www.makeuseof.com/using-chatgpt-meal-ideas-from-fridge-ingredients-photo/",ul:"makeuseof解説"},
+      {nm:"ChatGPT音声モードを語学パートナーに",show:"シチュ指定でロールプレイ会話、発音・フレーズのFB",why:"「話す相手がいない・恥ずかしい」壁をAIが解消",nov:"中",conf:"高",url:"https://www.howtogeek.com/chatgpt-conversational-mode-to-practice-a-language/",ul:"howtogeek解説"},
+      {nm:"カメラロール整理の6プロンプト",show:"写真仕分け・思い出20枚抽出・週次片付け・バックアップ",why:"「カメラロールが手につかない」万人のストレス",nov:"中",conf:"低",url:"https://www.threads.com/@promptifai/post/DJzzpbzMlnp/",ul:"@promptifai"},
+      {nm:"難しい書類・契約書をAIでかみ砕く",show:"要点要約・翻訳・専門用語の平易化・不利な条項の洗い出し",why:"「契約書が読めない」切実な悩みに直球（機密注意）",nov:"中",conf:"中",url:"https://juro.com/learn/chatgpt-contract-review",ul:"juro解説"}
+    ]},
+    {cat:"B Xでトレンドだが未ショート動画化", rows:[
+      {nm:"Claude Codeを業務に：Plan先行",show:"いきなり打たず、まず計画させると出力品質が段違い（反直感1フレーズ）",why:"「即指示 vs まず計画」のビフォーアフターが映える",nov:"高",conf:"高",url:"https://x.com/eyad_khrais/status/2010810802023141688",ul:"@eyad_khrais"},
+      {nm:"Skills：業務手順をmd1枚で教え込む",show:"業務固有のやり方をMarkdown1枚に書くと合う依頼時に自動適用",why:"「毎回プロンプト書く手間」に再利用という明快な解",nov:"高",conf:"高",url:"https://x.com/eyad_khrais/status/2010810802023141688",ul:"@eyad_khrais"},
+      {nm:"XMLタグ構造プロンプトでお手本量産",show:"お手本を複数タグで囲み同型出力。報告書/告知文テンプレ化",why:"「良い例を渡すだけで質が揃う」直感的で画面映え",nov:"中",conf:"高",url:"https://x.com/mattshumer_/status/1910014022889660541",ul:"@mattshumer_"},
+      {nm:"NotebookLM成果物をDocs/Sheetsへ書出し",show:"Study Guide/Briefingを編集できる成果物としてGoogle Docs/Sheetsに",why:"「作って終わり」でなく手元に残る決定打。公式発",nov:"中",conf:"高",url:"https://x.com/NotebookLM/status/2001774636795875493",ul:"@NotebookLM"},
+      {nm:"ChatGPTがPowerPointに常駐",show:"自然言語でスライド作成/修正、完成後に弱点・反論を指摘",why:"資料作成は全ビジネス層の負担。ツール内完結が映える",nov:"高",conf:"低",url:"https://x.com/minchoi",ul:"@minchoi ※出典弱・機能は実在"}
+    ]}
+  ];
+
+  /* ---------------- フォーマット data ---------------- */
+  var GLABEL={cooking:"料理",fitness:"筋トレ",finance:"金融",comedy:"お笑い/寸劇",education:"教育",tips:"Tips/満足感"};
+  var FORMATS=[
+    {id:"c1",genre:"cooking",name:"手元のみPOV・無言ASMR調理",
+     kind:"手元だけを固定俯瞰で写し、1動作1カット＋環境音強調・テロップ最小。冒頭は「手が動作を始める瞬間」でフック。",
+     ai:"画面手元POVに置換。受信箱→カーソルだけでAIに貼付→返信生成→「送信済み」をタイピング音ASMRで。声不要・倍速/海外に強い。",
+     shoot:"中",edit:"高",prio:"高",idea:1,
+     embed:{url:"https://www.youtube.com/watch?v=Sj8Dlq4VIEs",platform:"youtube",verified:"true",title:"No Talking ASMR Meal Prep（料理ASMR）"}},
+    {id:"c2",genre:"cooking",name:"材料→完成 高速モンタージュ（Tasty型）",
+     kind:"完成形を1秒先出し→材料を俯瞰で並べ→工程をジャンプカット/タイムラプス圧縮→トレンド音源に拍を合わせる。",
+     ai:"「材料=入力素材／完成=成果物」。議事録や提案書を先出し→録音/メモ/CSVを投入→生成を早回し。「材料:文字起こし1本+プロンプト3行」表記。",
+     shoot:"中",edit:"高",prio:"中",idea:10,
+     embed:{url:"https://www.youtube.com/watch?v=icr2j-IF5Zw",platform:"youtube",verified:"true",title:"Tasty 4 Meals（俯瞰モンタージュ）"}},
+    {id:"c3",genre:"cooking",name:"「これ知ってた?」裏技・時短ハック型",
+     kind:"面倒な普通のやり方を一瞬→「実はこうすると」を一手で実演→ビフォーアフター対比→驚きピーク→結論テロップ。",
+     ai:"1ハック=1本。手作業転記を一瞬→「スクショ貼って『表にして』」→5分vs8秒対比→結論プロンプト。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=xn6UsF9fRo4",platform:"youtube",verified:"true",title:"Kitchen Hacks（時短ハック）"}},
+    {id:"c4",genre:"cooking",name:"失敗あるある→プロの正解",
+     kind:"ありがちな失敗をドン→原因を1点→同画角で正解実演→仕上がり差→「これだけ覚えて」の1原則。",
+     ai:"「要約して」だけ/機密貼付などのNG→役割+制約+出力形式の正解→出力対比→1原則。「AIあるある失敗 #N」でシリーズ化。",
+     shoot:"中",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=UbVXjQBI92g",platform:"youtube",verified:"true",title:"Cooking Mistakes Everyone Makes / Andy Cooks"}},
+    {id:"c5",genre:"cooking",name:"ワンカット・ノーカット手順",
+     kind:"無編集で開始宣言→等速連続で工程→リアルな間も残す→字幕実況→完成までワンカット。「盛らない正直さ」が武器。",
+     ai:"実案件をAIと無編集ワンテイク画面録画。微妙な回答を追いプロンプトで直す様子も残す。商談・受注に効く。",
+     shoot:"中",edit:"低",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=A7OVB8jr844",platform:"youtube",verified:"true",title:"連続ワンテイク調理ASMR"}},
+
+    {id:"f1",genre:"fitness",name:"「1日◯分」チャレンジ型",
+     kind:"秒数・日数の約束をテロップ→即実演→山場をスロー→Day1とDay最終を対比→参加CTA。",
+     ai:"「1日5分・30日でメール処理を自動化」を1日1ミニタスクに分解連投。CTA「手作業をコメント→自動化案を返す」。",
+     shoot:"低",edit:"低",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/2Lvf7DH42eY",platform:"youtube_shorts",verified:"true",title:"30 Second Plank Challenge（Short）"}},
+    {id:"f2",genre:"fitness",name:"フォーム正解/不正解の対比",
+     kind:"「そのやり方ケガします」と不安→NGを誇張実演→同アングルで正解→決定的差を矢印1点→確認CTA。",
+     ai:"「そのAIの使い方、損してます」。雑な丸投げ→正しい指示+ガードレール→差分を矢印強調。",
+     shoot:"中",edit:"中",prio:"高",idea:3,
+     embed:{url:"https://www.youtube.com/watch?v=PPmvh7gBTi0",platform:"youtube",verified:"true",title:"Perfect Squat? / Jeff Nippard（フォーム対比）"}},
+    {id:"f3",genre:"fitness",name:"30日トランスフォーメーション",
+     kind:"Afterを先出し→Beforeで落差→タイムラプス/カレンダーで積み上げ→方法を実演→現在地を問う。",
+     ai:"「30日でこの業務がこう変わった」。自動ダッシュボードを先出し→手作業地獄→仕組み化の積み上げ。週8h→30分。",
+     shoot:"高",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=AY3ck0rPoCY",platform:"youtube",verified:"true",title:"30 Days Transformation Time-lapse"}},
+    {id:"f4",genre:"fitness",name:"「やりがちなNG」添削・あるある型",
+     kind:"「9割がやってるNG」で自分ごと化→NG再現→なぜダメか1文→正解→番号で列挙→参加CTA。",
+     ai:"便利ツール5選でなく「失敗あるある添削」に。巨大プロンプト/未検証/機密入力などを番号化。差別化の核。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=7tA23lAiED8",platform:"youtube",verified:"true",title:"5 Fitness Mistakes Beginners Make"}},
+    {id:"f5",genre:"fitness",name:"ルーティン密着（Day in the Life）",
+     kind:"密着対象を宣言→時刻テロップで一連の流れ→短尺カット+要所スロー→小ネタ→効能を一言。",
+     ai:"「AIフル活用の1日密着」。7:00メール一括→9:00議事録要約→14:00リサーチ委任→17:00レポート自動生成。",
+     shoot:"中",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=zmILRSLQYa8",platform:"youtube",verified:"true",title:"Day in the Life（密着ルーティン）"}},
+
+    {id:"m1",genre:"finance",name:"路上ギャラ突撃インタビュー型",
+     kind:"職業ラベル先出し→「何の仕事?」→「いくら?」単刀直入→金額を巨大字幕でピーク→次の人へ高速カット。",
+     ai:"「この職種、AIで何分短縮?」と突撃。「2時間→15分」を口から言わせ巨大字幕。職種でシリーズ化。",
+     shoot:"高",edit:"低",prio:"高",idea:2,
+     embed:{url:"https://www.tiktok.com/@salarytransparentstreet/video/7500003502501186862",platform:"tiktok",verified:"partial",title:"Salary Transparent Street（給料突撃）"}},
+    {id:"m2",genre:"finance",name:"規模ショック（米粒型・物量可視化）",
+     kind:"小単位で基準宣言（1粒=◯）→少量→大量→総額で画面を埋める物量クライマックス→余韻。",
+     ai:"付箋1枚=1時間で手作業工数を机一面に→「AIだと3枚分」に減る対比。抽象的な時短を物量に翻訳。",
+     shoot:"中",edit:"低",prio:"高",idea:8,
+     embed:{url:"https://www.tiktok.com/@humphreytalks/video/6846087300493888773",platform:"tiktok",verified:"partial",title:"Humphrey Yang 米粒で資産可視化"}},
+    {id:"m3",genre:"finance",name:"2人掛け合い「家計監査」型",
+     kind:"一番ヤバい数字を冒頭→専門家+当事者の2人構図→1項目ずつツッコミ→言い訳vs正論の対立→改善で着地。",
+     ai:"「AI監査」。当事者の業務手順を見て「それまだ手で!?」→言い訳→AI化プランで着地。感情の掛け合いで差別化。",
+     shoot:"高",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=5Oz0fmMrH54",platform:"youtube",verified:"true",title:"Caleb Hammer Financial Audit"}},
+    {id:"m4",genre:"finance",name:"失敗談ストーリーテリング型",
+     kind:"結末の衝撃数字を先出し→どん底→何が詰んでいたか→転機の具体行動→数字結果+「今日からできる1つ」。",
+     ai:"「残業20時間をAIでゼロにするまでの3つの失敗」。匿名のクライアント事例化にも。",
+     shoot:"低",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=Yvd0JwZj2hA",platform:"youtube",verified:"true",title:"借金20万ドル完済ストーリー / Aja Dang"}},
+    {id:"m5",genre:"finance",name:"手描きホワイトボード比喩解説型",
+     kind:"核心の問いを手描き→比喩オブジェを描き始める→図が段階的に完成→1図1メッセージ→完成図でまとめ。",
+     ai:"「AIエージェントってこういうこと」を手描き比喩（AI=新人/RAG=司書）。非エンジニア経営層に有効。",
+     shoot:"中",edit:"低",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=jTW777ENc3c",platform:"youtube",verified:"true",title:"複利を1分で / 手描きホワイトボード"}},
+
+    {id:"k1",genre:"comedy",name:"上司vs部下 寸劇（同一人物2役）",
+     kind:"0-2秒に上司役の本物っぽいセリフ→部下の本音リアクション→要求がエスカレート→表向き笑顔で本音真逆→オチ。",
+     ai:"「AIに頼む前/後の上司」。理不尽丸投げ→「AIに3分で下書きさせた、君は判断だけ」。ツール名を出さずパクリ回避。",
+     shoot:"高",edit:"中",prio:"高",idea:3,
+     embed:{url:"https://www.youtube.com/watch?v=QeD8NJawzKg",platform:"youtube",verified:"true",title:"Manager vs Employee（職場寸劇）"}},
+    {id:"k2",genre:"comedy",name:"POV型（視聴者=当事者）",
+     kind:"「POV:◯◯」テロップで役に固定→カメラに向け話す→状況が進行→「それ私だ」の共感ピーク→短く落とす。",
+     ai:"「POV:金曜17時に100行Excel整形を頼まれた人」。絶望→AIに貼付30秒で完了を一緒に体験。",
+     shoot:"中",edit:"低",prio:"高",idea:4,
+     embed:{url:"https://www.youtube.com/shorts/08df0K5qvJA",platform:"youtube_shorts",verified:"true",title:"POV: that one coworker（Short）"}},
+    {id:"k3",genre:"comedy",name:"あるある列挙→オチ型（一人多役）",
+     kind:"「職場にいる◯種類の人」と宣言→カットごと早替わり1特徴ずつ→ラピッド列挙→最後に自虐反転オチ。",
+     ai:"「AIの使い方で分かる職場の◯タイプ」。全部手作業/丸投げ/コピペ→最後に正解タイプでオチ兼Tips。",
+     shoot:"高",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=f7clnee__yQ",platform:"youtube",verified:"true",title:"Every Type of Coworker（一人多役）"}},
+    {id:"k4",genre:"comedy",name:"テキスト劇場型（チャットで物語）",
+     kind:"衝撃の1通目→メッセージを1通ずつ表示→緊張のエスカレーション→30-60秒で伏線回収→字幕の読みやすさが命。",
+     ai:"上司↔部下のSlack/LINE風で物語化。「至急:競合10社比較表を今夜中」→裏でAIに下書き→翌朝完成のどんでん返し。顔出し不要・量産可。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=fsByv3yMh64",platform:"youtube",verified:"true",title:"グループチャット物語（テキスト劇場）"}},
+    {id:"k5",genre:"comedy",name:"期待vs現実 寸劇型",
+     kind:"「期待」を理想的・誇張で提示→短く溜め→画面分割/「現実↓」で切替→崩れた現実=パンチライン→1本1対比。",
+     ai:"「AI入れれば一瞬で完璧な資料!」→「丸投げで事実誤認だらけ、全部手直し」。「雑だと結果も雑」を教訓に。",
+     shoot:"中",edit:"中",prio:"中",idea:9,
+     embed:{url:"https://www.youtube.com/watch?v=uFQBSX1kHmo",platform:"youtube",verified:"true",title:"Office Expectations vs Reality"}},
+    {id:"k6",genre:"comedy",name:"リアクション芸/真顔ツッコミ型",
+     kind:"建前の発信源（上司の全社メール）を提示→演者の無言の真顔→建前が続くほど表情が崩れる→本音の一言オチ。台本最小。",
+     ai:"「AI禁止の社内通達 vs それを読む現場の真顔」→「…じゃあこの300件、手で?」の本音ツッコミ。",
+     shoot:"低",edit:"低",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=HTgYHHKs0Zw",platform:"youtube",verified:"true",title:"Email in Real Life / Tripp and Tyler"}},
+
+    {id:"e1",genre:"education",name:"ライブ手描きホワイトボード講義",
+     kind:"素朴な疑問を声で→白紙から説明と同期で棒人間・矢印を手描き→要素に分解→描き上がった1枚が結論。",
+     ai:"「なぜ自分でやった方が速い仕事こそAIに渡すべきか」を棒人間+所要時間バーで描き、業務分担図で締め。",
+     shoot:"中",edit:"中",prio:"中",idea:5,
+     embed:{url:"https://www.youtube.com/watch?v=p_o4aY7xkXg",platform:"youtube",verified:"true",title:"What is Gravity? / minutephysics"}},
+    {id:"e2",genre:"education",name:"60秒圧縮ストーリー解説",
+     kind:"1文で舞台設定→対立/問題→転機を畳みかけ→「それが今の◯◯に繋がる」現代接続オチ。終始速いリズム。",
+     ai:"「2024年、ある経理が毎月60時間残業に潰れかけていた」→AIに切り出し→残業10時間に。人と業務を主役に。",
+     shoot:"低",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=Yocja_N5s1I",platform:"youtube",verified:"true",title:"Crash Course World History #1"}},
+    {id:"e3",genre:"education",name:"クイズ参加型 pause-and-reveal",
+     kind:"問題を大テロップ+音声→カウントダウン+ヒントで考える間を強制→転換音で答えリビール→「コメントで正解した?」。",
+     ai:"「このプロンプト、どこがダメ?」出題→3,2,1→ダメな理由+改善版をリビール。コメント・保存増。",
+     shoot:"低",edit:"中",prio:"高",idea:6,
+     embed:{url:"https://www.youtube.com/watch?v=Sg6vIEGx4C4",platform:"youtube",verified:"true",title:"Guess the Right Answer（クイズ型）"}},
+    {id:"e4",genre:"education",name:"「学校で教わらなかった」禁断知識型",
+     kind:"常識を名指し否定→「なぜ教えられなかったか」で緊張→正しい考え方を段階開示→「知ってる人と差がつく」オチ。",
+     ai:"「AIの使い方、誰も教えてくれない」→世間の誤解を否定→「本当に効くのは◯◯」。※稼ぐ系に寄らぬよう根拠を必ず1つ。",
+     shoot:"低",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=rhgwIhB58PA",platform:"youtube",verified:"true",title:"The Biggest Myth In Education / Veritasium"}},
+    {id:"e5",genre:"education",name:"図解アニメ・ナレーション同期型",
+     kind:"壮大/身近な数字でスケール→抽象概念をキャラ・アイコン・比喩に→グラフで規模を直感化→「つまり」で1枚に統合。",
+     ai:"業務を擬人化アイコン（書類くん/問い合わせモンスター）で図解。「毎日100通を積むと身長の◯倍」→AIで人が触る箱はこれだけ。",
+     shoot:"なし",edit:"高",prio:"低",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=h6fcK_fRYaI",platform:"youtube",verified:"true",title:"The Egg / Kurzgesagt（図解アニメ）"}},
+    {id:"e6",genre:"education",name:"POV・1人称ストーリー授業型",
+     kind:"「POV:〜」で視聴者を役に固定→演者がその場のセリフで問題提起→失敗例→指導→正解の会話劇→実体験に接続。",
+     ai:"「POV:AIに怯える同僚をあなたが救う側になる日」。「そのレポート、まだ手で?」→相棒にした働き方→「来年の普通だよ」。",
+     shoot:"中",edit:"低",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/yB4nLm0g39A",platform:"youtube_shorts",verified:"true",title:"Types of Teachers（POV授業・Short）"}},
+
+    {id:"t1",genre:"tips",name:"ビフォーアフター・トランスフォーメーション型",
+     kind:"最悪の状態を画面いっぱい→処理をタイムラプス+生音→節目で部分完成→ラストでAfter一気公開、最初とスプリット対比。",
+     ai:"「ぐちゃぐちゃの見積/受信トレイ200件→AIで整然」。タイピング・通知音で満足感。掃除のカタルシスを業務へ。",
+     shoot:"中",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/2ht-8R89g40",platform:"youtube_shorts",verified:"true",title:"Muddy Bus Cleaning ASMR（Short）"}},
+    {id:"t2",genre:"tips",name:"カウントダウン型ナンバリングTips",
+     kind:"「◯個」総数+強いベネフィット/後悔を宣言→番号オーバーレイで各3-7秒→「主張→一瞬の証拠→次へ」→最後に最強カード。",
+     ai:"「AIを業務に入れる前に知らなかった5つの落とし穴」。後悔/教訓ベースで番号化。各項目に実画面の一瞬の証拠。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/NEFmxZnE-dU",platform:"youtube_shorts",verified:"true",title:"Things I Wish I Knew（番号Tips・Short）"}},
+    {id:"t3",genre:"tips",name:"ノールック工程ひたすら見せ型",
+     kind:"空/乱雑な状態+最初の一手の生音→無言・無解説で作業をひたすら手元クローズアップ→同動作の反復→整然完成で引き。",
+     ai:"「AIが黙々と作業を完遂」。空のシート/フォルダ→1件ずつ詰め・分類・命名の反復→整然完成。整理整頓ASMR。",
+     shoot:"低",edit:"中",prio:"高",idea:7,
+     embed:{url:"https://www.youtube.com/watch?v=Uzzid2Th4p4",platform:"youtube",verified:"true",title:"Restock/工程ASMR（本家TikTok: @asmrkitchens）",alt:{url:"https://www.tiktok.com/@asmrkitchens/video/7431943435319364896",label:"本家TikTokを開く ↗"}}},
+    {id:"t4",genre:"tips",name:"「やり方を間違えてた」リビール型",
+     kind:"「あなたは今まで○○を間違ってた」と断言→非効率なやり方に共感→正しいやり方を対比リビール→理由を簡潔に→保存価値で締め。",
+     ai:"「あなたのAIの使い方、ずっと間違ってます」。コピペ繰り返し→テンプレ化/バッチ/エージェント化を対比。自己関連フック。",
+     shoot:"低",edit:"中",prio:"高",idea:0,
+     embed:{url:"https://www.instagram.com/cleanthatup/reel/C3oNYo0OtI2/",platform:"instagram",verified:"partial",title:"cleanthatup（やり方リビール・IGリール）"}},
+    {id:"t5",genre:"tips",name:"POV一人称・実況工程型",
+     kind:"「POV:あなたが○○する」+一人称手元カットで当事者化→工程を一人称で進めボイスオーバー→「ここがコツ」で緩急→完成を「あなたが作った」感。",
+     ai:"「POV:月曜の朝、AIに今週のタスクを丸投げする」。手元一人称+ボイスオーバーで工程→空の受信トレイを「あなたが終わらせた」。",
+     shoot:"中",edit:"中",prio:"中",idea:0,
+     embed:{url:"https://www.youtube.com/watch?v=foAg_rtQEdk",platform:"youtube",verified:"true",title:"POV First-Person Cooking（一人称実況）"}},
+    {id:"t6",genre:"tips",name:"手書きメモ/ノート術・俯瞰ライティング型",
+     kind:"完成した美しいノートをチラ見せ→「作り方」予告→俯瞰で白紙から書き進める→色分け・見出しの構造化→完成全景で保存促す。",
+     ai:"「白紙が、AIとの協働で設計書/議事録に育つ過程」を俯瞰ライティング。手で考える×AIで整えるのハイブリッド。",
+     shoot:"中",edit:"中",prio:"低",idea:0,
+     embed:{url:"https://www.youtube.com/shorts/5IukkmuNTW0",platform:"youtube_shorts",verified:"true",title:"Aesthetic Study Notes（ノート術・Short）"}}
+  ];
+
+  /* ---------------- render helpers ---------------- */
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function lvClass(v){return {"高":"l-h-hi","中":"l-m","低":"l-l","なし":"l-n"}[v];}
+  function lvSpan(v){var c={"高":"lv-h","中":"lv-m","低":"lv-l","なし":"lv-n"}[v];return '<i class="'+c+'">'+v+'</i>';}
+  function novClass(v){return {"高":"h","中":"m","低":"l"}[v];}
+
+  /* topics */
+  (function renderTopics(){
+    var host=document.getElementById("topics");
+    var html="";
+    TOPICS.forEach(function(g){
+      html+='<h3 class="cat">'+esc(g.cat)+'</h3>';
+      html+='<div class="table-scroll"><table><thead><tr>'+
+        '<th>ネタ名</th><th>何を見せる</th><th>なぜ刺さる</th><th>未開拓</th><th>確度</th><th>参考</th>'+
+        '</tr></thead><tbody>';
+      g.rows.forEach(function(r){
+        html+='<tr>'+
+          '<td><span class="nm">'+esc(r.nm)+'</span></td>'+
+          '<td>'+esc(r.show)+'</td>'+
+          '<td>'+esc(r.why)+'</td>'+
+          '<td><span class="nov '+novClass(r.nov)+'">'+r.nov+'</span></td>'+
+          '<td><span class="conf '+novClass(r.conf)+'">'+r.conf+'</span></td>'+
+          '<td><a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.ul)+' ↗</a></td>'+
+          '</tr>';
+      });
+      html+='</tbody></table></div>';
+    });
+    host.innerHTML=html;
+  })();
+
+  /* formats */
+  var PRIOW={"高":3,"中":2,"低":1};
+  var activeGenre="all";
+  var listEl=document.getElementById("fmt-list");
+  var fcountEl=document.getElementById("fcount");
+  var chipsEl=document.getElementById("genre-chips");
+
+  function ytId(u){var m=u.match(/(?:v=|\/shorts\/|youtu\.be\/|\/embed\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:"";}
+  function ttId(u){var m=u.match(/\/video\/(\d+)/);return m?m[1]:"";}
+
+  function facadeHtml(e){
+    if(!e||!e.url) return '<div class="embed-none">参考動画URL未取得</div>';
+    var label,style="";
+    if(e.platform.indexOf("youtube")===0){var id=ytId(e.url);style='style="background-image:url(https://img.youtube.com/vi/'+id+'/hqdefault.jpg)"';label="▶ 参考動画を再生 (YouTube)";}
+    else if(e.platform==="tiktok"){label="▶ TikTokで表示";}
+    else if(e.platform==="instagram"){label="▶ Instagramリールで表示";}
+    else{label="▶ 表示";}
+    return '<button class="embed-facade" '+style+' data-embed="'+esc(encodeURIComponent(JSON.stringify(e)))+'" aria-label="参考動画を読み込む"><span class="facade-label">'+label+'</span></button>';
+  }
+  function loadScript(src){var s=document.createElement("script");s.async=true;s.src=src;document.body.appendChild(s);}
+  function injectEmbed(wrap,e){
+    if(e.platform.indexOf("youtube")===0){
+      var id=ytId(e.url);
+      wrap.innerHTML='<div class="embed-frame"><iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0" title="参考動画" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>';
+    }else if(e.platform==="tiktok"){
+      wrap.innerHTML='<blockquote class="tiktok-embed" cite="'+esc(e.url)+'" data-video-id="'+ttId(e.url)+'" style="max-width:100%;min-width:240px;margin:0"><section></section></blockquote>';
+      loadScript("https://www.tiktok.com/embed.js");
+    }else if(e.platform==="instagram"){
+      wrap.innerHTML='<blockquote class="instagram-media" data-instgrm-permalink="'+esc(e.url)+'" data-instgrm-version="14" style="margin:0;width:100%;min-width:240px"></blockquote>';
+      if(window.instgrm&&window.instgrm.Embeds){window.instgrm.Embeds.process();}else{loadScript("https://www.instagram.com/embed.js");}
+    }
+  }
+
+  function cardHtml(f){
+    var idea=f.idea?('<span class="ideabadge">動画案 '+f.idea+'</span>'):"";
+    var pcls={"高":"p-high","中":"p-mid","低":"p-low"}[f.prio];
+    var vchip="";
+    if(f.embed&&f.embed.verified==="true")vchip='<span class="vchip v-true">確認済</span>';
+    else if(f.embed&&f.embed.verified==="partial")vchip='<span class="vchip v-partial">部分</span>';
+    var alt="";
+    if(f.embed&&f.embed.alt)alt='<a href="'+esc(f.embed.alt.url)+'" target="_blank" rel="noopener">'+esc(f.embed.alt.label)+'</a>';
+    var src=f.embed&&f.embed.title?'<span class="src">例: '+esc(f.embed.title)+'</span>':"";
+    var openA=f.embed&&f.embed.url?'<a href="'+esc(f.embed.url)+'" target="_blank" rel="noopener">別タブで開く ↗</a>':"";
+    return '<li class="fmt-card" data-genre="'+f.genre+'" data-prio="'+f.prio+'">'+
+      '<div class="fmt-head"><span class="gchip g-'+f.genre+'">'+esc(GLABEL[f.genre])+'</span>'+
+        '<span class="prio '+pcls+'">優先度 '+f.prio+'</span>'+idea+'</div>'+
+      '<h3>'+esc(f.name)+'</h3>'+
+      '<p class="fmt-kind">'+esc(f.kind)+'</p>'+
+      '<div class="fmt-ai"><span class="lbl">AI業務への落とし込み</span>'+esc(f.ai)+'</div>'+
+      '<div class="effort-row">'+
+        '<span class="effort"><b>撮影工数</b>'+lvSpan(f.shoot)+'</span>'+
+        '<span class="effort"><b>編集工数</b>'+lvSpan(f.edit)+'</span>'+
+      '</div>'+
+      '<div class="embed-wrap">'+facadeHtml(f.embed)+'</div>'+
+      '<div class="embed-foot">'+src+openA+alt+vchip+'</div>'+
+      '</li>';
+  }
+
+  function renderFormats(){
+    var items=FORMATS.filter(function(f){return activeGenre==="all"||f.genre===activeGenre;});
+    items.sort(function(a,b){
+      var d=PRIOW[b.prio]-PRIOW[a.prio]; if(d)return d;
+      return a.id<b.id?-1:1;
+    });
+    listEl.innerHTML=items.map(cardHtml).join("");
+    fcountEl.textContent=items.length+" 型を表示（全 "+FORMATS.length+" 型）・優先度の高い順";
+  }
+  function renderChips(){
+    var chips=[{id:"all",label:"すべて"}];
+    Object.keys(GLABEL).forEach(function(k){chips.push({id:k,label:GLABEL[k]});});
+    chipsEl.innerHTML=chips.map(function(c){
+      return '<button class="chip" type="button" data-genre="'+c.id+'" aria-pressed="'+(activeGenre===c.id?"true":"false")+'">'+esc(c.label)+'</button>';
+    }).join("");
+  }
+  chipsEl.addEventListener("click",function(ev){
+    var b=ev.target.closest("[data-genre]");if(!b)return;
+    activeGenre=b.getAttribute("data-genre");renderChips();renderFormats();
+  });
+  document.addEventListener("click",function(ev){
+    var btn=ev.target.closest(".embed-facade");if(!btn)return;
+    var e=JSON.parse(decodeURIComponent(btn.getAttribute("data-embed")));
+    injectEmbed(btn.closest(".embed-wrap"),e);
+  });
+  renderChips();renderFormats();
+  </script>
+</body>
+</html>
