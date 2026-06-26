@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>AI業務活用ショート動画 共通フォーマット 絵コンテ＋撮影台本</title>
+  <style>
+    :root{
+      color-scheme: dark;
+      --bg:#0b0f14; --panel:#111821; --panel-2:#162231; --text:#eef4fb; --muted:#a8b6c8;
+      --line:#2b3a4b; --accent:#58d6c2; --accent-2:#f2c94c; --info:#77aaff; --rose:#ff8a8a;
+      --shadow:rgba(0,0,0,.35); --max:1040px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;color:var(--text);line-height:1.7;
+      font-family:"Yu Gothic UI","Meiryo","Hiragino Kaku Gothic ProN",system-ui,sans-serif;
+      background:radial-gradient(circle at top left,rgba(88,214,194,.12),transparent 34rem),
+        linear-gradient(180deg,#0b0f14 0%,#101721 46%,#0b0f14 100%);}
+    a{color:var(--accent)}
+    header,main,footer{width:min(100% - 1.6rem,var(--max));margin:0 auto}
+    .back{display:inline-block;margin:1.4rem .8rem .4rem 0;color:var(--muted);text-decoration:none;font-size:.9rem}
+    .back:hover{color:var(--accent)}
+    .hero{padding:1rem 0 1.2rem}
+    .eyebrow{margin:0 0 .6rem;color:var(--accent);font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    h1{margin:0;font-size:clamp(1.5rem,4.4vw,2.6rem);line-height:1.22}
+    .meta-row{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 0}
+    .pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--line);border-radius:999px;
+      background:rgba(17,24,33,.7);color:var(--muted);font-size:.8rem;padding:.3rem .7rem}
+    .tldr{margin:1.2rem 0 0;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
+      background:linear-gradient(180deg,rgba(22,34,49,.7),rgba(17,24,33,.7));padding:1rem 1.1rem}
+    .tldr b{color:var(--text)}
+    .tldr ul{margin:.5rem 0 0;padding-left:1.2rem;color:var(--muted)}
+    .tldr li{margin:.3rem 0}
+    h2{margin:2.6rem 0 .5rem;font-size:clamp(1.25rem,3.4vw,1.7rem);border-bottom:1px solid var(--line);padding-bottom:.45rem}
+    h3{margin:1.8rem 0 .5rem;font-size:1.12rem;color:var(--text)}
+    h4{margin:1.2rem 0 .4rem;font-size:.98rem;color:var(--accent)}
+    p{margin:.4rem 0}
+    .sec-note{color:var(--muted);font-size:.9rem;margin:.2rem 0 1rem}
+    .tcard{border:1px solid var(--line);border-radius:14px;padding:1rem 1.05rem 1.2rem;margin:1rem 0 1.6rem;
+      background:linear-gradient(180deg,rgba(22,34,49,.55),rgba(17,24,33,.6));box-shadow:0 10px 26px var(--shadow)}
+    .tbadge{display:inline-block;font-size:.74rem;font-weight:700;border-radius:999px;padding:.16rem .6rem;margin-bottom:.3rem}
+    .b-a{color:#0b0f14;background:var(--accent)} .b-b{color:#0b0f14;background:var(--accent-2)} .b-c{color:#0b0f14;background:#c0a8ff}
+    /* spec grid */
+    .spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.5rem;margin:.7rem 0 0}
+    .spec div{border:1px solid var(--line);border-radius:8px;background:rgba(17,24,33,.5);padding:.45rem .6rem;font-size:.82rem;color:var(--muted)}
+    .spec b{display:block;color:var(--text);font-size:.78rem;margin-bottom:.15rem}
+    .lv-h{color:var(--rose);font-weight:700}.lv-m{color:var(--accent-2);font-weight:700}.lv-l{color:var(--accent);font-weight:700}
+    /* tables */
+    .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:rgba(17,24,33,.5);margin:.6rem 0}
+    table{border-collapse:collapse;width:100%;font-size:.86rem}
+    .cut-table{min-width:720px}
+    .bank-table{min-width:680px}
+    th,td{text-align:left;padding:.55rem .65rem;border-bottom:1px solid var(--line);vertical-align:top}
+    th{color:var(--muted);font-weight:700;background:rgba(22,34,49,.75);position:sticky;top:0}
+    td .cut{font-weight:700;color:var(--accent);white-space:nowrap}
+    td .sec{color:var(--accent-2);white-space:nowrap;font-weight:700}
+    .telop{color:var(--text);font-weight:600}
+    /* variable / script blocks */
+    .vars{margin:.5rem 0}
+    .slot{display:inline-block;background:rgba(242,201,76,.14);color:var(--accent-2);border:1px solid rgba(242,201,76,.4);
+      border-radius:6px;padding:.02rem .35rem;font-weight:700;font-size:.92em}
+    .scriptbox{position:relative;border:1px solid var(--line);border-radius:10px;background:#0d141d;margin:.5rem 0}
+    .scriptbox pre{margin:0;padding:.85rem 1rem;white-space:pre-wrap;word-break:break-word;font-size:.84rem;line-height:1.65;
+      font-family:"Yu Gothic UI",Consolas,monospace;color:#dce7f2}
+    .copy-btn{position:absolute;top:.5rem;right:.5rem;border:1px solid var(--accent);color:var(--accent);background:rgba(11,15,20,.8);
+      border-radius:8px;font:inherit;font-size:.75rem;font-weight:700;padding:.25rem .6rem;cursor:pointer}
+    .copy-btn:hover{background:var(--accent);color:#0b0f14}
+    .ex{border:1px dashed var(--line);border-radius:8px;padding:.5rem .7rem;margin:.45rem 0;background:rgba(17,24,33,.4);font-size:.86rem}
+    .ex b{color:var(--accent)}
+    .ref{font-size:.82rem;color:var(--muted)}
+    .legend,.warn{border:1px solid var(--line);border-radius:10px;background:rgba(17,24,33,.5);padding:.8rem 1rem;color:var(--muted);font-size:.86rem;margin:1rem 0}
+    .warn{border-color:rgba(242,201,76,.4);border-left:3px solid var(--accent-2);background:rgba(242,201,76,.06)}
+    ul.clean{margin:.4rem 0;padding-left:1.2rem}
+    ul.clean li{margin:.3rem 0}
+    .chk{list-style:none;padding-left:0}
+    .chk li{margin:.35rem 0;padding-left:1.6rem;position:relative}
+    .chk li::before{content:"☐";position:absolute;left:0;color:var(--accent)}
+    .toc{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 0}
+    .toc a{border:1px solid var(--line);border-radius:999px;padding:.4rem .8rem;text-decoration:none;color:var(--muted);font-size:.85rem;background:rgba(17,24,33,.6)}
+    .toc a:hover{border-color:var(--accent);color:var(--text)}
+    footer{padding:2.5rem 0 3.5rem;color:var(--muted);border-top:1px solid rgba(168,182,200,.14);font-size:.86rem;margin-top:2rem}
+    footer p{margin:.3rem 0}
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="../index.html">← 学習ノート一覧</a>
+    <a class="back" href="ig-ai-shortvideo-playbook.html">← ネタ×フォーマット プレイブックへ</a>
+    <div class="hero">
+      <p class="eyebrow">Shooting templates · 共通フォーマット</p>
+      <h1>AI業務活用ショート動画<br>共通フォーマット 絵コンテ＋撮影台本</h1>
+      <div class="meta-row">
+        <span class="pill">📅 2026-06-26</span>
+        <span class="pill">🎬 日本型・優先度「高」から厳選3テンプレ</span>
+        <span class="pill">🔁 フォーマット固定 × ネタ差し替え</span>
+        <span class="pill">📱 オンセット参照用</span>
+      </div>
+      <div class="tldr">
+        <b>狙い：フォーマット（型）を固定し、ネタだけ差し替えて量産する。</b>
+        <ul>
+          <li>「ネタ×フォーマット」の<b>フォーマット側を3本に確定</b>。台本は<span class="slot">{変数}</span>になっており、ネタバンクから差し込むだけ。</li>
+          <li><b>A｜無言・テロップ「◯選」型</b>（顔出し不要・最量産）／<b>B｜顔出しトークTOP3型</b>／<b>C｜ゆっくり・漫画解説型</b>（顔出さず）。</li>
+          <li>まず<b>テンプレA</b>を主力に。慣れたらB/Cへ横展開。</li>
+          <li>各テンプレに<b>絵コンテ（字コンテ）＋コピペ台本＋差し替え例3本</b>＋本家参考動画。</li>
+        </ul>
+      </div>
+      <div class="toc">
+        <a href="#rule">共通ルール</a>
+        <a href="#pick">どれを選ぶ</a>
+        <a href="#a">A 無言◯選</a>
+        <a href="#b">B 顔出しTOP3</a>
+        <a href="#c">C ゆっくり/漫画</a>
+        <a href="#bank">ネタバンク20</a>
+        <a href="#check">チェックリスト</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ 共通ルール ============ -->
+    <h2 id="rule">0. 全テンプレ共通の制作ルール（先に固定）</h2>
+    <p class="sec-note">どのテンプレでも守る土台。これを固定すると「考えること」が減り、ネタ差し替えだけで回せる。</p>
+    <div class="spec">
+      <div><b>アスペクト/尺</b>9:16 縦／20〜60秒（基本30秒）</div>
+      <div><b>冒頭3秒</b>結論・結果・損得を必ず先出し（説明は後）</div>
+      <div><b>テロップ</b>画面中央〜やや上。上下に被写体UIが来るので中央セーフゾーン厳守。1画面1メッセージ</div>
+      <div><b>フォント</b>太ゴシック1種＋強調色1色（黄or赤）。サイズは「離れて読める」最優先</div>
+      <div><b>1本=1ネタ</b>欲張らない（Bのみ1テーマ3項目）</div>
+      <div><b>数値</b>Before→Afterは実測のみ（捏造・誇大NG）</div>
+      <div><b>CTA</b>末尾は「保存」or「コメント」を1つだけ</div>
+      <div><b>SE/BGM</b>フック=ドン/ヒット音、各区切り=スワイプ音、BGMは小さく一定</div>
+      <div><b>シリーズ化</b>同じタイトル枠＋通し番号（#1,#2…）でブランド化</div>
+      <div><b>サムネ/1枚目</b>最大の数字 or 損得ワードを特大で</div>
+    </div>
+    <div class="warn">
+      <b>差別化の鉄則（パクリ回避）</b>：本家動画の<b>構図・テロップ文言・編集をそのままコピーしない</b>。借りるのは「型（構成と間）」だけ。題材は必ずAI業務活用に置換し、自分の実画面・実体験で作る。
+    </div>
+    <div class="warn">
+      <b>機密の扱い</b>：画面録画に<b>実在の社名・取引先・個人情報・メール本文・パスワード等を映さない</b>。デモはダミーデータで。契約書要約系は「機密は貼らない」と本編でも一言添える。
+    </div>
+
+    <!-- ============ どれを選ぶ ============ -->
+    <h2 id="pick">1. どのテンプレで始める？</h2>
+    <ul class="clean">
+      <li><b>顔出ししたくない・とにかく量産したい</b> → <b>A（無言・テロップ◯選）</b>。撮影は画面録画中心で最速。<b>まずはコレ推奨。</b></li>
+      <li><b>顔出しOK・人格/信頼で伸ばしたい</b> → <b>B（顔出しトークTOP3）</b>。フォロー・指名が付きやすい。</li>
+      <li><b>顔出さずじっくり解説・キャラ運用したい</b> → <b>C（ゆっくり/漫画解説）</b>。編集はやや重いが資産化しやすい。</li>
+    </ul>
+
+    <!-- ============ Template A ============ -->
+    <h2 id="a">テンプレ A｜無言・テロップ「知らないと損するAI ◯選」</h2>
+    <div class="tcard">
+      <span class="tbadge b-a">主力 / 顔出し不要 / 最量産</span>
+      <p>画面録画＋手元操作＋大テロップで、AI時短ワザを3つ連発。声は無し（BGM＋SE）か任意のアフレコ。<b>本家＝Tasty Japanの裏ワザ3選・森の家の100均◯選・uchilogのライフハック実演型</b>。</p>
+      <div class="spec">
+        <div><b>尺</b>30〜40秒</div>
+        <div><b>演者スタイル</b>無言・実演／任意アフレコ</div>
+        <div><b>撮影難度</b><span class="lv-l">低</span>（画面録画中心）</div>
+        <div><b>編集難度</b><span class="lv-m">中</span>（テロップ/テンポ/SE）</div>
+        <div><b>投稿頻度</b><span class="lv-l">高</span>（毎日〜週5可）</div>
+        <div><b>必要機材</b>PC（画面録画）＋編集アプリ。顔/マイク不要</div>
+      </div>
+      <p class="ref">本家の型を見る（料理/暮らし）：<a href="https://www.youtube.com/watch?v=B4fsPqy5N0g" target="_blank" rel="noopener">Tasty Japan 裏技3選 ↗</a> ／ <a href="https://www.youtube.com/watch?v=ND2k-KQ0FD8" target="_blank" rel="noopener">森の家 100均5選 ↗</a> ／ <a href="https://www.youtube.com/watch?v=q4IsA8UQ3rA" target="_blank" rel="noopener">uchilog ライフハック ↗</a></p>
+
+      <h4>絵コンテ（字コンテ）</h4>
+      <div class="table-scroll"><table class="cut-table"><thead><tr>
+        <th>カット</th><th>尺</th><th>画（映すもの）</th><th>テロップ</th><th>ナレ/音</th>
+      </tr></thead><tbody>
+        <tr><td class="cut">C1 フック</td><td class="sec">0–2.5s</td><td>黒背景に特大テロップ。右下に③の完成結果を0.5秒チラ見せ</td><td class="telop">知らないと損する<span class="slot">{テーマ}</span> <span class="slot">{N}</span>選</td><td>ドン！（ヒット音）／BGM開始</td></tr>
+        <tr><td class="cut">C2 ①</td><td class="sec">2.5–12s</td><td>「①<span class="slot">{見出し1}</span>」→手作業の面倒を1秒→AI操作1アクション→結果（Before/After or 時短）</td><td class="telop">① <span class="slot">{見出し1}</span><br>例:「<span class="slot">{Before}</span>」→「<span class="slot">{After}</span>」</td><td>スワイプ音／（任意）一言アフレコ</td></tr>
+        <tr><td class="cut">C3 ②</td><td class="sec">12–22s</td><td>同テンポで②。画面録画＋手元</td><td class="telop">② <span class="slot">{見出し2}</span></td><td>スワイプ音</td></tr>
+        <tr><td class="cut">C4 ③</td><td class="sec">22–33s</td><td>同テンポで③（最後に一番映えるワザ）</td><td class="telop">③ <span class="slot">{見出し3}</span></td><td>スワイプ音／効果音強め</td></tr>
+        <tr><td class="cut">C5 締め</td><td class="sec">33–38s</td><td>3つの見出しを一覧表示＋保存アイコン強調</td><td class="telop">全部試して→<b>保存</b>推奨<br><span class="slot">{シリーズ名}</span> #<span class="slot">{番号}</span></td><td>BGMフェード</td></tr>
+      </tbody></table></div>
+
+      <h4>コピペ台本テンプレ（<span class="slot">{}</span>を差し替え）</h4>
+      <div class="scriptbox"><button class="copy-btn" type="button">コピー</button><pre>【テンプレA 台本】タイトル: 知らないと損する{テーマ}{N}選 #{番号}
+
+C1 フック(0-2.5s)
+  画: 黒背景＋特大テロップ／③の結果を一瞬チラ見せ
+  テロップ: 知らないと損する{テーマ}{N}選
+  SE: ドン
+
+C2 ①(2.5-12s)
+  見出し: ① {見出し1}
+  画: {Before=手作業の面倒} → AI操作 {操作1アクション} → {After=結果/時短}
+  テロップ補足: {Before} → {After}（{短縮時間}）
+
+C3 ②(12-22s)
+  見出し: ② {見出し2}
+  画: {Before2} → {操作2} → {After2}
+
+C4 ③(22-33s)  ※一番映えるワザを最後に
+  見出し: ③ {見出し3}
+  画: {Before3} → {操作3} → {After3}
+
+C5 締め(33-38s)
+  テロップ: 全部試して→保存推奨 ／ {シリーズ名} #{番号}
+  CTA: 保存
+
+使用AI: {ツール名}  ／  注意: 画面はダミーデータ。社名・本文は映さない</pre></div>
+
+      <h4>ネタ差し替え例（同じ型で3本）</h4>
+      <div class="ex"><b>例1：</b>テーマ=「ChatGPT時短」N=3／①長文メール→3秒で要約＋返信案／②箇条書き→整った議事録／③英文メール→一発作成。シリーズ名「秒で終わる仕事術」#1</div>
+      <div class="ex"><b>例2：</b>テーマ=「Excelが秒で終わる」N=3／①関数を日本語で生成／②表をAIに整形・分類／③グラフ用にデータ要約。#2</div>
+      <div class="ex"><b>例3：</b>テーマ=「資料作成」N=3／①メモ→構成案／②長文PDF→要点3つ／③スライドの叩き台生成。#3</div>
+    </div>
+
+    <!-- ============ Template B ============ -->
+    <h2 id="b">テンプレ B｜顔出しトーク「結論先出し TOP3 / 1テーマ言い切り」</h2>
+    <div class="tcard">
+      <span class="tbadge b-b">人格・信頼で伸ばす / 顔出し</span>
+      <p>カメラに正対し、断定タイトル→「重要なのは3つ」→各項目を主張＋一言理由→結論。ジャンプカットで間を詰める。<b>本家＝マコなり社長のTOP3型・ブラホワの結論ジャッジ切り抜き</b>。</p>
+      <div class="spec">
+        <div><b>尺</b>30〜60秒</div>
+        <div><b>演者スタイル</b>トーク（カメラ目線）</div>
+        <div><b>撮影難度</b><span class="lv-m">中</span>（自分を撮る/話す）</div>
+        <div><b>編集難度</b><span class="lv-m">中</span>（ジャンプカット＋テロップ）</div>
+        <div><b>投稿頻度</b><span class="lv-m">中</span>（週2〜3）</div>
+        <div><b>必要機材</b>スマホ＋三脚＋（ピンマイク推奨）＋明るい場所</div>
+      </div>
+      <p class="ref">本家の型を見る：<a href="https://www.youtube.com/watch?v=Sr-8m0FL0J0" target="_blank" rel="noopener">マコなり社長 TOP3 ↗</a> ／ <a href="https://www.youtube.com/watch?v=IrHX3S0upHs" target="_blank" rel="noopener">ブラホワ 結論ジャッジ ↗</a></p>
+
+      <h4>絵コンテ（字コンテ）</h4>
+      <div class="table-scroll"><table class="cut-table"><thead><tr>
+        <th>カット</th><th>尺</th><th>画（映すもの）</th><th>テロップ</th><th>セリフ（言い回しテンプレ）</th>
+      </tr></thead><tbody>
+        <tr><td class="cut">C1 フック</td><td class="sec">0–3s</td><td>バストアップ・カメラ目線。表情強め</td><td class="telop"><span class="slot">{断定フック}</span></td><td>「<span class="slot">{断定フック}</span>、知らずにやってる人めっちゃ多いです」</td></tr>
+        <tr><td class="cut">C2 予告</td><td class="sec">3–7s</td><td>指で「3」を提示</td><td class="telop">重要なのは3つ</td><td>「大事なことは3つ。最後が一番効きます」</td></tr>
+        <tr><td class="cut">C3 ①</td><td class="sec">7–20s</td><td>語り＋画面に証拠スクショを一瞬インサート</td><td class="telop">① <span class="slot">{項目1}</span></td><td>「1つ目、<span class="slot">{項目1}</span>。理由は<span class="slot">{理由1}</span>」</td></tr>
+        <tr><td class="cut">C4 ②</td><td class="sec">20–33s</td><td>ジャンプカットで間を詰める</td><td class="telop">② <span class="slot">{項目2}</span></td><td>「2つ目、<span class="slot">{項目2}</span>。<span class="slot">{理由2}</span>」</td></tr>
+        <tr><td class="cut">C5 ③</td><td class="sec">33–48s</td><td>最重要。少し前のめり</td><td class="telop">③ <span class="slot">{項目3}</span></td><td>「そして一番大事、<span class="slot">{項目3}</span>」</td></tr>
+        <tr><td class="cut">C6 締め</td><td class="sec">48–58s</td><td>結論を言い切る・うなずき</td><td class="telop">結論：<span class="slot">{結論1行}</span></td><td>「結論、<span class="slot">{結論1行}</span>。<span class="slot">{CTA}</span>」</td></tr>
+      </tbody></table></div>
+
+      <h4>コピペ台本テンプレ</h4>
+      <div class="scriptbox"><button class="copy-btn" type="button">コピー</button><pre>【テンプレB 台本】タイトル: {断定フック} #{番号}
+
+C1 フック(0-3s): 「{断定フック}、知らずにやってる人多いです」
+C2 予告(3-7s): 「大事なことは3つ。最後が一番効きます」
+C3 ①(7-20s): 「1つ目、{項目1}。理由は{理由1}」  ※画面に{証拠スクショ1}を一瞬
+C4 ②(20-33s): 「2つ目、{項目2}。{理由2}」        ※{証拠スクショ2}
+C5 ③(33-48s): 「一番大事、{項目3}」              ※{証拠スクショ3}
+C6 締め(48-58s): 「結論、{結論1行}。{CTA=保存orコメントで教えて}」
+
+編集: 各カットの“間”はジャンプカットで削る／テロップは項目を常時表示
+注意: 断定はするが根拠を1つ必ず添える（誇大・断言だけはNG）</pre></div>
+
+      <h4>ネタ差し替え例（同じ型で3本）</h4>
+      <div class="ex"><b>例1：</b>断定フック=「AIに丸投げしてる人、損してます」／①前提を渡す②出力形式を指定③検証する／結論「AIは“指示力”で差がつく」</div>
+      <div class="ex"><b>例2：</b>断定フック=「会議でAI使えない人がやりがちなこと TOP3」／①録音し忘れ②要約丸写し③決定事項を抜く／結論「議事録は“確認”だけ人がやる」</div>
+      <div class="ex"><b>例3：</b>断定フック=「仕事が遅い人のAIの使い方 TOP3」／①毎回ゼロから書く②テンプレ化しない③1回で諦める／結論「型を保存して使い回す」</div>
+    </div>
+
+    <!-- ============ Template C ============ -->
+    <h2 id="c">テンプレ C｜顔出さず解説「ゆっくり/ずんだもん・漫画対話 AI解説」</h2>
+    <div class="tcard">
+      <span class="tbadge b-c">顔出し不要 / キャラ資産化 / 解説</span>
+      <p>立ち絵2キャラ（先生役＋初心者役）＋合成音声＋画面デモ＋テロップ。初心者役が素朴な疑問を代弁し、先生役が手順を見せる。<b>本家＝化け学のゆっくり解説・フェルミ漫画大学の本要約対話</b>。</p>
+      <div class="spec">
+        <div><b>尺</b>40〜60秒</div>
+        <div><b>演者スタイル</b>アフレコ（合成音声＋キャラ）</div>
+        <div><b>撮影難度</b><span class="lv-l">低</span>（素材のみ・実写不要）</div>
+        <div><b>編集難度</b><span class="lv-h">高</span>（音声/立ち絵/スライド組み）</div>
+        <div><b>投稿頻度</b><span class="lv-m">中</span>（週2目安）</div>
+        <div><b>必要ツール</b>VOICEVOX等の合成音声＋ゆっくりMovieMaker/CapCut＋立ち絵素材</div>
+      </div>
+      <p class="ref">本家の型を見る：<a href="https://www.youtube.com/watch?v=lw42KPdyxhw" target="_blank" rel="noopener">ゆっくり雑学 ↗</a> ／ <a href="https://www.youtube.com/watch?v=8a4urd5MPeI" target="_blank" rel="noopener">フェルミ漫画 本要約 ↗</a></p>
+
+      <h4>絵コンテ（字コンテ）</h4>
+      <div class="table-scroll"><table class="cut-table"><thead><tr>
+        <th>カット</th><th>尺</th><th>画（映すもの）</th><th>テロップ</th><th>セリフ（合成音声）</th>
+      </tr></thead><tbody>
+        <tr><td class="cut">C1 フック</td><td class="sec">0–4s</td><td>2キャラ登場＋背景に画面チラ見せ</td><td class="telop">実は9割が知らない<span class="slot">{テーマ}</span></td><td>先生「今日は<span class="slot">{テーマ}</span>。9割が損してます」</td></tr>
+        <tr><td class="cut">C2 悩み</td><td class="sec">4–14s</td><td>初心者キャラが困り顔</td><td class="telop">「<span class="slot">{悩み}</span>」</td><td>初心者「<span class="slot">{悩み}</span>…どうすれば？」</td></tr>
+        <tr><td class="cut">C3 解決</td><td class="sec">14–34s</td><td>画面デモ＋手順を吹き出し。操作を実画面で</td><td class="telop">こうするだけ：<span class="slot">{手順}</span></td><td>先生「<span class="slot">{手順}</span>。これだけ」</td></tr>
+        <tr><td class="cut">C4 具体例</td><td class="sec">34–50s</td><td>Before/Afterを並べる</td><td class="telop"><span class="slot">{Before}</span> → <span class="slot">{After}</span></td><td>初心者「えっ、<span class="slot">{After}</span>!?」</td></tr>
+        <tr><td class="cut">C5 まとめ</td><td class="sec">50–58s</td><td>1枚に要点集約＋次回予告</td><td class="telop">つまり <span class="slot">{まとめ1行}</span></td><td>先生「つまり<span class="slot">{まとめ1行}</span>。保存しといてね」</td></tr>
+      </tbody></table></div>
+
+      <h4>コピペ台本テンプレ</h4>
+      <div class="scriptbox"><button class="copy-btn" type="button">コピー</button><pre>【テンプレC 台本】タイトル: 実は9割が知らない{テーマ} #{番号}
+
+C1 フック(0-4s) 先生: 「今日は{テーマ}。9割が損してます」
+C2 悩み(4-14s)  初心者: 「{悩み}…どうすればいいの？」
+C3 解決(14-34s) 先生: 「{手順ステップ1}→{手順ステップ2}→{手順ステップ3}。これだけ」
+                 画: 実画面でデモ（ダミーデータ）
+C4 具体例(34-50s) 初心者: 「えっ、{After}!?」  画: {Before}→{After}
+C5 まとめ(50-58s) 先生: 「つまり{まとめ1行}。保存しといてね」
+
+キャラ: 先生役＝落ち着き／初心者役＝視聴者の代弁（素朴な疑問でテンポを作る）
+注意: 合成音声の読み・アクセント要確認／画面はダミーデータ</pre></div>
+
+      <h4>ネタ差し替え例（同じ型で3本）</h4>
+      <div class="ex"><b>例1：</b>テーマ=「議事録を自分で書かない方法」／悩み=「会議後の議事録が地獄」／手順=録音→文字起こし→AI要約プロンプト／After=90秒で完成</div>
+      <div class="ex"><b>例2：</b>テーマ=「Excel関数を覚えなくていい時代」／悩み=「関数が分からない」／手順=やりたい事を日本語で→AIが数式生成→貼る／After=暗記ゼロ</div>
+      <div class="ex"><b>例3：</b>テーマ=「分厚いPDFを読まずに要点だけ」／悩み=「資料が読み切れない」／手順=PDF投入→要点3つ＋出典Q&A／After=5分で把握</div>
+    </div>
+
+    <!-- ============ ネタバンク ============ -->
+    <h2 id="bank">2. 共通ネタバンク（AI業務活用 20）</h2>
+    <p class="sec-note">この20本を上の3テンプレへ差し込めば、当面のネタ切れはなし。○=相性良い。<b>1ネタ→3テンプレで3本</b>作れるので、20ネタ＝最大60本の素になる。</p>
+    <div class="table-scroll"><table class="bank-table"><thead><tr>
+      <th>#</th><th>AI業務ネタ</th><th>見せ方の核（Before→After）</th><th>A</th><th>B</th><th>C</th>
+    </tr></thead><tbody>
+      <tr><td>1</td><td class="telop">議事録を録音→AI要約</td><td>手打ち1時間 → 90秒で整形</td><td>○</td><td>○</td><td>○</td></tr>
+      <tr><td>2</td><td class="telop">長文メール→要約＆返信ドラフト</td><td>読むだけで疲れる → 貼って一発</td><td>○</td><td>○</td><td>○</td></tr>
+      <tr><td>3</td><td class="telop">Excel関数を日本語で生成</td><td>関数ググる → やりたい事を書くだけ</td><td>○</td><td>○</td><td>○</td></tr>
+      <tr><td>4</td><td class="telop">箇条書き→整った文書/企画書</td><td>体裁を整える時間 → 自動整形</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>5</td><td class="telop">分厚いPDF→要点＋出典Q&A</td><td>全部読む → 要点3つ＋根拠</td><td>○</td><td>○</td><td>○</td></tr>
+      <tr><td>6</td><td class="telop">会議の日程調整文面</td><td>毎回書く → テンプレ生成</td><td>○</td><td>—</td><td>—</td></tr>
+      <tr><td>7</td><td class="telop">競合/市場リサーチの要約</td><td>情報収集が長い → 観点別に要約</td><td>○</td><td>○</td><td>○</td></tr>
+      <tr><td>8</td><td class="telop">スプレッドシートの分類・命名</td><td>手作業仕分け → 一括処理</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>9</td><td class="telop">プレゼン構成の壁打ち</td><td>構成に悩む → 叩き台が出る</td><td>—</td><td>○</td><td>○</td></tr>
+      <tr><td>10</td><td class="telop">お詫び/依頼メールの下書き</td><td>言い回しに悩む → 角の立たない文</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>11</td><td class="telop">英文メール作成・翻訳</td><td>辞書と格闘 → 自然な英文</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>12</td><td class="telop">アンケート自由記述の集計・分類</td><td>目視で分類 → 自動タグ付け</td><td>○</td><td>○</td><td>○</td></tr>
+      <tr><td>13</td><td class="telop">SNS/告知文の量産</td><td>1本ずつ書く → 一括で複数案</td><td>○</td><td>—</td><td>—</td></tr>
+      <tr><td>14</td><td class="telop">マニュアル/手順書の作成</td><td>ゼロから書く → 操作を文章化</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>15</td><td class="telop">画像/スクショから表・文字抽出</td><td>手入力 → OCRで一括</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>16</td><td class="telop">タスク分解・優先順位づけ</td><td>頭がパンク → 分解して順序化</td><td>—</td><td>○</td><td>○</td></tr>
+      <tr><td>17</td><td class="telop">契約書/規約の要点・リスク抽出</td><td>読めない → 要点＋注意点（機密注意）</td><td>○</td><td>○</td><td>○</td></tr>
+      <tr><td>18</td><td class="telop">日報/週報の自動生成</td><td>毎日面倒 → 箇条書き→整形</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>19</td><td class="telop">名簿/データの整形・重複削除</td><td>手で直す → 一括クレンジング</td><td>○</td><td>—</td><td>○</td></tr>
+      <tr><td>20</td><td class="telop">アイデア出し・ネーミング</td><td>1人で詰まる → 大量に発散</td><td>—</td><td>○</td><td>○</td></tr>
+    </tbody></table></div>
+
+    <!-- ============ チェックリスト ============ -->
+    <h2 id="check">3. 撮影・投稿チェックリスト（毎回）</h2>
+    <h4>撮影前</h4>
+    <ul class="chk">
+      <li>テンプレ（A/B/C）とネタ（#番号）を1つに決めた</li>
+      <li>台本の<span class="slot">{変数}</span>を全部埋めた（特に冒頭3秒のフック文）</li>
+      <li>Before→Afterの数値は実測でメモした（盛らない）</li>
+      <li>画面に映る情報をダミーデータに差し替えた（社名/個人名/本文なし）</li>
+    </ul>
+    <h4>撮影/編集</h4>
+    <ul class="chk">
+      <li>9:16・中央セーフゾーンにテロップ配置</li>
+      <li>冒頭3秒で結論/結果/損得が伝わる</li>
+      <li>各区切りにSE、間はジャンプカットで詰めた</li>
+      <li>テロップは離れて読める大きさ・1画面1メッセージ</li>
+    </ul>
+    <h4>投稿</h4>
+    <ul class="chk">
+      <li>1枚目（サムネ）に最大の数字/損得ワード</li>
+      <li>CTAは1つ（保存 or コメント）</li>
+      <li>シリーズ名＋通し番号を入れた</li>
+      <li>本家のコピーになっていない（型だけ借り、中身は自作）</li>
+    </ul>
+
+    <div class="warn">
+      <b>次の一手</b>：このフォーマットが固まったので、運用は「<b>ネタバンク#○ × テンプレ○</b>」を選ぶだけ。まずはテンプレAでネタ#1〜#3を3本撮り、伸びた型に寄せていくのがおすすめ。ネタを増やしたくなったら<a href="ig-ai-shortvideo-playbook.html">ネタ×フォーマット プレイブック</a>のネタ案カタログから補充。
+    </div>
+  </main>
+
+  <footer>
+    <p>非公開メモ（検索エンジン除外設定済み）。URLを知っている人だけが閲覧できます。</p>
+    <p>日本型フォーマット（優先度高）を基に作成した撮影テンプレート。最終更新: 2026-06-26</p>
+  </footer>
+
+  <script>
+    document.addEventListener("click",function(ev){
+      var b=ev.target.closest(".copy-btn"); if(!b) return;
+      var pre=b.parentElement.querySelector("pre");
+      var t=pre.innerText;
+      function done(){ var o=b.textContent; b.textContent="コピー済✓"; setTimeout(function(){b.textContent=o;},1400); }
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var r=document.createRange(); r.selectNodeContents(pre); var s=getSelection(); s.removeAllRanges(); s.addRange(r); try{document.execCommand("copy");}catch(e){} done(); }
+    });
+  </script>
+</body>
+</html>
