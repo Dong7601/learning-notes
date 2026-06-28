@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>Mac無しで作る『Xの開きすぎ抑止』— iOSショートカット×Scriptableの仕組み</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel-soft: #1c2330;
+      --text: #e6edf3;
+      --muted: #9aa7b3;
+      --line: #30363d;
+      --accent: #58a6ff;
+      --accent-2: #7ee787;
+      --warning: #f2cc60;
+      --danger: #ff7b72;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      --radius: 16px;
+      --max: 1040px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(88, 166, 255, 0.14), transparent 30rem),
+        linear-gradient(180deg, #0d1117 0%, #111827 52%, #0d1117 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+      line-height: 1.78;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      width: min(100% - 32px, var(--max));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 34px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .hero {
+      padding: clamp(28px, 5vw, 56px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(22, 27, 34, 0.96), rgba(28, 35, 48, 0.88));
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent-2);
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 940px;
+      font-size: clamp(2rem, 5vw, 4.15rem);
+      line-height: 1.13;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      margin: 22px 0 0;
+      max-width: 880px;
+      color: #c9d1d9;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+    }
+
+    .meta-row,
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .meta-pill,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(13, 17, 23, 0.52);
+      color: var(--muted);
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .level-advanced {
+      border-color: rgba(242, 204, 96, 0.5);
+      color: #f2cc60;
+      background: rgba(242, 204, 96, 0.09);
+    }
+
+    main {
+      margin-top: 30px;
+    }
+
+    section {
+      margin-top: 24px;
+      padding: clamp(22px, 4vw, 34px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(22, 27, 34, 0.9);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      color: #d8e2ef;
+      font-size: 1.12rem;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 12px 0 0;
+    }
+
+    ul,
+    ol {
+      margin: 12px 0 0;
+      padding-left: 1.25rem;
+    }
+
+    li + li {
+      margin-top: 10px;
+    }
+
+    strong {
+      color: #ffffff;
+    }
+
+    code {
+      padding: 0.12em 0.34em;
+      border: 1px solid rgba(88, 166, 255, 0.28);
+      border-radius: 6px;
+      background: rgba(88, 166, 255, 0.1);
+      color: #d2e7ff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    .tldr {
+      border-color: rgba(126, 231, 135, 0.35);
+      background: linear-gradient(135deg, rgba(22, 27, 34, 0.96), rgba(21, 43, 32, 0.62));
+    }
+
+    .visual-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .visual-figure {
+      margin: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #0d1117;
+      overflow: hidden;
+    }
+
+    .visual-figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .visual-figure figcaption {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .viz-node {
+      fill: #161b22;
+      stroke: #58a6ff;
+      stroke-width: 2;
+    }
+
+    .viz-node.is-soft {
+      fill: #1c2330;
+      stroke: #7ee787;
+    }
+
+    .viz-node.is-warn {
+      fill: rgba(242, 204, 96, 0.12);
+      stroke: #f2cc60;
+    }
+
+    .viz-node.is-danger {
+      fill: rgba(255, 123, 114, 0.1);
+      stroke: #ff7b72;
+    }
+
+    .viz-arrow {
+      fill: none;
+      stroke: #8b949e;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      marker-end: url(#arrow);
+    }
+
+    .viz-arrow.is-ok {
+      stroke: #7ee787;
+    }
+
+    .viz-arrow.is-warn {
+      stroke: #f2cc60;
+    }
+
+    .viz-text,
+    .viz-small,
+    .viz-label {
+      fill: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .viz-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .viz-small {
+      fill: #9aa7b3;
+      font-size: 13px;
+    }
+
+    .viz-label {
+      fill: #c9d1d9;
+      font-size: 15px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      margin-top: 18px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: rgba(13, 17, 23, 0.58);
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #ffffff;
+      background: rgba(88, 166, 255, 0.08);
+      font-size: 0.92rem;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .glossary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .term {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(13, 17, 23, 0.45);
+    }
+
+    .term dt {
+      margin: 0 0 6px;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .term dd {
+      margin: 0;
+      color: #c9d1d9;
+    }
+
+    footer {
+      margin-top: 28px;
+      padding: 22px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 22px, var(--max));
+        padding-top: 18px;
+      }
+
+      .hero,
+      section {
+        border-radius: 12px;
+      }
+
+      .meta-pill,
+      .tag {
+        white-space: normal;
+      }
+
+      .glossary {
+        grid-template-columns: 1fr;
+      }
+
+      .visual-figure {
+        padding: 12px;
+      }
+
+      .viz-text {
+        font-size: 16px;
+      }
+
+      .viz-small {
+        font-size: 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a class="back-link" href="../index.html">← 一覧へ戻る</a>
+
+    <header class="hero">
+      <p class="eyebrow">開発・自動化</p>
+      <h1>Mac無しで作る「Xの開きすぎ抑止」— iOSショートカット×Scriptableの仕組み</h1>
+      <p class="summary">なんとなくX(旧Twitter)を開きすぎる癖を抑えるため、開くたびに「目的」を選ばせて利用時間を記録する“one sec”風の個人用ツールを、Mac無し・無料・iPhone上だけで作った記録。iOSの「ショートカット自動化」と無料アプリ「Scriptable」(JavaScript)を組み合わせた設計と、実機で詰まった落とし穴・その解法までをまとめる。</p>
+      <div class="meta-row" aria-label="メタ情報">
+        <span class="meta-pill level-advanced">難易度: 応用</span>
+        <span class="meta-pill">カテゴリ: 開発・自動化</span>
+        <span class="meta-pill">更新日: 2026-06-28</span>
+      </div>
+      <div class="tags" aria-label="タグ">
+        <span class="tag">iOS</span>
+        <span class="tag">iPhone</span>
+        <span class="tag">ショートカット</span>
+        <span class="tag">Scriptable</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">WebView</span>
+        <span class="tag">自動化</span>
+        <span class="tag">デジタルウェルビーイング</span>
+        <span class="tag">URLスキーム</span>
+        <span class="tag">Mac不要</span>
+        <span class="tag">グレース期間</span>
+        <span class="tag">one sec</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="tldr" aria-labelledby="tldr">
+        <h2 id="tldr">TL;DR</h2>
+        <ul>
+          <li>Mac/Xcode/Apple Developer登録なしで、iOSの「ショートカット自動化」＋無料アプリ「Scriptable」(JavaScript) だけで、Xを開くたびに目的(暇つぶし/なんとなく/仕事で/調べ物)を選ばせ、その日の利用時間を記録する“one sec”風ツールを作った。</li>
+          <li>仕組みの核は役割分担：Xを開くと自動化が発火 → 「裏」で判定スクリプトが走り → 介入が必要なときだけScriptableを「前面」に開き直してHTML製の介入画面を表示 → 目的を選ぶと記録してXを開く。</li>
+          <li>ネイティブアプリ(Swift)ではないので「完全ブロック」はできない＝記録＋ソフト抑止。利用時間は「前回開いてから今回までの経過」を前回の目的に加算する近似（60分上限・日付で集計リセット）。</li>
+          <li>最大の難所は X⇄Scriptable の無限ループ。45秒の「グレース期間」と「裏=判定／前面=UI」分離で遮断した。実機特有のクセ（裏ではWebView表示不可、出力がショートカットでは“ファイル型”扱いになりIf比較が壊れる等）に複数ハマった。</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="visuals">
+        <h2 id="visuals">図解</h2>
+        <div class="visual-grid">
+          <figure class="visual-figure">
+            <svg viewBox="0 0 860 360" role="img" aria-labelledby="fig1-title fig1-desc">
+              <title id="fig1-title">X起動からScriptable介入画面までの全体アーキテクチャ</title>
+              <desc id="fig1-desc">Xを開くとショートカット自動化が発火し、Scriptableが判定とUIを担当し、状態ファイルを読み書きしてからXへ戻る流れ。</desc>
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"></path>
+                </marker>
+              </defs>
+              <rect class="viz-node" x="24" y="96" width="132" height="82" rx="14"></rect>
+              <text class="viz-text" x="90" y="131" text-anchor="middle">Xを開く</text>
+              <text class="viz-small" x="90" y="154" text-anchor="middle">旧Twitter</text>
+
+              <rect class="viz-node is-soft" x="220" y="78" width="154" height="118" rx="14"></rect>
+              <text class="viz-text" x="297" y="118" text-anchor="middle">①自動化</text>
+              <text class="viz-small" x="297" y="143" text-anchor="middle">App X が</text>
+              <text class="viz-small" x="297" y="162" text-anchor="middle">開かれたとき</text>
+
+              <rect class="viz-node" x="438" y="72" width="182" height="130" rx="14"></rect>
+              <text class="viz-text" x="529" y="112" text-anchor="middle">②Scriptable</text>
+              <text class="viz-small" x="529" y="138" text-anchor="middle">判定 → UI</text>
+              <text class="viz-small" x="529" y="158" text-anchor="middle">JavaScript / WebView</text>
+
+              <rect class="viz-node is-warn" x="438" y="252" width="182" height="74" rx="14"></rect>
+              <text class="viz-text" x="529" y="282" text-anchor="middle">③状態ファイル</text>
+              <text class="viz-small" x="529" y="305" text-anchor="middle">端末ローカルJSON</text>
+
+              <rect class="viz-node is-soft" x="704" y="96" width="132" height="82" rx="14"></rect>
+              <text class="viz-text" x="770" y="131" text-anchor="middle">Xへ</text>
+              <text class="viz-small" x="770" y="154" text-anchor="middle">目的選択後</text>
+
+              <path class="viz-arrow" d="M 156 137 H 212"></path>
+              <path class="viz-arrow" d="M 374 137 H 430"></path>
+              <path class="viz-arrow" d="M 620 137 H 696"></path>
+              <path class="viz-arrow is-warn" d="M 529 203 V 244"></path>
+              <path class="viz-arrow is-warn" d="M 438 289 C 350 289 312 235 312 198"></path>
+
+              <text class="viz-label" x="184" y="121" text-anchor="middle">発火</text>
+              <text class="viz-label" x="406" y="121" text-anchor="middle">実行</text>
+              <text class="viz-label" x="659" y="121" text-anchor="middle">開く</text>
+              <text class="viz-label" x="620" y="237" text-anchor="middle">読み書き</text>
+            </svg>
+            <figcaption>Xを完全ブロックするのではなく、開く瞬間に目的選択と記録を挟む構成。</figcaption>
+          </figure>
+
+          <figure class="visual-figure">
+            <svg viewBox="0 0 860 430" role="img" aria-labelledby="fig2-title fig2-desc">
+              <title id="fig2-title">通常フローとこだま時のグレース期間によるループ防止</title>
+              <desc id="fig2-desc">通常は介入画面を表示して目的選択後にXへ戻る。Xへ戻った直後の再発火は45秒のグレース期間中として何もしない。</desc>
+              <defs>
+                <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"></path>
+                </marker>
+              </defs>
+              <style>
+                #fig2 .viz-arrow { marker-end: url(#arrow2); }
+              </style>
+              <g id="fig2">
+                <text class="viz-text" x="36" y="42">通常フロー</text>
+                <rect class="viz-node" x="36" y="70" width="122" height="64" rx="12"></rect>
+                <text class="viz-label" x="97" y="108" text-anchor="middle">Xを開く</text>
+
+                <rect class="viz-node is-soft" x="218" y="70" width="160" height="64" rx="12"></rect>
+                <text class="viz-label" x="298" y="96" text-anchor="middle">裏で判定</text>
+                <text class="viz-small" x="298" y="116" text-anchor="middle">介入が必要</text>
+
+                <rect class="viz-node" x="438" y="70" width="172" height="64" rx="12"></rect>
+                <text class="viz-label" x="524" y="96" text-anchor="middle">前面でUI</text>
+                <text class="viz-small" x="524" y="116" text-anchor="middle">棒グラフ＋目的ボタン</text>
+
+                <rect class="viz-node is-warn" x="670" y="70" width="154" height="64" rx="12"></rect>
+                <text class="viz-label" x="747" y="96" text-anchor="middle">記録してXへ</text>
+                <text class="viz-small" x="747" y="116" text-anchor="middle">今+45秒</text>
+
+                <path class="viz-arrow" d="M 158 102 H 210"></path>
+                <path class="viz-arrow" d="M 378 102 H 430"></path>
+                <path class="viz-arrow" d="M 610 102 H 662"></path>
+
+                <text class="viz-text" x="36" y="218">こだま時</text>
+                <rect class="viz-node is-danger" x="36" y="248" width="150" height="70" rx="12"></rect>
+                <text class="viz-label" x="111" y="276" text-anchor="middle">Xへ戻った直後</text>
+                <text class="viz-small" x="111" y="298" text-anchor="middle">自動化がもう一度発火</text>
+
+                <rect class="viz-node is-warn" x="260" y="248" width="176" height="70" rx="12"></rect>
+                <text class="viz-label" x="348" y="276" text-anchor="middle">グレース期間中</text>
+                <text class="viz-small" x="348" y="298" text-anchor="middle">45秒の猶予</text>
+
+                <rect class="viz-node is-soft" x="510" y="248" width="150" height="70" rx="12"></rect>
+                <text class="viz-label" x="585" y="276" text-anchor="middle">何もしない</text>
+                <text class="viz-small" x="585" y="298" text-anchor="middle">画面を出さない</text>
+
+                <rect class="viz-node" x="724" y="248" width="100" height="70" rx="12"></rect>
+                <text class="viz-label" x="774" y="290" text-anchor="middle">Xに留まる</text>
+
+                <path class="viz-arrow is-warn" d="M 186 283 H 252"></path>
+                <path class="viz-arrow is-ok" d="M 436 283 H 502"></path>
+                <path class="viz-arrow is-ok" d="M 660 283 H 716"></path>
+
+                <path class="viz-arrow is-warn" d="M 747 134 C 747 178 116 178 116 238"></path>
+                <text class="viz-small" x="430" y="174" text-anchor="middle">X が前面に戻るため“こだま”発火する</text>
+              </g>
+            </svg>
+            <figcaption>無限ループの正体は、目的選択後にXへ戻る操作そのものが再び自動化の引き金になること。</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section aria-labelledby="what">
+        <h2 id="what">1. 何を作ったか</h2>
+        <p>目的は、なんとなくXを開きすぎる癖の抑止です。参考にしたのは "one sec" というアプリの体験で、開こうとすると一拍置く画面が出る、あの感覚を本人用に再現しました。</p>
+        <p>仕様はシンプルです。Xを開くたびに割り込み画面を出し、(1)今日すでに何分Xに使ったか＋目的別の内訳を見せ、(2)「どうして開いたの？」と目的を毎回選ばせて記録します。「記録せずに開く」も可能にしました。</p>
+        <p>方針は、ストア公開不要・本人専用。Xを完全ブロックするのではなく、「記録＋一拍置かせるソフト抑止」として作っています。</p>
+      </section>
+
+      <section aria-labelledby="not-native">
+        <h2 id="not-native">2. なぜネイティブアプリ(Swift)にしなかったか</h2>
+        <p>本人の環境はWindowsのみで、Mac/Xcode/Apple Developerアカウントなしでした。</p>
+        <p>iOSのネイティブアプリ(Swift)は、ビルド・実機インストールにMac＋Xcodeが必須です。無料Apple IDだと7日ごとに再インストール、$99/年の開発者登録で1年有効。Windowsだけでは作れません。</p>
+        <p>そこで、Mac不要・無料・iPhone上で完結する「ショートカット自動化＋Scriptable」を選びました。</p>
+      </section>
+
+      <section aria-labelledby="architecture">
+        <h2 id="architecture">3. 全体アーキテクチャ（3つの部品）</h2>
+        <ol>
+          <li><strong>ショートカットの個人用自動化</strong>：「App X が開かれたとき」に発火する“引き金”。確認なしで即実行する設定。</li>
+          <li><strong>Scriptable（無料アプリ）</strong>：JavaScriptを動かせる。HTML/CSSの「介入画面」をWebViewで表示し、選択を記録し、Xを開く“頭脳とUI”。</li>
+          <li><strong>状態ファイル</strong>：端末ローカルのJSON（今日の日付・目的別の合計分・直近で開いた時刻・直前の目的・グレース期限・履歴）。</li>
+        </ol>
+        <p>役割分担は、「Xを開く → ①自動化 → ②Scriptable(判定→UI) → ③状態ファイル読み書き → Xへ」という流れです。</p>
+      </section>
+
+      <section aria-labelledby="flow">
+        <h2 id="flow">4. 動作の流れ（通常時 と こだま時）</h2>
+        <h3>通常（介入する）</h3>
+        <p>Xを開くと、自動化が裏で判定スクリプトを実行します。「介入が必要」と判断したら、ショートカットがScriptableを前面で開き直します。そこで介入画面（棒グラフ＋目的ボタン）を出し、目的を選ぶと、記録＋「グレース期限=今+45秒」を保存してXを開きます。</p>
+        <h3>こだま（ループ防止）</h3>
+        <p>Xを開いた直後、自動化が“もう一度”発火します。X が前面に戻ったためです。このとき裏の判定はグレース期間中なので「何もしない」を返し、画面を出さずXに留まります。これで X⇄Scriptable の無限ループを止めます。</p>
+      </section>
+
+      <section aria-labelledby="decisions">
+        <h2 id="decisions">5. 主要な設計判断</h2>
+        <h3>「裏で判定／前面でUI」を1つのスクリプトで分岐</h3>
+        <p>実行コンテキスト（アプリ内で動いているか）を見て、裏（ショートカットのRun Script）なら判定だけ、前面（専用URLで開かれた/手動実行）ならUI表示、と切り替えます。WebViewは前面でしか出せないためです。</p>
+        <h3>無限ループとグレース期間</h3>
+        <p>45秒の猶予を設け、X起動直後の“こだま”発火を握り潰します。</p>
+        <h3>利用時間の近似</h3>
+        <p>スクリプトは「Xを開く瞬間」しか動けないので、正確な利用時間は測れません。そこで「前回開いてから今回開くまでの経過時間」を前回選んだ目的に加算する近似を採用しました。就寝・離席の過大計上を防ぐため60分を超える経過は加算しません。日付が変わったらその日の集計をリセットして履歴へ退避します。</p>
+        <h3>状態はローカルファイル固定</h3>
+        <p>iCloud保存だと書き込み直後の読み込みが遅延して判定が壊れ、ループの原因になったため、端末ローカル保存に固定しました。</p>
+        <h3>介入画面はWebView(HTML/CSS)</h3>
+        <p>棒グラフ・目的ボタン・「本当に開く？」「記録せずに開く」などの見た目を、参考アプリ風にHTMLで再現しました。</p>
+      </section>
+
+      <section aria-labelledby="pitfalls">
+        <h2 id="pitfalls">6. ハマりどころ6選</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>症状・課題</th>
+                <th>原因</th>
+                <th>解決</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>裏で介入画面を出そうとするとエラー</td>
+                <td>ショートカットから裏で動くと WebView を表示できない</td>
+                <td>UIは「前面」でのみ表示。裏は判定だけに役割分担</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>裏からアプリを前面化できない端末がある</td>
+                <td>裏のスクリプトから他アプリを開く命令が効かないことがある</td>
+                <td>前面化はショートカットの「URLを開く」に任せる</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>ボタンを押しても無反応</td>
+                <td>WebViewのボタン取得を不安定な方法で実装していた</td>
+                <td>ボタン押下を「ページ遷移の横取り」で確実に捕捉する方式に変更</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>条件分岐(If)が一致しない</td>
+                <td>スクリプトの出力がショートカットでは“ファイル型”扱いになり等価比較が壊れる</td>
+                <td>Ifをやめ、「開くべきURL/空文字」を返して『URLを開く』に直接渡す（途中で「テキスト」アクションで型変換）</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>X⇄Scriptableの無限ループ</td>
+                <td>Xを開く度に自動化が再発火し続ける</td>
+                <td>45秒のグレース期間＋裏判定で“こだま”を握り潰す</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>利用時間がうまく測れない</td>
+                <td>常駐できないので正確計測は不可</td>
+                <td>「開く間隔」で近似（60分上限・日付リセット）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="transfer">
+        <h2 id="transfer">7. PCからiPhoneへコードを渡す</h2>
+        <p>iOSアプリ(Scriptable)で動くので、PC上のコードをiPhoneに渡す必要があります。iCloud for Windows未導入だと「フォルダにドラッグで同期」が使えません。</p>
+        <p>今回はコードをSlackやメモ経由でスマホに送り、Scriptableに貼り付けました。iCloud for Windowsを入れれば、iCloud Drive内のScriptableフォルダにファイルを置くだけで自動同期でき、再コピペが不要になります。</p>
+      </section>
+
+      <section aria-labelledby="limits">
+        <h2 id="limits">8. 限界と次の一手</h2>
+        <p>これは“ソフト抑止”です。自動化を自分でオフにすれば回避できます（本人の意思が前提＝意図どおり）。</p>
+        <p>利用時間はあくまで近似です。別アプリへ移った時間も含みうるため、60分上限で緩和しています。</p>
+        <p>「Xを本当にブロック」「正確な利用時間」「凝った独自UI」をやりたいなら、Mac＋Xcodeのネイティブアプリ(Swift)と Screen Time / FamilyControls といった仕組みが本命です。今回の方式(ショートカット＋Scriptable)はMac不要で手軽ですが、できることの上限があります。</p>
+      </section>
+
+      <section aria-labelledby="glossary">
+        <h2 id="glossary">用語集</h2>
+        <dl class="glossary">
+          <div class="term">
+            <dt>ショートカット自動化</dt>
+            <dd>iOS標準アプリ「ショートカット」の機能で、「特定アプリを開いたとき」などの“引き金”で処理を自動実行する仕組み。</dd>
+          </div>
+          <div class="term">
+            <dt>Scriptable</dt>
+            <dd>iOSでJavaScriptを実行できる無料アプリ。WebViewでHTML画面を出したり、ファイル読み書きや他アプリ起動ができる。</dd>
+          </div>
+          <div class="term">
+            <dt>WebView</dt>
+            <dd>アプリの中にWebページ(HTML/CSS)を表示する部品。今回は介入画面の見た目をこれで作った。</dd>
+          </div>
+          <div class="term">
+            <dt>URLスキーム</dt>
+            <dd><code>scriptable://…</code> や <code>twitter://</code> のような、特定アプリを開くための専用URL。アプリ間の受け渡しに使う。</dd>
+          </div>
+          <div class="term">
+            <dt>グレース期間</dt>
+            <dd>一度許可した直後の短い猶予時間（今回は45秒）。この間の再発火を無視して無限ループを防ぐ。</dd>
+          </div>
+          <div class="term">
+            <dt>Screen Time / FamilyControls</dt>
+            <dd>iOSの利用制限・スクリーンタイムの仕組み。アプリを“本当に”ブロックしたり利用時間を扱うにはこれ系のネイティブAPI（Mac＋Xcode開発）が必要。</dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+
+    <footer>
+      2026-06-28 / 公開用に匿名化済み
+    </footer>
+  </div>
+</body>
+</html>

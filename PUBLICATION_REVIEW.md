@@ -56,3 +56,12 @@
 - 内容: AI業務活用ショート動画の共通フォーマット撮影テンプレ（絵コンテ＋台本＋ネタバンク）。日本型フォーマット調査の派生。
 - 検閲結果: 会社名・取引先名・固有プロジェクト名・部署名・個人連絡先・秘密値なし。公開クリエイターの公開動画URL（YouTube oEmbed確認済）と一般的な制作手順のみ。台本内に「画面に社名・本文・個人情報を映さない／数値は実測」の注意を明記。**問題なし。**
 - 検索除外: `<head>` に `noindex, nofollow` / `googlebot noindex, nofollow` メタを維持。
+
+---
+
+## 2026-06-28
+
+### notes/iphone-x-usage-gate-scriptable.html
+- 内容: Mac無しでiPhoneのX開きすぎを抑止する個人用ツール（iOSショートカット自動化＋Scriptable/JavaScript＋WebView）の実装と仕組み・ハマりどころ。本人の実体験ベースの技術解説。
+- 検閲結果: 会社名・取引先名・固有プロジェクト名・部署名・個人情報・連絡先・秘密値・トークン類なし。本人の利用習慣は「本人用」と匿名化、固有名はアプリ名(Scriptable/one sec)とOS機能名・公開URLスキームのみ。**問題なし。**
+- 検索除外: `<head>` に `noindex, nofollow` / `googlebot noindex, nofollow` メタを維持。
